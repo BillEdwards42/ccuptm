@@ -301,20 +301,32 @@ function initializeMap() {
         // Clear any existing markers first
         markerClusterGroup.clearLayers();
         
+        // Get or create a separate container for the hover labels
+        let labelContainer = document.getElementById('map-label-container');
+        if (!labelContainer) {
+            labelContainer = document.createElement('div');
+            labelContainer.id = 'map-label-container';
+            labelContainer.style.position = 'absolute';
+            labelContainer.style.top = '0';
+            labelContainer.style.left = '0';
+            labelContainer.style.width = '100%';
+            labelContainer.style.height = '100%';
+            labelContainer.style.pointerEvents = 'none';
+            labelContainer.style.zIndex = '1000';
+            document.getElementById('map').appendChild(labelContainer);
+        } else {
+            labelContainer.innerHTML = ''; // Clear existing labels
+        }
+        
         establishments.forEach(establishment => {
-            // Create marker HTML elements
+            // Create marker HTML elements (just the icon, no label)
             const markerIcon = document.createElement('div');
             markerIcon.className = 'marker-icon';
             markerIcon.innerHTML = `<i class="fas fa-${establishment.icon}"></i>`;
             
-            const markerLabel = document.createElement('div');
-            markerLabel.className = 'marker-label';
-            markerLabel.textContent = establishment.name;
-            
             const markerContainer = document.createElement('div');
             markerContainer.className = 'custom-marker';
             markerContainer.appendChild(markerIcon);
-            markerContainer.appendChild(markerLabel);
             
             // Create custom icon and marker
             const customIcon = L.divIcon({
@@ -326,6 +338,78 @@ function initializeMap() {
             
             const marker = L.marker(establishment.position, { icon: customIcon });
             marker.establishment = establishment;
+            
+            // Create a separate hover label
+            const hoverLabel = document.createElement('div');
+            hoverLabel.className = 'hover-label';
+            hoverLabel.textContent = establishment.name;
+            hoverLabel.style.display = 'none';
+            labelContainer.appendChild(hoverLabel);
+            
+            // Store a reference to the hover label
+            marker.hoverLabel = hoverLabel;
+            
+            // Add hover events directly to the marker element
+            marker.on('mouseover', function() {
+                const markerPosition = map.latLngToContainerPoint(this.getLatLng());
+                hoverLabel.style.left = `${markerPosition.x}px`;
+                hoverLabel.style.top = `${markerPosition.y + 20}px`;
+                hoverLabel.style.display = 'block';
+                
+                // Add transition effect - start with label slightly up and transparent
+                hoverLabel.style.opacity = '0';
+                hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
+                
+                // Trigger transition after a small delay to ensure it runs
+                setTimeout(() => {
+                    hoverLabel.style.opacity = '1';
+                    hoverLabel.style.transform = 'translateX(-50%) translateY(0)';
+                }, 10);
+            });
+            
+            marker.on('mouseout', function() {
+                // Fade out with transition
+                hoverLabel.style.opacity = '0';
+                hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
+                
+                // Hide after transition completes
+                setTimeout(() => {
+                    if (hoverLabel.style.opacity === '0') {
+                        hoverLabel.style.display = 'none';
+                    }
+                }, 300);
+            });
+            
+            // Update label position when map moves or zooms
+            map.on('move', function() {
+                if (hoverLabel.style.display === 'block') {
+                    const markerPosition = map.latLngToContainerPoint(marker.getLatLng());
+                    hoverLabel.style.left = `${markerPosition.x}px`;
+                    hoverLabel.style.top = `${markerPosition.y + 20}px`;
+                }
+            });
+            
+            // Apply similar transition when marker icon is hovered directly
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.addEventListener('mouseenter', function() {
+                    // Also animate the marker icon for a better user experience
+                    const iconElement = markerElement.querySelector('.marker-icon');
+                    if (iconElement) {
+                        iconElement.style.transform = 'scale(1.2)';
+                        iconElement.style.backgroundColor = '#FF6347'; // Tomato - slightly darker on hover
+                    }
+                });
+                
+                markerElement.addEventListener('mouseleave', function() {
+                    // Revert marker icon animation
+                    const iconElement = markerElement.querySelector('.marker-icon');
+                    if (iconElement) {
+                        iconElement.style.transform = '';
+                        iconElement.style.backgroundColor = '';
+                    }
+                });
+            }
             
             // Add click event listener to marker
             marker.on('click', () => {
@@ -433,6 +517,12 @@ function initializeMap() {
         
         mobilePopupActive = false;
         activeMarker = null;
+        
+        // Fix: Restore touch functionality by refreshing the map
+        setTimeout(() => {
+            // This forces Leaflet to recapture touch events
+            map.invalidateSize();
+        }, 100);
     }
     
     // Create popup content with establishment data

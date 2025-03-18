@@ -292,7 +292,7 @@ body.intro-page {
         width: 100%;
         max-width: 500px;
         background-color: rgba(255, 255, 255, 0.95);
-        padding: 30px 20px;
+        padding: 30px 25px;
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         text-align: center;
@@ -300,6 +300,7 @@ body.intro-page {
         border: 1px solid rgba(255, 127, 80, 0.2);
         overflow-y: visible;
         height: auto;
+        margin: 0 auto;
     }
     
     .intro-content-mobile .intro-logo img {
@@ -339,6 +340,9 @@ body.intro-page {
         font-size: 0.95rem;
         line-height: 1.6;
         margin-bottom: 15px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
     
     .intro-content-mobile .enter-button {
@@ -372,6 +376,7 @@ body.intro-page {
     
     .intro-content-mobile {
         padding: 25px 20px;
+        max-width: 95%;
     }
     
     .intro-content-mobile .intro-logo img {
