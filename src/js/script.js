@@ -936,7 +936,16 @@ function initializeMap() {
             
             // Add click event listener to marker
             marker.on('click', () => {
-                window.innerWidth <= 768 ? showMobilePopup(marker) : showDesktopPopup(marker);
+                console.log('Marker clicked', marker.establishment.name);
+                
+                // Determine which popup method to use based on device
+                if (window.innerWidth <= 768) {
+                    showMobilePopup(marker);
+                } else {
+                    showDesktopPopup(marker);
+                }
+                
+                // Track active marker
                 activeMarker = marker;
             });
             
@@ -1011,82 +1020,108 @@ function initializeMap() {
         // The bottom sheet container is already in the HTML
         const bottomSheet = document.getElementById('bottom-sheet-container');
         
-        if (bottomSheet) {
-            // Set up touch event handling for dragging
-            let startY = 0;
-            let startTranslateY = 0;
-            let currentTranslateY = 0;
-            const maxTranslateY = 0;
-            const minTranslateY = window.innerHeight;
+        // Set up touch event handling for dragging - moved outside "if" so it can be returned
+        let startY = 0;
+        let startTranslateY = 0;
+        let currentTranslateY = 0;
+        const maxTranslateY = 0;
+        const minTranslateY = window.innerHeight;
+        
+        const handleTouch = {
+            start: function(e) {
+                const touches = e.touches[0];
+                startY = touches.clientY;
+                bottomSheet.style.transition = 'none';
+                
+                // Get the current transform value
+                const style = window.getComputedStyle(bottomSheet);
+                const matrix = new WebKitCSSMatrix(style.transform);
+                startTranslateY = matrix.m42;
+                
+                document.addEventListener('touchmove', handleTouch.move, { passive: false });
+                document.addEventListener('touchend', handleTouch.end, { passive: true });
+            },
             
-            const handleTouch = {
-                start: function(e) {
-                    const touches = e.touches[0];
-                    startY = touches.clientY;
-                    bottomSheet.style.transition = 'none';
-                    
-                    // Get the current transform value
-                    const style = window.getComputedStyle(bottomSheet);
-                    const matrix = new WebKitCSSMatrix(style.transform);
-                    startTranslateY = matrix.m42;
-                    
-                    document.addEventListener('touchmove', handleTouch.move, { passive: false });
-                    document.addEventListener('touchend', handleTouch.end, { passive: true });
-                },
+            move: function(e) {
+                const touches = e.touches[0];
+                const diffY = touches.clientY - startY;
                 
-                move: function(e) {
-                    const touches = e.touches[0];
-                    const diffY = touches.clientY - startY;
-                    
-                    // Calculate new position
-                    currentTranslateY = Math.max(maxTranslateY, Math.min(minTranslateY, startTranslateY + diffY));
-                    
-                    // Apply new position
-                    bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
-                    
-                    // Prevent default only if we're dragging the sheet
-                    if (e.target.closest('.bottom-sheet-handle')) {
-                        e.preventDefault();
-                    }
-                },
+                // Calculate new position
+                currentTranslateY = Math.max(maxTranslateY, Math.min(minTranslateY, startTranslateY + diffY));
                 
-                end: function(e) {
-                    bottomSheet.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                    
-                    // Snap to positions based on velocity and current position
-                    const endY = e.changedTouches[0].clientY;
-                    const diffY = endY - startY;
-                    
-                    // If dragged up
-                    if (diffY < -50) {
-                        // Expand to full
-                        bottomSheet.classList.add('active');
-                        bottomSheet.classList.remove('peek');
-                    } 
-                    // If dragged down a lot
-                    else if (diffY > 100) {
-                        // Close completely
-                        closeBottomSheet();
-                    } 
-                    // If dragged down a little
-                    else if (diffY > 20) {
-                        // Minimize to peek
-                        bottomSheet.classList.remove('active');
-                        bottomSheet.classList.add('peek');
-                    }
-                    // Otherwise, keep current state
-                    
-                    document.removeEventListener('touchmove', handleTouch.move);
-                    document.removeEventListener('touchend', handleTouch.end);
+                // Apply new position
+                bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
+                
+                // Prevent default only if we're dragging the sheet
+                if (e.target.closest('.bottom-sheet-handle')) {
+                    e.preventDefault();
                 }
-            };
+            },
+            
+            end: function(e) {
+                bottomSheet.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                // Snap to positions based on velocity and current position
+                const endY = e.changedTouches[0].clientY;
+                const diffY = endY - startY;
+                
+                // If dragged up
+                if (diffY < -50) {
+                    // Expand to full
+                    bottomSheet.classList.add('active');
+                    bottomSheet.classList.remove('peek');
+                } 
+                // If dragged down a lot
+                else if (diffY > 100) {
+                    // Close completely
+                    closeBottomSheet();
+                } 
+                // If dragged down a little
+                else if (diffY > 20) {
+                    // Minimize to peek
+                    bottomSheet.classList.remove('active');
+                    bottomSheet.classList.add('peek');
+                }
+                // Otherwise, keep current state
+                
+                document.removeEventListener('touchmove', handleTouch.move);
+                document.removeEventListener('touchend', handleTouch.end);
+            }
+        };
+        
+        if (bottomSheet) {
+            // Make sure the sheet is hidden initially with transform
+            if (!bottomSheet.style.transform) {
+                bottomSheet.style.transform = 'translateY(100%)';
+            }
             
             // Add touch event listeners
             const handle = bottomSheet.querySelector('.bottom-sheet-handle');
             if (handle) {
-                handle.addEventListener('touchstart', handleTouch.start, { passive: true });
+                // Remove any existing listeners first to avoid duplicates
+                const newHandle = handle.cloneNode(true);
+                handle.parentNode.replaceChild(newHandle, handle);
+                
+                // Add the touch event listener
+                newHandle.addEventListener('touchstart', handleTouch.start, { passive: true });
             }
+            
+            // Add touch event to the entire sheet for dragging (not just the handle)
+            bottomSheet.addEventListener('touchstart', function(e) {
+                // If already touching the handle, ignore (let the handle handler take over)
+                if (e.target.closest('.bottom-sheet-handle')) {
+                    return;
+                }
+                
+                // For the sheet itself (not the content or controls), enable dragging
+                if (e.target === bottomSheet || e.target.classList.contains('bottom-sheet-header')) {
+                    handleTouch.start(e);
+                }
+            }, { passive: true });
         }
+        
+        // Return the handlers so they can be used elsewhere
+        return { handleTouch };
     }
     
     // Display appropriate view for mobile devices
@@ -1108,6 +1143,9 @@ function initializeMap() {
         const bottomSheetContent = document.getElementById('bottom-sheet-content');
         
         if (!bottomSheet || !bottomSheetContent) return;
+        
+        // Reset the transform to ensure it can be shown
+        bottomSheet.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         
         // Save current map state before showing bottom sheet
         saveMapState();
@@ -1147,27 +1185,43 @@ function initializeMap() {
         header.appendChild(closeBtn);
         
         // Create the establishment content
-        const content = createPopupContent(marker.establishment);
-        content.classList.add('bottom-sheet-establishment-content');
+        const popupContent = createPopupContent(marker.establishment);
+        
+        // Remove the header from the popup content to avoid duplication
+        const existingHeader = popupContent.querySelector('.establishment-popup-header');
+        if (existingHeader) {
+            existingHeader.remove();
+        }
+        
+        // Add the bottom-sheet-specific class
+        popupContent.classList.add('bottom-sheet-establishment-content');
         
         // Combine elements
         wrapper.appendChild(header);
-        wrapper.appendChild(content);
+        wrapper.appendChild(popupContent);
         
         // Add to bottom sheet
         bottomSheetContent.innerHTML = '';
         bottomSheetContent.appendChild(wrapper);
         
-        // Show the bottom sheet with animation
-        bottomSheet.classList.add('active');
-        bottomSheet.classList.remove('peek');
+        // Make sure the bottom sheet is properly positioned to begin with
+        bottomSheet.style.transform = ''; // Clear any inline transform style
         
-        // Allow map interaction to continue (unlike popup approach)
-        // We don't need to disable map interactions
-        
-        // Store the current marker as active
-        window.activeMarker = marker;
-        window.bottomSheetActive = true;
+        // Show the bottom sheet with animation after a brief delay to ensure styles are applied
+        setTimeout(() => {
+            bottomSheet.classList.add('active');
+            bottomSheet.classList.remove('peek');
+            bottomSheet.style.transform = 'translateY(0)'; // Explicitly set transform
+            
+            // Allow map interaction to continue (unlike popup approach)
+            // We don't need to disable map interactions
+            
+            // Store the current marker as active
+            window.activeMarker = marker;
+            window.bottomSheetActive = true;
+            
+            console.log('Bottom sheet activated');
+        }, 50);
     }
     
     // Close bottom sheet
@@ -1182,8 +1236,20 @@ function initializeMap() {
         bottomSheet.classList.remove('peek');
         bottomSheet.style.transform = 'translateY(100%)';
         
+        // Clear state variables
         window.bottomSheetActive = false;
         window.activeMarker = null;
+        
+        // Clean up any event listeners that might be preventing future opens
+        const handle = bottomSheet.querySelector('.bottom-sheet-handle');
+        if (handle) {
+            // Re-enable the touch events on the handle
+            const newHandle = handle.cloneNode(true);
+            handle.parentNode.replaceChild(newHandle, handle);
+            
+            // Re-add the touch event listener
+            newHandle.addEventListener('touchstart', setupBottomSheet().handleTouch.start, { passive: true });
+        }
         
         // No need to reset the map or reinitialize since we didn't disable interactions
     }
