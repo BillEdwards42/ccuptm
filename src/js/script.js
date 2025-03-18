@@ -252,21 +252,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     infoContent.style.overflowY = 'auto';
                     infoContent.style.webkitOverflowScrolling = 'touch';
                     
-                    // For iOS Safari
+                    // Use simpler touch handling for better response
                     setTimeout(() => {
-                        infoContent.addEventListener('touchstart', function(e) {
-                            // Allow scrolling within info-guide-content
-                            if (infoContent.scrollHeight > infoContent.clientHeight) {
-                                e.stopPropagation();
-                            }
-                        }, { passive: true });
+                        infoContent.style.touchAction = 'pan-y';
                     }, 100);
                 }
                 
-                // Set the info-guide-btn to active and remove active from other links
-                document.querySelectorAll('.navbar-links a').forEach(link => {
-                    link.classList.toggle('active', link.id === 'info-guide-btn');
-                });
+                // Disable map interactions entirely while info guide is open
+                if (document.getElementById('map') && map) {
+                    map.dragging.disable();
+                    map.touchZoom.disable();
+                    map.doubleClickZoom.disable();
+                    if (map.tap) map.tap.disable();
+                }
             }
         });
     }
@@ -274,26 +272,50 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close button for info guide
     const infoGuideClose = document.getElementById('info-guide-close');
     if (infoGuideClose) {
+        // Use simpler event handling for better touch response
         infoGuideClose.addEventListener('click', (e) => {
             e.preventDefault();
-            const overlay = document.getElementById('info-guide-overlay');
-            if (overlay) {
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-                
-                // Use the centralized touch reset function
-                resetTouchSystem(() => {
-                    // Reset the active state on all nav links and restore map as active
-                    document.querySelectorAll('.navbar-links a').forEach(link => {
-                        if (link.id === 'map-nav-btn') {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
-                });
-            }
+            closeInfoGuide();
         });
+        
+        infoGuideClose.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeInfoGuide();
+        });
+    }
+    
+    // Centralized function to close info guide
+    function closeInfoGuide() {
+        const overlay = document.getElementById('info-guide-overlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Re-enable map interactions
+            if (document.getElementById('map') && map) {
+                map.dragging.enable();
+                map.touchZoom.enable();
+                map.doubleClickZoom.enable();
+                if (map.tap) map.tap.enable();
+                
+                // Force a map refresh
+                try {
+                    map.invalidateSize({reset: true, pan: false});
+                } catch(e) {
+                    console.error('Error refreshing map:', e);
+                }
+            }
+            
+            // Reset the active state on all nav links and restore map as active
+            document.querySelectorAll('.navbar-links a').forEach(link => {
+                if (link.id === 'map-nav-btn') {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
     }
     
     // Close on overlay click
@@ -301,20 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (infoGuideOverlay) {
         infoGuideOverlay.addEventListener('click', (e) => {
             if (e.target === infoGuideOverlay) {
-                infoGuideOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-                
-                // Use the centralized touch reset function
-                resetTouchSystem(() => {
-                    // Reset the active state on all nav links and restore map as active
-                    document.querySelectorAll('.navbar-links a').forEach(link => {
-                        if (link.id === 'map-nav-btn') {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
-                });
+                closeInfoGuide();
             }
         });
     }
@@ -324,20 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') {
             const overlay = document.getElementById('info-guide-overlay');
             if (overlay && overlay.classList.contains('active')) {
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-                
-                // Use the centralized touch reset function
-                resetTouchSystem(() => {
-                    // Reset the active state on all nav links and restore map as active
-                    document.querySelectorAll('.navbar-links a').forEach(link => {
-                        if (link.id === 'map-nav-btn') {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
-                });
+                closeInfoGuide();
             }
         }
     });
@@ -493,9 +489,7 @@ function initializeMap() {
     
     // Setup event listeners
     function setupEventListeners() {
-        // Map nav button as reset view handler
-        const mapNavButton = document.getElementById('map-nav-btn');
-
+        // Reset view handler function
         function resetView() {
             console.log('Map reset view triggered');
             
@@ -529,33 +523,31 @@ function initializeMap() {
             }, delay);
         }
 
-        if (mapNavButton) {
-            mapNavButton.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent default behavior
-                e.stopPropagation(); // Stop event from bubbling to the map
-                
-                // Only reset view if map nav button is already active (map is showing)
-                if (mapNavButton.classList.contains('active')) {
-                    resetView();
-                }
+        // Reset view button for non-touch devices
+        const resetViewBtn = document.getElementById('reset-view-btn');
+        if (resetViewBtn) {
+            resetViewBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                resetView();
             });
+        }
 
-            mapNavButton.addEventListener('touchstart', (e) => {
-                // Only prevent default if map nav button is already active
-                if (mapNavButton.classList.contains('active')) {
-                    e.preventDefault(); // Prevent default touch behavior
-                    e.stopPropagation(); // Stop event from affecting the map
-                }
-            });
-            
-            // Handle touch end event to trigger reset
-            mapNavButton.addEventListener('touchend', (e) => {
-                // Only reset view if map nav button is already active
-                if (mapNavButton.classList.contains('active')) {
+        // Map nav button (we're removing its reset functionality for mobile)
+        const mapNavButton = document.getElementById('map-nav-btn');
+        if (mapNavButton) {
+            // Only for non-touch devices, keep the reset view functionality
+            if (!isTouchDevice()) {
+                mapNavButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    resetView();
-                }
-            });
+                    e.stopPropagation();
+                    
+                    // Only reset view if map nav button is already active (map is showing)
+                    if (mapNavButton.classList.contains('active')) {
+                        resetView();
+                    }
+                });
+            }
         }
         
         // Handle window resize
@@ -1119,6 +1111,9 @@ function initializeMap() {
         // Save current map state before showing bottom sheet
         saveMapState();
         
+        // Prevent scrolling of background
+        document.body.style.overflow = 'hidden';
+        
         // Create content wrapper with header
         const wrapper = document.createElement('div');
         wrapper.className = 'bottom-sheet-wrapper';
@@ -1151,7 +1146,20 @@ function initializeMap() {
         closeBtn.className = 'bottom-sheet-close';
         closeBtn.innerHTML = '<i class="fas fa-arrow-left"></i>'; // Changed to back arrow
         closeBtn.title = '返回地圖';
-        closeBtn.addEventListener('click', closeBottomSheet);
+        
+        // Add simpler event listeners for better touch response
+        closeBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeBottomSheet();
+        });
+        
+        closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeBottomSheet();
+        });
+        
         header.appendChild(closeBtn);
         
         // Create the establishment content
@@ -1191,10 +1199,13 @@ function initializeMap() {
         window.activeMarker = marker;
         window.bottomSheetActive = true;
         
-        // Update the active state of navbar items - when card is open, no nav items should be active
-        document.querySelectorAll('.navbar-links a').forEach(link => {
-            link.classList.remove('active');
-        });
+        // Disable map touch events entirely while modal is open
+        if (map) {
+            map.dragging.disable();
+            map.touchZoom.disable();
+            map.doubleClickZoom.disable();
+            if (map.tap) map.tap.disable();
+        }
         
         console.log('Bottom sheet activated as fullscreen modal');
     }
@@ -1213,10 +1224,28 @@ function initializeMap() {
         bottomSheet.classList.remove('active');
         bottomSheet.style.transform = 'translateY(100%)';
         
+        // Restore body scrolling
+        document.body.style.overflow = '';
+        
         // After animation completes, set visibility to hidden
         setTimeout(() => {
             bottomSheet.style.visibility = 'hidden';
             bottomSheet.style.pointerEvents = 'none';
+            
+            // Re-enable map interactions
+            if (map) {
+                map.dragging.enable();
+                map.touchZoom.enable();
+                map.doubleClickZoom.enable();
+                if (map.tap) map.tap.enable();
+                
+                // Force a map refresh to ensure touch is working
+                try {
+                    map.invalidateSize({reset: true, pan: false});
+                } catch(e) {
+                    console.error('Error refreshing map:', e);
+                }
+            }
         }, 300);
         
         // Clear state variables
