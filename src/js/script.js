@@ -13,9 +13,33 @@ function setActiveState() {
     });
 }
 
+// Global variable to track currently active hover label
+let activeHoverLabel = null;
+
+// Function to hide all hover labels
+function hideAllHoverLabels() {
+    const labelContainer = document.getElementById('map-label-container');
+    if (labelContainer) {
+        const labels = labelContainer.querySelectorAll('.hover-label');
+        labels.forEach(label => {
+            label.style.opacity = '0';
+            label.style.transform = 'translateX(-50%) translateY(-5px)';
+            setTimeout(() => {
+                if (label.style.opacity === '0') {
+                    label.style.display = 'none';
+                }
+            }, 300);
+        });
+    }
+    activeHoverLabel = null;
+}
+
 // Function to completely reset touch handling
 function resetTouchSystem(callback) {
     console.log('Resetting touch system');
+    
+    // Hide any visible hover labels
+    hideAllHoverLabels();
     
     // Create an overlay to temporarily capture and reset touch events
     const touchResetOverlay = document.createElement('div');
@@ -324,6 +348,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('map')) {
         initializeMap();
         
+        // For touch devices, setup the bottom sheet instead of traditional popups
+        if (isTouchDevice()) {
+            console.log('Touch device detected, initializing bottom sheet');
+            setupBottomSheet();
+        } else {
+            // For non-touch devices, use the traditional popup
+            setupMobilePopup();
+        }
+        
         // Add handler for mobile browsers to reset map if touch issues are detected
         if ('ontouchstart' in window || navigator.maxTouchPoints) {
             // Make the reset view button also reset the map instance if needed
@@ -333,6 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 resetViewBtn.onclick = function(e) {
                     // If original handler exists, call it
                     if (originalClickHandler) originalClickHandler.call(this, e);
+                    
+                    // If bottom sheet is open, close it
+                    if (window.bottomSheetActive) {
+                        closeBottomSheet();
+                    }
                     
                     // Also completely re-initialize the map
                     setTimeout(() => {
@@ -458,20 +496,44 @@ function initializeMap() {
     // Setup event listeners
     function setupEventListeners() {
         // Reset view button click handler - maintain default zoom level of 17
-        document.getElementById('reset-view').addEventListener('click', () => {
-            map.setView([23.5558, 120.4705], 17, {
-                animate: true,
-                duration: 0.5
-            });
+        document.getElementById('reset-view').addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent any default behavior
+            e.stopPropagation(); // Stop event propagation
             
-            // Fix touch handlers when reset button is clicked
-            resetMapTouchHandlers();
+            // Close any open popups or sheets
+            if (window.bottomSheetActive) {
+                closeBottomSheet();
+            }
+            if (window.mobilePopupActive) {
+                closeMobilePopup();
+            }
+            map.closePopup();
+            
+            // Use a timeout to ensure UI updates before map manipulation
+            setTimeout(() => {
+                // Reset the view with animation
+                map.setView([23.5558, 120.4705], 17, {
+                    animate: true,
+                    duration: 0.5
+                });
+                
+                // Fix touch handlers when reset button is clicked
+                resetMapTouchHandlers();
+                
+                console.log('Map view reset to default position');
+            }, 50);
         });
         
         // Handle window resize
         window.addEventListener('resize', () => {
             map.closePopup();
-            closeMobilePopup();
+            
+            // Close the appropriate mobile view based on device type
+            if (isTouchDevice() && window.bottomSheetActive) {
+                closeBottomSheet();
+            } else if (window.mobilePopupActive) {
+                closeMobilePopup();
+            }
         });
         
         // Handle popup close event
@@ -732,16 +794,10 @@ function initializeMap() {
             markerIcon.className = 'marker-icon';
             markerIcon.innerHTML = `<i class="fas fa-${establishment.icon}"></i>`;
             
-            // Create label for marker
-            const markerLabel = document.createElement('div');
-            markerLabel.className = 'marker-label';
-            markerLabel.textContent = establishment.name;
-            
-            // Create marker container
+            // Create marker container - without the embedded label for simplicity
             const markerContainer = document.createElement('div');
             markerContainer.className = 'custom-marker';
             markerContainer.appendChild(markerIcon);
-            markerContainer.appendChild(markerLabel);
             
             // Create custom icon and marker
             const customIcon = L.divIcon({
@@ -754,7 +810,7 @@ function initializeMap() {
             const marker = L.marker(establishment.position, { icon: customIcon });
             marker.establishment = establishment;
             
-            // Create a separate hover label
+            // Create a hover label - only need one type of label now
             const hoverLabel = document.createElement('div');
             hoverLabel.className = 'hover-label';
             hoverLabel.textContent = establishment.name;
@@ -764,64 +820,116 @@ function initializeMap() {
             // Store a reference to the hover label
             marker.hoverLabel = hoverLabel;
             
-            // Add hover events directly to the marker element
-            marker.on('mouseover', function() {
-                const markerPosition = map.latLngToContainerPoint(this.getLatLng());
-                hoverLabel.style.left = `${markerPosition.x}px`;
-                hoverLabel.style.top = `${markerPosition.y + 20}px`;
-                hoverLabel.style.display = 'block';
-                
-                // Add transition effect - start with label slightly up and transparent
-                hoverLabel.style.opacity = '0';
-                hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
-                
-                // Trigger transition after a small delay to ensure it runs
-                setTimeout(() => {
-                    hoverLabel.style.opacity = '1';
-                    hoverLabel.style.transform = 'translateX(-50%) translateY(0)';
-                }, 10);
-            });
-            
-            marker.on('mouseout', function() {
-                // Fade out with transition
-                hoverLabel.style.opacity = '0';
-                hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
-                
-                // Hide after transition completes
-                setTimeout(() => {
-                    if (hoverLabel.style.opacity === '0') {
-                        hoverLabel.style.display = 'none';
+            // Add hover events directly to the marker element (but only for non-touch devices)
+            if (!isTouchDevice()) {
+                marker.on('mouseover', function() {
+                    // Hide any other active labels first
+                    if (activeHoverLabel && activeHoverLabel !== hoverLabel) {
+                        hideAllHoverLabels();
                     }
-                }, 300);
-            });
-            
-            // Update label position when map moves or zooms
-            map.on('move', function() {
-                if (hoverLabel.style.display === 'block') {
-                    const markerPosition = map.latLngToContainerPoint(marker.getLatLng());
+                    
+                    // Set this as the active label
+                    activeHoverLabel = hoverLabel;
+                    
+                    // Position and show label
+                    const markerPosition = map.latLngToContainerPoint(this.getLatLng());
                     hoverLabel.style.left = `${markerPosition.x}px`;
                     hoverLabel.style.top = `${markerPosition.y + 20}px`;
-                }
-            });
-            
-            // Apply similar transition when marker icon is hovered directly
-            const markerElement = marker.getElement();
-            if (markerElement) {
-                markerElement.addEventListener('mouseenter', function() {
-                    // Also animate the marker icon for a better user experience
-                    const iconElement = markerElement.querySelector('.marker-icon');
-                    if (iconElement) {
-                        iconElement.style.transform = 'scale(1.2)';
-                        iconElement.style.backgroundColor = '#FF6347'; // Tomato - slightly darker on hover
+                    hoverLabel.style.display = 'block';
+                    
+                    // Add transition effect - start with label slightly up and transparent
+                    hoverLabel.style.opacity = '0';
+                    hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
+                    
+                    // Trigger transition after a small delay to ensure it runs
+                    setTimeout(() => {
+                        hoverLabel.style.opacity = '1';
+                        hoverLabel.style.transform = 'translateX(-50%) translateY(0)';
+                    }, 10);
+                });
+                
+                marker.on('mouseout', function() {
+                    // Only hide if we're not mousing over directly to the element
+                    const markerElement = marker.getElement();
+                    if (markerElement && !markerElement.matches(':hover')) {
+                        // Fade out with transition
+                        hoverLabel.style.opacity = '0';
+                        hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
+                        
+                        // Hide after transition completes
+                        setTimeout(() => {
+                            if (hoverLabel.style.opacity === '0') {
+                                hoverLabel.style.display = 'none';
+                                if (activeHoverLabel === hoverLabel) {
+                                    activeHoverLabel = null;
+                                }
+                            }
+                        }, 300);
                     }
                 });
                 
-                markerElement.addEventListener('mouseleave', function() {
-                    // Revert marker icon animation
-                    const iconElement = markerElement.querySelector('.marker-icon');
-                    if (iconElement) {
-                        iconElement.style.transform = '';
-                        iconElement.style.backgroundColor = '';
+                // Apply transitions when marker icon is hovered directly
+                const markerElement = marker.getElement();
+                if (markerElement) {
+                    markerElement.addEventListener('mouseenter', function() {
+                        // Hide any other active labels first
+                        if (activeHoverLabel && activeHoverLabel !== hoverLabel) {
+                            hideAllHoverLabels();
+                        }
+                        
+                        // Set this as the active label
+                        activeHoverLabel = hoverLabel;
+                        
+                        // Show the hover label on icon hover
+                        const markerPosition = map.latLngToContainerPoint(marker.getLatLng());
+                        hoverLabel.style.left = `${markerPosition.x}px`;
+                        hoverLabel.style.top = `${markerPosition.y + 20}px`;
+                        hoverLabel.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            hoverLabel.style.opacity = '1';
+                            hoverLabel.style.transform = 'translateX(-50%) translateY(0)';
+                        }, 10);
+                        
+                        // Animate the marker icon
+                        const iconElement = markerElement.querySelector('.marker-icon');
+                        if (iconElement) {
+                            iconElement.style.transform = 'scale(1.2)';
+                            iconElement.style.backgroundColor = '#FF6347'; // Tomato - slightly darker on hover
+                        }
+                    });
+                    
+                    markerElement.addEventListener('mouseleave', function() {
+                        // Fade out hover label
+                        hoverLabel.style.opacity = '0';
+                        hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
+                        
+                        setTimeout(() => {
+                            if (hoverLabel.style.opacity === '0') {
+                                hoverLabel.style.display = 'none';
+                                if (activeHoverLabel === hoverLabel) {
+                                    activeHoverLabel = null;
+                                }
+                            }
+                        }, 300);
+                        
+                        // Revert marker icon animation
+                        const iconElement = markerElement.querySelector('.marker-icon');
+                        if (iconElement) {
+                            iconElement.style.transform = '';
+                            iconElement.style.backgroundColor = '';
+                        }
+                    });
+                }
+            }
+            
+            // Update label position when map moves or zooms
+            if (!isTouchDevice()) {
+                map.on('move', function() {
+                    if (activeHoverLabel === hoverLabel && hoverLabel.style.display === 'block') {
+                        const markerPosition = map.latLngToContainerPoint(marker.getLatLng());
+                        hoverLabel.style.left = `${markerPosition.x}px`;
+                        hoverLabel.style.top = `${markerPosition.y + 20}px`;
                     }
                 });
             }
@@ -875,7 +983,14 @@ function initializeMap() {
         });
     }
     
-    // Setup mobile popup elements
+    // Detect if the device has touch support
+    function isTouchDevice() {
+        return ('ontouchstart' in window) || 
+               (navigator.maxTouchPoints > 0) || 
+               (navigator.msMaxTouchPoints > 0);
+    }
+    
+    // Setup mobile popup elements - used for non-touch devices
     function setupMobilePopup() {
         if (!document.querySelector('.mobile-popup-overlay')) {
             const overlay = document.createElement('div');
@@ -891,9 +1006,191 @@ function initializeMap() {
         }
     }
     
-    // Display popup for mobile view
+    // Setup bottom sheet for touch devices
+    function setupBottomSheet() {
+        // The bottom sheet container is already in the HTML
+        const bottomSheet = document.getElementById('bottom-sheet-container');
+        
+        if (bottomSheet) {
+            // Set up touch event handling for dragging
+            let startY = 0;
+            let startTranslateY = 0;
+            let currentTranslateY = 0;
+            const maxTranslateY = 0;
+            const minTranslateY = window.innerHeight;
+            
+            const handleTouch = {
+                start: function(e) {
+                    const touches = e.touches[0];
+                    startY = touches.clientY;
+                    bottomSheet.style.transition = 'none';
+                    
+                    // Get the current transform value
+                    const style = window.getComputedStyle(bottomSheet);
+                    const matrix = new WebKitCSSMatrix(style.transform);
+                    startTranslateY = matrix.m42;
+                    
+                    document.addEventListener('touchmove', handleTouch.move, { passive: false });
+                    document.addEventListener('touchend', handleTouch.end, { passive: true });
+                },
+                
+                move: function(e) {
+                    const touches = e.touches[0];
+                    const diffY = touches.clientY - startY;
+                    
+                    // Calculate new position
+                    currentTranslateY = Math.max(maxTranslateY, Math.min(minTranslateY, startTranslateY + diffY));
+                    
+                    // Apply new position
+                    bottomSheet.style.transform = `translateY(${currentTranslateY}px)`;
+                    
+                    // Prevent default only if we're dragging the sheet
+                    if (e.target.closest('.bottom-sheet-handle')) {
+                        e.preventDefault();
+                    }
+                },
+                
+                end: function(e) {
+                    bottomSheet.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    
+                    // Snap to positions based on velocity and current position
+                    const endY = e.changedTouches[0].clientY;
+                    const diffY = endY - startY;
+                    
+                    // If dragged up
+                    if (diffY < -50) {
+                        // Expand to full
+                        bottomSheet.classList.add('active');
+                        bottomSheet.classList.remove('peek');
+                    } 
+                    // If dragged down a lot
+                    else if (diffY > 100) {
+                        // Close completely
+                        closeBottomSheet();
+                    } 
+                    // If dragged down a little
+                    else if (diffY > 20) {
+                        // Minimize to peek
+                        bottomSheet.classList.remove('active');
+                        bottomSheet.classList.add('peek');
+                    }
+                    // Otherwise, keep current state
+                    
+                    document.removeEventListener('touchmove', handleTouch.move);
+                    document.removeEventListener('touchend', handleTouch.end);
+                }
+            };
+            
+            // Add touch event listeners
+            const handle = bottomSheet.querySelector('.bottom-sheet-handle');
+            if (handle) {
+                handle.addEventListener('touchstart', handleTouch.start, { passive: true });
+            }
+        }
+    }
+    
+    // Display appropriate view for mobile devices
     function showMobilePopup(marker) {
-        console.log('Opening mobile popup');
+        // Choose between bottom sheet (touch) and popup (non-touch)
+        if (isTouchDevice()) {
+            showBottomSheet(marker);
+        } else {
+            showMobilePopupLegacy(marker);
+        }
+    }
+    
+    // Show bottom sheet for touch devices
+    function showBottomSheet(marker) {
+        console.log('Opening bottom sheet');
+        if (!marker || !marker.establishment) return;
+        
+        const bottomSheet = document.getElementById('bottom-sheet-container');
+        const bottomSheetContent = document.getElementById('bottom-sheet-content');
+        
+        if (!bottomSheet || !bottomSheetContent) return;
+        
+        // Save current map state before showing bottom sheet
+        saveMapState();
+        
+        // Create content wrapper with header
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bottom-sheet-wrapper';
+        
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'bottom-sheet-header';
+        
+        const titleContainer = document.createElement('div');
+        titleContainer.className = 'bottom-sheet-title-container';
+        
+        const title = document.createElement('h3');
+        title.className = 'bottom-sheet-title';
+        title.textContent = marker.establishment.name;
+        titleContainer.appendChild(title);
+        
+        // Add certification badge if needed
+        if (marker.establishment.certified) {
+            const certBadge = document.createElement('div');
+            certBadge.className = 'certification-badge';
+            certBadge.innerHTML = '<i class="fas fa-award"></i>';
+            certBadge.title = '已認證';
+            titleContainer.appendChild(certBadge);
+        }
+        
+        header.appendChild(titleContainer);
+        
+        // Add close button
+        const closeBtn = document.createElement('div');
+        closeBtn.className = 'bottom-sheet-close';
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        closeBtn.addEventListener('click', closeBottomSheet);
+        header.appendChild(closeBtn);
+        
+        // Create the establishment content
+        const content = createPopupContent(marker.establishment);
+        content.classList.add('bottom-sheet-establishment-content');
+        
+        // Combine elements
+        wrapper.appendChild(header);
+        wrapper.appendChild(content);
+        
+        // Add to bottom sheet
+        bottomSheetContent.innerHTML = '';
+        bottomSheetContent.appendChild(wrapper);
+        
+        // Show the bottom sheet with animation
+        bottomSheet.classList.add('active');
+        bottomSheet.classList.remove('peek');
+        
+        // Allow map interaction to continue (unlike popup approach)
+        // We don't need to disable map interactions
+        
+        // Store the current marker as active
+        window.activeMarker = marker;
+        window.bottomSheetActive = true;
+    }
+    
+    // Close bottom sheet
+    function closeBottomSheet() {
+        console.log('Closing bottom sheet');
+        const bottomSheet = document.getElementById('bottom-sheet-container');
+        
+        if (!bottomSheet) return;
+        
+        // Hide with animation
+        bottomSheet.classList.remove('active');
+        bottomSheet.classList.remove('peek');
+        bottomSheet.style.transform = 'translateY(100%)';
+        
+        window.bottomSheetActive = false;
+        window.activeMarker = null;
+        
+        // No need to reset the map or reinitialize since we didn't disable interactions
+    }
+    
+    // Display popup for mobile view (legacy approach for non-touch devices)
+    function showMobilePopupLegacy(marker) {
+        console.log('Opening mobile popup (legacy)');
         if (!marker || !marker.establishment) return;
         
         const overlay = document.querySelector('.mobile-popup-overlay');
@@ -901,7 +1198,7 @@ function initializeMap() {
         
         if (!overlay || !container) {
             setupMobilePopup();
-            return showMobilePopup(marker);
+            return showMobilePopupLegacy(marker);
         }
         
         // Save current map state before showing popup
@@ -943,9 +1240,9 @@ function initializeMap() {
         window.mobilePopupActive = true;
     }
     
-    // Close mobile popup
+    // Close mobile popup (legacy approach for non-touch devices)
     function closeMobilePopup() {
-        console.log('Closing mobile popup');
+        console.log('Closing mobile popup (legacy)');
         const overlay = document.querySelector('.mobile-popup-overlay');
         const container = document.querySelector('.mobile-popup-container');
         

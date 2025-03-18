@@ -99,34 +99,11 @@ body {
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
-/* Marker and label styles */
-.marker-label {
-    background-color: rgba(255, 255, 255, 0.95);
-    color: #654321; /* Match navbar text color */
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: bold;
-    margin-top: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    max-width: 150px;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    opacity: 0;
-    transition: all 0.3s ease;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-5px);
-    pointer-events: none;
-}
-
-.custom-marker:hover .marker-label {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    z-index: 9999 !important;
+/* Marker styles */
+.custom-marker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Ensure proper touch handling on mobile */
@@ -225,50 +202,33 @@ html, body {
     font-size: 16px;
 }
 
-.marker-label {
-    display: none; /* Hide old labels */
-}
-
-/* New hover labels that are completely separate from markers */
-.marker-label {
+/* Hover labels that are completely separate from markers */
+.hover-label {
     background-color: rgba(255, 255, 255, 0.95);
     color: #654321; /* Match navbar text color */
     padding: 3px 8px;
     border-radius: 10px;
     font-size: 12px;
     font-weight: bold;
-    margin-top: 5px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     max-width: 150px;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    opacity: 0;
-    transition: all 0.3s ease;
     position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-5px);
+    z-index: 1500;
+    transform: translateX(-50%);
     pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.custom-marker:hover .marker-icon {
+.marker-icon:hover {
     transform: scale(1.2);
     background-color: #FF6347; /* Slightly darker on hover */
 }
 
-/* We're replacing this with our new hover label system */
-.custom-marker:hover .marker-label {
-    display: none;
-}
-
-/* Add special styling for the map label container */
-.custom-marker:hover .marker-label {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    z-index: 9999 !important;
-}
+/* Container for hover labels */
 
 #map-label-container {
     position: absolute;
@@ -280,10 +240,7 @@ html, body {
     z-index: 9000;
 }
 
-/* Make hovered marker labels appear above all map elements */
-.leaflet-marker-pane .leaflet-marker-icon:hover .marker-label {
-    z-index: 9999 !important;
-}
+/* Use proper z-index for all marker elements */
 
 /* Popup styles */
 .leaflet-popup-content-wrapper {
@@ -436,7 +393,7 @@ html, body {
     color: #FFC107;
 }
 
-/* Mobile fullscreen popup */
+/* Mobile fullscreen popup - deprecated but kept for non-touch */
 .mobile-popup-overlay {
     display: none;
     position: fixed;
@@ -492,6 +449,117 @@ html, body {
     font-size: 20px;
     cursor: pointer;
     z-index: 10;
+}
+
+/* Bottom Sheet for Touch Devices */
+.bottom-sheet-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.2);
+    z-index: 1600;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+
+.bottom-sheet-container.active {
+    transform: translateY(0);
+}
+
+.bottom-sheet-container.peek {
+    transform: translateY(calc(100% - 80px));
+}
+
+.bottom-sheet-handle {
+    width: 100%;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    cursor: grab;
+}
+
+.bottom-sheet-handle:active {
+    cursor: grabbing;
+}
+
+.handle-indicator {
+    width: 40px;
+    height: 4px;
+    background-color: #ddd;
+    border-radius: 4px;
+}
+
+.bottom-sheet-content {
+    padding: 0;
+    overflow-y: auto;
+    max-height: calc(85vh - 24px);
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Bottom sheet header with title and close button */
+.bottom-sheet-header {
+    background-color: #FF7F50; /* Coral */
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.bottom-sheet-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    flex: 1;
+}
+
+.bottom-sheet-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.bottom-sheet-title-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.bottom-sheet-title {
+    margin-right: 10px;
+}
+
+/* Ensure touch scrolling works properly within the bottom sheet */
+.bottom-sheet-content {
+    scrollbar-width: thin;
+}
+
+.bottom-sheet-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.bottom-sheet-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
 }
 
 /* Responsive styles */

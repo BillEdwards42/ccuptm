@@ -304,7 +304,8 @@ body.intro-page {
         text-align: center;
         animation: fadeIn 1s ease-out;
         border: 1px solid rgba(255, 127, 80, 0.2);
-        overflow: hidden;
+        overflow-y: auto;
+        max-height: 90vh;
         height: auto;
         margin: 0 auto;
         display: flex;
@@ -368,6 +369,8 @@ body.intro-page {
         display: inline-flex;
         transform: scale(1.1);
         animation: pulseButton 2s infinite;
+        align-self: center;
+        z-index: 10;
     }
     
     @keyframes pulseButton {
