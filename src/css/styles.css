@@ -610,6 +610,8 @@ body.intro-page {
     z-index: 1500;
     opacity: 0;
     transition: opacity 0.3s ease;
+    overflow: hidden; /* Prevent body scrolling */
+    -webkit-overflow-scrolling: none;
 }
 
 .info-guide-overlay.active {
@@ -691,6 +693,8 @@ body.intro-page {
     padding: 20px;
     overflow-y: auto;
     max-height: 60vh;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+    overscroll-behavior: contain; /* Prevent scroll chaining */
 }
 
 @media (max-width: 768px) {
@@ -698,6 +702,17 @@ body.intro-page {
         max-height: 50vh;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-y; /* Allow vertical touch scrolling only */
+        scrollbar-width: thin; /* For Firefox */
+    }
+    
+    .info-guide-content::-webkit-scrollbar {
+        width: 6px; /* For Chrome and Safari */
+    }
+    
+    .info-guide-content::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.3);
+        border-radius: 3px;
     }
 }
 

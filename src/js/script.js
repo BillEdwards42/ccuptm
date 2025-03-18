@@ -27,6 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 overlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
                 
+                // Enable scrolling specifically on the info guide content
+                const infoContent = document.querySelector('.info-guide-content');
+                if (infoContent) {
+                    infoContent.style.overflowY = 'auto';
+                    infoContent.style.webkitOverflowScrolling = 'touch';
+                    
+                    // For iOS Safari
+                    setTimeout(() => {
+                        infoContent.addEventListener('touchstart', function(e) {
+                            // Allow scrolling within info-guide-content
+                            if (infoContent.scrollHeight > infoContent.clientHeight) {
+                                e.stopPropagation();
+                            }
+                        }, { passive: true });
+                    }, 100);
+                }
+                
                 // Set the info-guide-btn to active and remove active from other links
                 document.querySelectorAll('.navbar-links a').forEach(link => {
                     if (link.id === 'info-guide-btn') {
@@ -48,6 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (overlay) {
                 overlay.classList.remove('active');
                 document.body.style.overflow = '';
+                
+                // For iOS Safari - restore proper touch handling on map
+                if (document.getElementById('map')) {
+                    setTimeout(() => {
+                        if (map && typeof map.invalidateSize === 'function') {
+                            map.invalidateSize();
+                            map.touchZoom.enable();
+                            map.dragging.enable();
+                            map.tap.enable();
+                        }
+                    }, 300);
+                }
                 
                 // Remove the active class from info-guide-btn
                 document.querySelectorAll('.navbar-links a').forEach(link => {
@@ -488,6 +517,11 @@ function initializeMap() {
             return showMobilePopup(marker);
         }
         
+        // Before showing the popup, disable map interactions to prevent touch issues
+        map.touchZoom.disable();
+        map.dragging.disable();
+        
+        // Create content for the popup
         const content = createPopupContent(marker.establishment);
         
         const closeBtn = document.createElement('div');
@@ -501,6 +535,9 @@ function initializeMap() {
         
         overlay.classList.add('active');
         container.classList.add('active');
+        
+        // Add this to prevent background scrolling/zooming while popup is open
+        document.body.style.overflow = 'hidden';
         
         mobilePopupActive = true;
     }
@@ -518,11 +555,32 @@ function initializeMap() {
         mobilePopupActive = false;
         activeMarker = null;
         
-        // Fix: Restore touch functionality by refreshing the map
+        // Fix: More comprehensive restoration of map and touch functionality
         setTimeout(() => {
-            // This forces Leaflet to recapture touch events
+            // Force map to recalculate its container size
             map.invalidateSize();
-        }, 100);
+            
+            // Explicitly enable touch zoom again
+            map.touchZoom.enable();
+            map.dragging.enable();
+            map.tap.enable();
+            
+            // Reset body overflow
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
+            
+            // Re-add touch handlers to the map container
+            const mapContainer = document.getElementById('map');
+            if (mapContainer) {
+                mapContainer.style.touchAction = 'manipulation'; // Better touch handling
+                
+                // Remove any "frozen" state that might have been applied
+                mapContainer.classList.remove('leaflet-touch-zoom-frozen');
+                mapContainer.classList.remove('leaflet-grab');
+                mapContainer.classList.add('leaflet-grab');
+                mapContainer.classList.add('leaflet-touch-drag');
+            }
+        }, 300); // Longer timeout to ensure DOM updates complete
     }
     
     // Create popup content with establishment data

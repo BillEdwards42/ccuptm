@@ -10,6 +10,12 @@ body.intro-page {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+}
+
+/* Make sure all elements use border-box to avoid overflow issues */
+* {
+    box-sizing: border-box;
 }
 
 .intro-container {
@@ -298,9 +304,11 @@ body.intro-page {
         text-align: center;
         animation: fadeIn 1s ease-out;
         border: 1px solid rgba(255, 127, 80, 0.2);
-        overflow-y: visible;
+        overflow: hidden;
         height: auto;
         margin: 0 auto;
+        display: flex;
+        flex-direction: column;
     }
     
     .intro-content-mobile .intro-logo img {
@@ -324,6 +332,10 @@ body.intro-page {
         margin-bottom: 20px;
         position: relative;
         padding-bottom: 15px;
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
     }
     
     .intro-content-mobile .intro-text:after {
@@ -342,7 +354,9 @@ body.intro-page {
         margin-bottom: 15px;
         word-wrap: break-word;
         overflow-wrap: break-word;
+        word-break: break-word;
         hyphens: auto;
+        max-width: 100%;
     }
     
     .intro-content-mobile .enter-button {
@@ -377,6 +391,11 @@ body.intro-page {
     .intro-content-mobile {
         padding: 25px 20px;
         max-width: 95%;
+        width: 95%;
+    }
+    
+    .intro-content-mobile .intro-text {
+        max-width: 100%;
     }
     
     .intro-content-mobile .intro-logo img {
