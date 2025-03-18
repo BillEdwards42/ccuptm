@@ -157,43 +157,118 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only initialize map if on map page
     if (document.getElementById('map')) {
         initializeMap();
+        
+        // Add handler for mobile browsers to reset map if touch issues are detected
+        if ('ontouchstart' in window || navigator.maxTouchPoints) {
+            // Make the reset view button also reset the map instance if needed
+            const resetViewBtn = document.getElementById('reset-view');
+            if (resetViewBtn) {
+                const originalClickHandler = resetViewBtn.onclick;
+                resetViewBtn.onclick = function(e) {
+                    // If original handler exists, call it
+                    if (originalClickHandler) originalClickHandler.call(this, e);
+                    
+                    // Also completely re-initialize the map
+                    setTimeout(() => {
+                        console.log('Resetting map from reset button');
+                        initializeMap();
+                        loadEstablishmentsData();
+                    }, 100);
+                };
+            }
+        }
     }
 });
 
+// Save map configuration and state variables at module level
+const MAP_CONFIG = {
+    attributionControl: false,
+    zoomControl: false,
+    minZoom: 17,
+    maxZoom: 20,
+    tap: true,
+    tapTolerance: 15,
+    touchZoom: true,
+    bounceAtZoomLimits: false
+};
+
+const DEFAULT_VIEW = [23.5558, 120.4705];
+const DEFAULT_ZOOM = 17;
+
+let map; // Store map reference globally
+let tileLayer; // Store tile layer reference
+let mapState = {}; // Store current map state
+
 // Initialize map and related functionality
 function initializeMap() {
-    // Create map with configuration - add back minZoom constraint
-    const map = L.map('map', {
-        attributionControl: false,
-        zoomControl: false,
-        minZoom: 17,
-        maxZoom: 20,
-        tap: true,
-        tapTolerance: 15,   // Increased touch tolerance
-        touchZoom: true,
-        bounceAtZoomLimits: false  // Prevents bouncing when reaching zoom limits
-    }).setView([23.5558, 120.4705], 17);
+    console.log('Initializing map');
     
-    // Store original handlers in case we need to restore them
-    window._originalMapHandlers = {
-        _onTouchStart: map._onTouchStart,
-        _onTouchEnd: map._onTouchEnd,
-        _onTouchMove: map._onTouchMove
-    };
+    // Get map container element
+    const mapContainer = document.getElementById('map');
     
-    // Add tile layer with CartoDB Voyager style - add back minZoom constraint
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // If a map instance already exists, destroy it first
+    if (map && typeof map.remove === 'function') {
+        console.log('Removing existing map instance');
+        // Save current map state before removing
+        saveMapState();
+        map.remove();
+        map = null;
+    }
+    
+    // Create a new map instance
+    map = L.map('map', MAP_CONFIG).setView(
+        mapState.center || DEFAULT_VIEW, 
+        mapState.zoom || DEFAULT_ZOOM
+    );
+    
+    // Add tile layer with CartoDB Voyager style
+    tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors, © CARTO',
         maxZoom: 20,
         minZoom: 17,
         subdomains: 'abcd'
     }).addTo(map);
     
-    // State variables
-    let activeMarker = null;
-    let mobilePopupActive = false;
-    let establishments = [];
-    let markerClusterGroup = L.markerClusterGroup({
+    // Create a new marker cluster group
+    window.markerClusterGroup = window.markerClusterGroup || L.markerClusterGroup({
+        maxClusterRadius: 40,
+        iconCreateFunction: function(cluster) {
+            const count = cluster.getChildCount();
+            return L.divIcon({
+                html: `<div><span>${count}</span></div>`,
+                className: 'marker-cluster',
+                iconSize: L.point(40, 40)
+            });
+        },
+        spiderfyOnMaxZoom: false,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true
+    });
+    
+    // Add the cluster group to the map
+    map.addLayer(window.markerClusterGroup);
+    
+    // State variables (keep these outside the function so they persist)
+    window.activeMarker = window.activeMarker || null;
+    window.mobilePopupActive = window.mobilePopupActive || false;
+    window.establishments = window.establishments || [];
+    
+    // Helper function to save current map state
+    function saveMapState() {
+        if (!map) return;
+        
+        try {
+            mapState = {
+                center: map.getCenter(),
+                zoom: map.getZoom(),
+                bounds: map.getBounds()
+            };
+            console.log('Map state saved:', mapState);
+        } catch (error) {
+            console.error('Error saving map state:', error);
+        }
+    }
+    let _markerClusterGroup = L.markerClusterGroup({
         maxClusterRadius: 40,
         iconCreateFunction: function(cluster) {
             const count = cluster.getChildCount();
@@ -362,7 +437,7 @@ function initializeMap() {
                 return response.json();
             })
             .then(data => {
-                establishments = data.features.map(feature => {
+                window.establishments = data.features.map(feature => {
                     // Convert GeoJSON coordinates [lng, lat] to Leaflet coordinates [lat, lng]
                     const [lng, lat] = feature.geometry.coordinates;
                     
@@ -401,7 +476,7 @@ function initializeMap() {
     
     // Setup default establishments if data fails to load
     function setupDefaultEstablishments() {
-        establishments = [
+        window.establishments = [
             {
                 name: "咖啡廳工讀",
                 position: [23.5559, 120.4715],
@@ -453,8 +528,20 @@ function initializeMap() {
     
     // Add markers for all establishments
     function addMapMarkers() {
+        console.log('Adding map markers');
+        
         // Clear any existing markers first
-        markerClusterGroup.clearLayers();
+        if (window.markerClusterGroup) {
+            window.markerClusterGroup.clearLayers();
+        }
+        
+        // Make sure we're dealing with an array of establishments
+        if (!window.establishments || !Array.isArray(window.establishments)) {
+            console.error('No establishments data to add');
+            return;
+        }
+        
+        console.log(`Adding ${window.establishments.length} establishments`);
         
         // Get or create a separate container for the hover labels
         let labelContainer = document.getElementById('map-label-container');
@@ -473,15 +560,22 @@ function initializeMap() {
             labelContainer.innerHTML = ''; // Clear existing labels
         }
         
-        establishments.forEach(establishment => {
-            // Create marker HTML elements (just the icon, no label)
+        window.establishments.forEach(establishment => {
+            // Create marker HTML elements
             const markerIcon = document.createElement('div');
             markerIcon.className = 'marker-icon';
             markerIcon.innerHTML = `<i class="fas fa-${establishment.icon}"></i>`;
             
+            // Create label for marker
+            const markerLabel = document.createElement('div');
+            markerLabel.className = 'marker-label';
+            markerLabel.textContent = establishment.name;
+            
+            // Create marker container
             const markerContainer = document.createElement('div');
             markerContainer.className = 'custom-marker';
             markerContainer.appendChild(markerIcon);
+            markerContainer.appendChild(markerLabel);
             
             // Create custom icon and marker
             const customIcon = L.divIcon({
@@ -644,36 +738,20 @@ function initializeMap() {
             return showMobilePopup(marker);
         }
         
-        // Store the current map state to restore later
-        window._mapState = {
-            dragging: map.dragging.enabled(),
-            touchZoom: map.touchZoom.enabled(),
-            doubleClickZoom: map.doubleClickZoom.enabled(),
-            scrollWheelZoom: map.scrollWheelZoom.enabled(),
-            boxZoom: map.boxZoom.enabled(),
-            keyboard: map.keyboard.enabled(),
-            tap: map.tap && map.tap.enabled()
-        };
+        // Save current map state before showing popup
+        saveMapState();
         
-        console.log('Saving map state:', window._mapState);
-        
-        // Before showing the popup, disable map interactions
-        map.dragging.disable();
-        map.touchZoom.disable();
-        map.doubleClickZoom.disable();
-        map.scrollWheelZoom.disable();
-        map.boxZoom.disable();
-        map.keyboard.disable();
-        if (map.tap) map.tap.disable();
-        
-        // Save style states
-        window._bodyStyle = {
-            overflow: document.body.style.overflow,
-            touchAction: document.body.style.touchAction,
-            position: document.body.style.position
-        };
-        
-        console.log('Saving body style:', window._bodyStyle);
+        // First, make sure all map interactions are disabled
+        if (map) {
+            // Disable all map interactions
+            map.dragging.disable();
+            map.touchZoom.disable();
+            map.doubleClickZoom.disable();
+            map.scrollWheelZoom.disable();
+            map.boxZoom.disable();
+            map.keyboard.disable();
+            if (map.tap) map.tap.disable();
+        }
         
         // Create content for the popup
         const content = createPopupContent(marker.establishment);
@@ -694,20 +772,9 @@ function initializeMap() {
         document.body.style.overflow = 'hidden';
         document.body.style.touchAction = 'none';
         
-        // Save map container style
-        const mapContainer = document.getElementById('map');
-        if (mapContainer) {
-            window._mapContainerStyle = {
-                touchAction: mapContainer.style.touchAction,
-                pointerEvents: mapContainer.style.pointerEvents
-            };
-            
-            // Disable touch on map while popup is active
-            mapContainer.style.touchAction = 'none';
-            mapContainer.style.pointerEvents = 'none';
-        }
-        
-        mobilePopupActive = true;
+        // Store the current marker as active
+        window.activeMarker = marker;
+        window.mobilePopupActive = true;
     }
     
     // Close mobile popup
@@ -721,82 +788,40 @@ function initializeMap() {
         overlay.classList.remove('active');
         container.classList.remove('active');
         
-        mobilePopupActive = false;
-        activeMarker = null;
+        window.mobilePopupActive = false;
+        window.activeMarker = null;
         
-        // First, restore CSS styles immediately
-        document.body.style.overflow = window._bodyStyle?.overflow || '';
-        document.body.style.touchAction = window._bodyStyle?.touchAction || '';
-        document.body.style.position = window._bodyStyle?.position || '';
+        // Restore body styles
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+        document.body.style.position = '';
         
-        // Restore map container style
-        const mapContainer = document.getElementById('map');
-        if (mapContainer && window._mapContainerStyle) {
-            mapContainer.style.touchAction = window._mapContainerStyle.touchAction || '';
-            mapContainer.style.pointerEvents = window._mapContainerStyle.pointerEvents || '';
-        }
-        
-        // Schedule a complete map re-initialization
+        // Completely reinitialize the map
         setTimeout(() => {
-            console.log('Restoring map state and functionality');
+            // Save any important map state before rebuilding
+            saveMapState(); 
             
-            try {
-                // Force map to recalculate its container size
-                map.invalidateSize({reset: true, animate: false, pan: false});
-                
-                // Restore all map controls based on saved state
-                if (window._mapState) {
-                    console.log('Restoring from saved state:', window._mapState);
-                    
-                    if (window._mapState.dragging) map.dragging.enable();
-                    if (window._mapState.touchZoom) map.touchZoom.enable();
-                    if (window._mapState.doubleClickZoom) map.doubleClickZoom.enable();
-                    if (window._mapState.scrollWheelZoom) map.scrollWheelZoom.enable();
-                    if (window._mapState.boxZoom) map.boxZoom.enable();
-                    if (window._mapState.keyboard) map.keyboard.enable();
-                    if (window._mapState.tap && map.tap) map.tap.enable();
-                } else {
-                    console.log('No saved state, enabling all controls');
-                    // If no saved state, enable everything
-                    map.dragging.enable();
-                    map.touchZoom.enable();
-                    map.doubleClickZoom.enable();
-                    map.scrollWheelZoom.enable();
-                    map.boxZoom.enable();
-                    map.keyboard.enable();
-                    if (map.tap) map.tap.enable();
-                }
-                
-                // Fix for Leaflet touch handler issues
-                if (L.Browser.touch) {
-                    console.log('Refreshing Leaflet touch handlers');
-                    // Re-create touch handlers by accessing and activating them
-                    map._renderer._update();
-                    map._onResize();
-                    
-                    // Directly check Leaflet's internal state
-                    const mapPane = document.querySelector('.leaflet-map-pane');
-                    if (mapPane) {
-                        mapPane.style.touchAction = '';
-                        mapPane.style.userSelect = '';
-                    }
-                    
-                    // Make container touchable again
-                    mapContainer.classList.add('leaflet-touch');
-                    mapContainer.classList.add('leaflet-touch-drag');
-                    mapContainer.classList.add('leaflet-touch-zoom');
-                }
-                
-                // Force a redraw by triggering a viewport change
-                const center = map.getCenter();
-                const zoom = map.getZoom();
-                map.setView(center, zoom, {animate: false});
-                
-                console.log('Map restoration complete');
-            } catch (error) {
-                console.error('Error restoring map:', error);
+            // Re-initialize the map from scratch
+            initializeMap();
+            
+            // Rebuild markers and UI after map is re-initialized
+            setupEventListeners();
+            setActiveNavLink();
+            
+            // If we already loaded establishments data, don't reload it
+            if (window.establishments && window.establishments.length > 0) {
+                console.log('Re-adding existing markers');
+                addMapMarkers();
+            } else {
+                console.log('Loading establishment data');
+                loadEstablishmentsData();
             }
-        }, 300); // Longer timeout to ensure DOM updates complete
+            
+            console.log('Map re-initialization complete');
+            
+            // Re-setup the mobile popup elements
+            setupMobilePopup();
+        }, 300);
     }
     
     // Create popup content with establishment data

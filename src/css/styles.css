@@ -99,6 +99,36 @@ body {
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
+/* Marker and label styles */
+.marker-label {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #654321; /* Match navbar text color */
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    max-width: 150px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    pointer-events: none;
+}
+
+.custom-marker:hover .marker-label {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    z-index: 9999 !important;
+}
+
 /* Ensure proper touch handling on mobile */
 .leaflet-container {
     -webkit-tap-highlight-color: transparent;
@@ -178,25 +208,27 @@ body {
 }
 
 /* New hover labels that are completely separate from markers */
-.hover-label {
+.marker-label {
     background-color: rgba(255, 255, 255, 0.95);
     color: #654321; /* Match navbar text color */
     padding: 3px 8px;
     border-radius: 10px;
     font-size: 12px;
     font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    margin-top: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     max-width: 150px;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    position: absolute;
-    transform: translateX(-50%);
-    pointer-events: none;
-    z-index: 9999 !important;
-    transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 0;
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    pointer-events: none;
 }
 
 .custom-marker:hover .marker-icon {
@@ -210,6 +242,12 @@ body {
 }
 
 /* Add special styling for the map label container */
+.custom-marker:hover .marker-label {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    z-index: 9999 !important;
+}
+
 #map-label-container {
     position: absolute;
     top: 0;
