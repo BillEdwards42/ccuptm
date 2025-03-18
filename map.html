@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCU - 打工地圖</title>
+    <!-- Favicon -->
+    <link rel="icon" href="src/images/p_logo.png" type="image/png" sizes="32x32">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Leaflet.MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Our custom styles -->
+    <link rel="stylesheet" href="src/css/styles.css" />
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="src/images/p_logo.png" alt="Logo">
+            <h1>CCU - 打工地圖</h1>
+        </div>
+        <div class="navbar-links">
+            <a href="map.html" class="active"><i class="fas fa-map-marked-alt"></i> <span>地圖</span></a>
+            <a href="#" id="info-guide-btn"><i class="fas fa-question-circle"></i> <span>資訊導引</span></a>
+            <a href="about.html"><i class="fas fa-info-circle"></i> <span>勞工權益</span></a>
+        </div>
+    </nav>
+    
+    <!-- Map container -->
+    <div id="map"></div>
+    
+    <!-- Reset view button -->
+    <button class="reset-view-btn" id="reset-view">
+        <i class="fas fa-location-arrow"></i>
+    </button>
+    
+    <!-- Information Guide Popup -->
+    <div class="info-guide-overlay" id="info-guide-overlay">
+        <div class="info-guide-container">
+            <div class="info-guide-header">
+                <h3>資訊導引說明</h3>
+                <button class="info-guide-close" id="info-guide-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="info-guide-content">
+                <div class="info-category">
+                    <div class="category-header">
+                        <i class="fas fa-clipboard-check"></i>
+                        <h4>客觀指標</h4>
+                    </div>
+                    <div class="category-content">
+                        <p>包含時薪、供餐、試用期、勞健保、國定假日雙倍。這些指標較客觀，時薪多少就是多少，供餐不是有就是沒有，較少人為主觀因素介入。若無店家認證則資料來自問卷統整。</p>
+                    </div>
+                </div>
+                
+                <div class="info-category">
+                    <div class="category-header">
+                        <i class="fas fa-star-half-alt"></i>
+                        <h4>主觀指標</h4>
+                    </div>
+                    <div class="category-content">
+                        <p>包含環境評分以及滿意度評分。此二項指標為較主觀之指標，資料來源為問卷統整，包含同學叫主觀的意見投入，僅供參考。</p>
+                    </div>
+                </div>
+                
+                <div class="info-category">
+                    <div class="category-header">
+                        <i class="fas fa-award" style="color: #FF7F50;"></i>
+                        <h4>認證標章</h4>
+                    </div>
+                    <div class="category-content">
+                        <p>此項僅包含店家名稱旁之店家認證標章。若店家認證標章亮起，表示該店家之客觀指標經過老闆協助驗證，最為準確。</p>
+                    </div>
+                </div>
+                
+                <div class="info-footer">
+                    <p>以上資訊均有附上更新日期以表示資訊蒐集之時間。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Leaflet.MarkerCluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <!-- Our custom script -->
+    <script src="src/js/script.js"></script>
+</body>
+</html>

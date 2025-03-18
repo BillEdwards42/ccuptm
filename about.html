@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>勞工權益 - CCU 打工地圖</title>
+    <!-- Favicon -->
+    <link rel="icon" href="src/images/p_logo.png" type="image/png">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Our custom styles -->
+    <link rel="stylesheet" href="src/css/styles.css" />
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="src/images/p_logo.png" alt="Logo">
+            <h1>CCU - 打工地圖</h1>
+        </div>
+        <div class="navbar-links">
+            <a href="map.html"><i class="fas fa-map-marked-alt"></i> <span>地圖</span></a>
+            <a href="#" id="info-guide-btn"><i class="fas fa-question-circle"></i> <span>資訊導引</span></a>
+            <a href="about.html" class="active"><i class="fas fa-info-circle"></i> <span>勞工權益</span></a>
+        </div>
+    </nav>
+    
+    <!-- Main content -->
+    <div class="content-area">
+        <div class="about-container">
+            <h1>勞工權益資訊</h1>
+            
+            <div class="about-section">
+                <h2>我們的使命</h2>
+                <p>這個互動式地圖提供附近打工機會的信息。地圖上的每個點代表提供兼職職位的機構，並附有時薪、餐飲福利、假日薪資等詳細信息。</p>
+                <p>我們的使命是通過在互動式地圖上直觀地組織這些信息，將學生和求職者與當地的兼職機會聯繫起來。</p>
+            </div>
+            
+            <div class="about-section">
+                <h2>如何使用</h2>
+                <p>我們的地圖顯示了區域內提供兼職職位的各種機構。點擊一個位置，您可以查看以下詳細信息：</p>
+                <ul>
+                    <li>時薪率</li>
+                    <li>餐飲福利</li>
+                    <li>假日薪資政策</li>
+                    <li>其他相關細節</li>
+                </ul>
+                <p>使用導航工具探索不同的區域，找到符合您需求和偏好的機會。</p>
+            </div>
+            
+            <div class="about-section">
+                <h2>我們的團隊</h2>
+                <p>我們是一群致力於幫助同學找到合適兼職工作機會的學生團隊。</p>
+                
+                <div class="team-grid">
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="團隊成員">
+                        <h3>張小明</h3>
+                        <p>專案負責人</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="團隊成員">
+                        <h3>李大華</h3>
+                        <p>開發者</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="團隊成員">
+                        <h3>王美玲</h3>
+                        <p>數據專家</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="團隊成員">
+                        <h3>陳俊傑</h3>
+                        <p>UI/UX 設計師</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-section">
+                <h2>聯繫我們</h2>
+                <p>如果您有任何問題、建議或想將您的機構添加到我們的地圖中，請聯繫我們：</p>
+                <p><i class="fas fa-envelope"></i> contact@ccuworkmap.com</p>
+                <p><i class="fas fa-phone"></i> (06) 123-4567</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Information Guide Popup -->
+    <div class="info-guide-overlay" id="info-guide-overlay">
+        <div class="info-guide-container">
+            <div class="info-guide-header">
+                <h3>資訊導引說明</h3>
+                <button class="info-guide-close" id="info-guide-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="info-guide-content">
+                <div class="info-category">
+                    <div class="category-header">
+                        <i class="fas fa-clipboard-check"></i>
+                        <h4>客觀指標</h4>
+                    </div>
+                    <div class="category-content">
+                        <p>包含時薪、供餐、試用期、勞健保、國定假日雙倍。這些指標較客觀，時薪多少就是多少，供餐不是有就是沒有，較少人為主觀因素介入。若無店家認證則資料來自問卷統整。</p>
+                    </div>
+                </div>
+                
+                <div class="info-category">
+                    <div class="category-header">
+                        <i class="fas fa-star-half-alt"></i>
+                        <h4>主觀指標</h4>
+                    </div>
+                    <div class="category-content">
+                        <p>包含環境評分以及滿意度評分。此二項指標為較主觀之指標，資料來源為問卷統整，包含同學叫主觀的意見投入，僅供參考。</p>
+                    </div>
+                </div>
+                
+                <div class="info-category">
+                    <div class="category-header">
+                        <i class="fas fa-award" style="color: #FF7F50;"></i>
+                        <h4>認證標章</h4>
+                    </div>
+                    <div class="category-content">
+                        <p>此項僅包含店家名稱旁之店家認證標章。若店家認證標章亮起，表示該店家之客觀指標經過老闆協助驗證，最為準確。</p>
+                    </div>
+                </div>
+                
+                <div class="info-footer">
+                    <p>以上資訊均有附上更新日期以表示資訊蒐集之時間。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer style="background-color: #3A4256; color: white; text-align: center; padding: 20px 0; margin-top: 30px;">
+        <p>© 2023 CCU 打工地圖. 版權所有.</p>
+    </footer>
+    
+    <!-- Our custom script -->
+    <script src="src/js/script.js"></script>
+</body>
+</html>
