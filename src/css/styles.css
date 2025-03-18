@@ -73,6 +73,7 @@ body {
     align-items: center;
     gap: 5px;
     letter-spacing: 1px;
+    touch-action: manipulation;
 }
 
 .navbar-links a:hover, .navbar-links a.active {
@@ -151,7 +152,7 @@ html, body {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background-color: #FF7F50; /* Coral - match marker */
+    background-color: #FF7F50;
     color: white;
     border: none;
     border-radius: 50%;
@@ -164,6 +165,7 @@ html, body {
     cursor: pointer;
     z-index: 1000;
     transition: transform 0.3s, background-color 0.3s;
+    touch-action: none;
 }
 
 .reset-view-btn:hover {
