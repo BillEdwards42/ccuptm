@@ -13,15 +13,184 @@ function setActiveState() {
     });
 }
 
+// Function to completely reset touch handling
+function resetTouchSystem(callback) {
+    console.log('Resetting touch system');
+    
+    // Create an overlay to temporarily capture and reset touch events
+    const touchResetOverlay = document.createElement('div');
+    touchResetOverlay.style.position = 'fixed';
+    touchResetOverlay.style.top = '0';
+    touchResetOverlay.style.left = '0';
+    touchResetOverlay.style.width = '100%';
+    touchResetOverlay.style.height = '100%';
+    touchResetOverlay.style.backgroundColor = 'rgba(255,255,255,0.01)'; // Almost transparent
+    touchResetOverlay.style.zIndex = '9999';
+    touchResetOverlay.style.pointerEvents = 'all';
+    touchResetOverlay.style.touchAction = 'manipulation';
+    document.body.appendChild(touchResetOverlay);
+    
+    // Force a touch handler flush by toggling hardware acceleration on elements
+    document.body.style.transform = 'translateZ(0)';
+    touchResetOverlay.style.transform = 'translateZ(0)';
+    
+    // Toggle pointer events to force a reset
+    document.body.style.pointerEvents = 'none';
+    setTimeout(() => {
+        document.body.style.pointerEvents = '';
+    }, 50);
+    
+    // Force a browser repaint
+    void document.body.offsetHeight;
+    void touchResetOverlay.offsetHeight;
+    
+    // For Android browsers, toggle touch mode
+    if (/android/i.test(navigator.userAgent)) {
+        // Create and dispatch synthetic touch events to reset touch system
+        try {
+            const touchStartEvent = new TouchEvent('touchstart', {
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(touchStartEvent);
+            
+            setTimeout(() => {
+                const touchEndEvent = new TouchEvent('touchend', {
+                    bubbles: true,
+                    cancelable: true
+                });
+                document.dispatchEvent(touchEndEvent);
+            }, 50);
+        } catch (e) {
+            console.log('TouchEvent constructor not available, using alternative method');
+            // Alternative for browsers that don't support TouchEvent constructor
+            const touchStartEvent = document.createEvent('Event');
+            touchStartEvent.initEvent('touchstart', true, true);
+            document.dispatchEvent(touchStartEvent);
+            
+            setTimeout(() => {
+                const touchEndEvent = document.createEvent('Event');
+                touchEndEvent.initEvent('touchend', true, true);
+                document.dispatchEvent(touchEndEvent);
+            }, 50);
+        }
+    }
+    
+    // Remove the overlay and reset hardware acceleration after a short delay
+    setTimeout(() => {
+        // Remove the overlay
+        if (document.body.contains(touchResetOverlay)) {
+            document.body.removeChild(touchResetOverlay);
+        }
+        
+        // Reset hardware acceleration
+        document.body.style.transform = '';
+        
+        // Reset map if available
+        if (document.getElementById('map') && map && typeof map.invalidateSize === 'function') {
+            map.invalidateSize({reset: true, pan: false});
+            map.touchZoom.enable();
+            map.dragging.enable();
+            map.tap.enable();
+            
+            // Force a redraw with animation to trigger internal updates
+            const center = map.getCenter();
+            const zoom = map.getZoom();
+            try {
+                map.flyTo(center, zoom, {
+                    duration: 0.01, // Very short animation to force refresh
+                    noMoveStart: true
+                });
+            } catch (e) {
+                console.error('Error refreshing map:', e);
+                map.setView(center, zoom);
+            }
+        }
+        
+        // Execute callback if provided
+        if (typeof callback === 'function') {
+            callback();
+        }
+        
+        console.log('Touch system reset complete');
+    }, 200);
+}
+
 // Setup global info guide popup for all pages
 document.addEventListener('DOMContentLoaded', () => {
     // Add a global handler to fix touch issues after any touch interactions
     if ('ontouchstart' in window) {
+        // Track touch events for detection of possible touch issues
+        let lastTouchStartTime = 0;
+        let lastTouchEndTime = 0;
+        let touchStartPos = { x: 0, y: 0 };
+        let touchEndPos = { x: 0, y: 0 };
+        let consecutiveFailedTouches = 0;
+        
+        // Listen for touch start events globally
+        document.addEventListener('touchstart', function(e) {
+            lastTouchStartTime = Date.now();
+            if (e.touches && e.touches[0]) {
+                touchStartPos = {
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                };
+            }
+        }, {passive: true});
+        
+        // Listen for touch move events to detect if scrolling is working properly
+        document.addEventListener('touchmove', function(e) {
+            // If a touch move event happens, reset consecutive failed touches counter
+            // since we're detecting some movement
+            consecutiveFailedTouches = 0;
+        }, {passive: true});
+        
+        // Listen for touch end events
         document.addEventListener('touchend', function(e) {
+            lastTouchEndTime = Date.now();
+            if (e.changedTouches && e.changedTouches[0]) {
+                touchEndPos = {
+                    x: e.changedTouches[0].clientX,
+                    y: e.changedTouches[0].clientY
+                };
+            }
+            
+            // Calculate touch duration and distance
+            const touchDuration = lastTouchEndTime - lastTouchStartTime;
+            const touchDistance = Math.sqrt(
+                Math.pow(touchEndPos.x - touchStartPos.x, 2) + 
+                Math.pow(touchEndPos.y - touchStartPos.y, 2)
+            );
+            
             // If we're on the map page and not in a popup
-            if (document.getElementById('map') && !document.querySelector('.mobile-popup-overlay.active')) {
-                const map = document.getElementById('map');
-                // Check if the touch ended inside the map
+            if (document.getElementById('map') && 
+                !document.querySelector('.mobile-popup-overlay.active') &&
+                !document.querySelector('.info-guide-overlay.active')) {
+                
+                // Detect possible touch issues:
+                // 1. Very short touches that don't move (likely unregistered taps)
+                // 2. Long touches that don't move (stuck touch events)
+                if ((touchDuration < 100 && touchDistance < 5) || 
+                    (touchDuration > 500 && touchDistance < 10)) {
+                    consecutiveFailedTouches++;
+                    console.log('Possible touch issue detected:', 
+                        consecutiveFailedTouches, 
+                        'duration:', touchDuration, 
+                        'distance:', touchDistance);
+                }
+                
+                // If we detect consecutive potential touch issues, try resetting
+                if (consecutiveFailedTouches >= 2) {
+                    console.log('Multiple touch issues detected, resetting touch system');
+                    consecutiveFailedTouches = 0;
+                    if (typeof resetTouchSystem === 'function') {
+                        resetTouchSystem(function() {
+                            console.log('Touch system reset from global handler');
+                        });
+                    }
+                }
+                
+                // Also check if the touch ended inside the map for the traditional reset
                 if (e.target.closest('#map')) {
                     // If we detect touches aren't working (not tested yet), try resetting
                     setTimeout(function() {
@@ -87,27 +256,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 overlay.classList.remove('active');
                 document.body.style.overflow = '';
                 
-                // For iOS Safari - restore proper touch handling on map
-                if (document.getElementById('map')) {
-                    setTimeout(() => {
-                        if (map && typeof map.invalidateSize === 'function') {
-                            map.invalidateSize();
-                            map.touchZoom.enable();
-                            map.dragging.enable();
-                            map.tap.enable();
+                // Use the centralized touch reset function
+                resetTouchSystem(() => {
+                    // Remove the active class from info-guide-btn
+                    document.querySelectorAll('.navbar-links a').forEach(link => {
+                        if (link.id === 'info-guide-btn') {
+                            link.classList.remove('active');
                         }
-                    }, 300);
-                }
-                
-                // Remove the active class from info-guide-btn
-                document.querySelectorAll('.navbar-links a').forEach(link => {
-                    if (link.id === 'info-guide-btn') {
-                        link.classList.remove('active');
-                    }
+                    });
+                    
+                    // Restore the correct active state
+                    setActiveState();
                 });
-                
-                // Restore the correct active state
-                setActiveState();
             }
         });
     }
@@ -120,15 +280,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 infoGuideOverlay.classList.remove('active');
                 document.body.style.overflow = '';
                 
-                // Remove the active class from info-guide-btn
-                document.querySelectorAll('.navbar-links a').forEach(link => {
-                    if (link.id === 'info-guide-btn') {
-                        link.classList.remove('active');
-                    }
+                // Use the centralized touch reset function
+                resetTouchSystem(() => {
+                    // Remove the active class from info-guide-btn
+                    document.querySelectorAll('.navbar-links a').forEach(link => {
+                        if (link.id === 'info-guide-btn') {
+                            link.classList.remove('active');
+                        }
+                    });
+                    
+                    // Restore the correct active state
+                    setActiveState();
                 });
-                
-                // Restore the correct active state
-                setActiveState();
             }
         });
     }
@@ -141,15 +304,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 overlay.classList.remove('active');
                 document.body.style.overflow = '';
                 
-                // Remove the active class from info-guide-btn
-                document.querySelectorAll('.navbar-links a').forEach(link => {
-                    if (link.id === 'info-guide-btn') {
-                        link.classList.remove('active');
-                    }
+                // Use the centralized touch reset function
+                resetTouchSystem(() => {
+                    // Remove the active class from info-guide-btn
+                    document.querySelectorAll('.navbar-links a').forEach(link => {
+                        if (link.id === 'info-guide-btn') {
+                            link.classList.remove('active');
+                        }
+                    });
+                    
+                    // Restore the correct active state
+                    setActiveState();
                 });
-                
-                // Restore the correct active state
-                setActiveState();
             }
         }
     });
@@ -367,52 +533,52 @@ function initializeMap() {
             // Make sure map is valid
             if (!map || typeof map.invalidateSize !== 'function') return;
             
-            // Force a complete re-initialization of the map
-            map.invalidateSize({reset: true, pan: false});
-            
-            // Enable all possible interactions
-            map.dragging.enable();
-            map.touchZoom.enable();
-            map.doubleClickZoom.enable();
-            map.scrollWheelZoom.enable();
-            map.boxZoom.enable();
-            map.keyboard.enable();
-            if (map.tap) map.tap.enable();
-            
-            // Reset handlers from saved originals if available
-            if (window._originalMapHandlers) {
-                map._onTouchStart = window._originalMapHandlers._onTouchStart;
-                map._onTouchEnd = window._originalMapHandlers._onTouchEnd;
-                map._onTouchMove = window._originalMapHandlers._onTouchMove;
-            }
-            
-            // Force a redraw with animation to trigger internal updates
-            const center = map.getCenter();
-            const zoom = map.getZoom();
-            map.flyTo(center, zoom, {
-                duration: 0.01, // Very short animation to force refresh
-                noMoveStart: true
+            // First use our generic touch reset function
+            resetTouchSystem(() => {
+                // Now do map-specific resets
+                try {
+                    // Force a complete re-initialization of the map
+                    map.invalidateSize({reset: true, pan: false});
+                    
+                    // Enable all possible interactions
+                    map.dragging.enable();
+                    map.touchZoom.enable();
+                    map.doubleClickZoom.enable();
+                    map.scrollWheelZoom.enable();
+                    map.boxZoom.enable();
+                    map.keyboard.enable();
+                    if (map.tap) map.tap.enable();
+                    
+                    // Reset handlers from saved originals if available
+                    if (window._originalMapHandlers) {
+                        map._onTouchStart = window._originalMapHandlers._onTouchStart;
+                        map._onTouchEnd = window._originalMapHandlers._onTouchEnd;
+                        map._onTouchMove = window._originalMapHandlers._onTouchMove;
+                    }
+                    
+                    // Fix CSS related issues
+                    const mapContainer = document.getElementById('map');
+                    if (mapContainer) {
+                        // Ensure proper CSS classes
+                        mapContainer.classList.add('leaflet-touch');
+                        mapContainer.classList.add('leaflet-touch-drag');
+                        mapContainer.classList.add('leaflet-touch-zoom');
+                        
+                        // Reset any CSS that might be interfering
+                        mapContainer.style.touchAction = '';
+                        mapContainer.style.pointerEvents = '';
+                    }
+                    
+                    // Ensure body doesn't have any lingering styles
+                    document.body.style.overflow = '';
+                    document.body.style.touchAction = '';
+                    document.body.style.position = '';
+                    
+                    console.log('Map-specific touch handlers reset complete');
+                } catch (innerError) {
+                    console.error('Error in map-specific reset:', innerError);
+                }
             });
-            
-            // Fix CSS related issues
-            const mapContainer = document.getElementById('map');
-            if (mapContainer) {
-                // Ensure proper CSS classes
-                mapContainer.classList.add('leaflet-touch');
-                mapContainer.classList.add('leaflet-touch-drag');
-                mapContainer.classList.add('leaflet-touch-zoom');
-                
-                // Reset any CSS that might be interfering
-                mapContainer.style.touchAction = '';
-                mapContainer.style.pointerEvents = '';
-            }
-            
-            // Ensure body doesn't have any lingering styles
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
-            document.body.style.position = '';
-            
-            console.log('Touch handlers reset complete');
         } catch (error) {
             console.error('Error resetting touch handlers:', error);
         }
@@ -796,8 +962,8 @@ function initializeMap() {
         document.body.style.touchAction = '';
         document.body.style.position = '';
         
-        // Completely reinitialize the map
-        setTimeout(() => {
+        // Use the centralized touch reset function with map reinitialization
+        resetTouchSystem(() => {
             // Save any important map state before rebuilding
             saveMapState(); 
             
@@ -821,7 +987,7 @@ function initializeMap() {
             
             // Re-setup the mobile popup elements
             setupMobilePopup();
-        }, 300);
+        });
     }
     
     // Create popup content with establishment data

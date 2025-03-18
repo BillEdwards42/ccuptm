@@ -133,11 +133,33 @@ body {
 .leaflet-container {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+    pointer-events: auto;
 }
 
 /* Fix for touch events on markers */
 .leaflet-marker-icon {
     touch-action: auto !important;
+}
+
+/* Improve touch handling for clusters */
+.marker-cluster {
+    touch-action: auto !important;
+    pointer-events: auto !important;
+}
+
+/* Fix for Android touch handling */
+html, body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+    touch-action: manipulation;
+}
+
+#map {
+    -webkit-transform: translateZ(0); /* Enable hardware acceleration for smoother performance */
+    will-change: transform; /* Signal to browser that this element will change */
+    backface-visibility: hidden; /* Additional optimization for layer compositing */
+    perspective: 1000; /* Additional optimization for layer compositing */
 }
 
 /* Handle touch events properly */
