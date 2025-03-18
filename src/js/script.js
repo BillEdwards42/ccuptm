@@ -15,6 +15,27 @@ function setActiveState() {
 
 // Setup global info guide popup for all pages
 document.addEventListener('DOMContentLoaded', () => {
+    // Add a global handler to fix touch issues after any touch interactions
+    if ('ontouchstart' in window) {
+        document.addEventListener('touchend', function(e) {
+            // If we're on the map page and not in a popup
+            if (document.getElementById('map') && !document.querySelector('.mobile-popup-overlay.active')) {
+                const map = document.getElementById('map');
+                // Check if the touch ended inside the map
+                if (e.target.closest('#map')) {
+                    // If we detect touches aren't working (not tested yet), try resetting
+                    setTimeout(function() {
+                        if (typeof resetMapTouchHandlers === 'function' && 
+                            !document.querySelector('.mobile-popup-overlay.active') && 
+                            !document.querySelector('.info-guide-overlay.active')) {
+                            resetMapTouchHandlers();
+                        }
+                    }, 500);
+                }
+            }
+        }, {passive: true});
+    }
+    
     // Set initial active state
     setActiveState();
     // Initialize info guide popup on all pages
@@ -146,8 +167,19 @@ function initializeMap() {
         attributionControl: false,
         zoomControl: false,
         minZoom: 17,
-        maxZoom: 20
+        maxZoom: 20,
+        tap: true,
+        tapTolerance: 15,   // Increased touch tolerance
+        touchZoom: true,
+        bounceAtZoomLimits: false  // Prevents bouncing when reaching zoom limits
     }).setView([23.5558, 120.4705], 17);
+    
+    // Store original handlers in case we need to restore them
+    window._originalMapHandlers = {
+        _onTouchStart: map._onTouchStart,
+        _onTouchEnd: map._onTouchEnd,
+        _onTouchMove: map._onTouchMove
+    };
     
     // Add tile layer with CartoDB Voyager style - add back minZoom constraint
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -190,6 +222,9 @@ function initializeMap() {
                 animate: true,
                 duration: 0.5
             });
+            
+            // Fix touch handlers when reset button is clicked
+            resetMapTouchHandlers();
         });
         
         // Handle window resize
@@ -215,6 +250,97 @@ function initializeMap() {
             
             activeMarker = null;
         });
+        
+        // Add a special fix for iOS devices
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            document.addEventListener('touchstart', function() {
+                // This empty handler enables :active CSS states on iOS
+            }, false);
+        }
+        
+        // Add hammer.js-like touch event handler
+        const mapContainer = document.getElementById('map');
+        
+        // Track touch events
+        let touchStartTime = 0;
+        let touchStartPos = { x: 0, y: 0 };
+        let isTouching = false;
+        
+        mapContainer.addEventListener('touchstart', function(e) {
+            touchStartTime = Date.now();
+            touchStartPos = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY
+            };
+            isTouching = true;
+        }, { passive: true });
+        
+        mapContainer.addEventListener('touchend', function(e) {
+            isTouching = false;
+            // If no popup is active and touch isn't working, try resetting handlers
+            if (!mobilePopupActive && Date.now() - touchStartTime > 300) {
+                resetMapTouchHandlers();
+            }
+        }, { passive: true });
+    }
+    
+    // Function to completely reset map touch handlers
+    function resetMapTouchHandlers() {
+        console.log('Resetting map touch handlers');
+        
+        try {
+            // Make sure map is valid
+            if (!map || typeof map.invalidateSize !== 'function') return;
+            
+            // Force a complete re-initialization of the map
+            map.invalidateSize({reset: true, pan: false});
+            
+            // Enable all possible interactions
+            map.dragging.enable();
+            map.touchZoom.enable();
+            map.doubleClickZoom.enable();
+            map.scrollWheelZoom.enable();
+            map.boxZoom.enable();
+            map.keyboard.enable();
+            if (map.tap) map.tap.enable();
+            
+            // Reset handlers from saved originals if available
+            if (window._originalMapHandlers) {
+                map._onTouchStart = window._originalMapHandlers._onTouchStart;
+                map._onTouchEnd = window._originalMapHandlers._onTouchEnd;
+                map._onTouchMove = window._originalMapHandlers._onTouchMove;
+            }
+            
+            // Force a redraw with animation to trigger internal updates
+            const center = map.getCenter();
+            const zoom = map.getZoom();
+            map.flyTo(center, zoom, {
+                duration: 0.01, // Very short animation to force refresh
+                noMoveStart: true
+            });
+            
+            // Fix CSS related issues
+            const mapContainer = document.getElementById('map');
+            if (mapContainer) {
+                // Ensure proper CSS classes
+                mapContainer.classList.add('leaflet-touch');
+                mapContainer.classList.add('leaflet-touch-drag');
+                mapContainer.classList.add('leaflet-touch-zoom');
+                
+                // Reset any CSS that might be interfering
+                mapContainer.style.touchAction = '';
+                mapContainer.style.pointerEvents = '';
+            }
+            
+            // Ensure body doesn't have any lingering styles
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
+            document.body.style.position = '';
+            
+            console.log('Touch handlers reset complete');
+        } catch (error) {
+            console.error('Error resetting touch handlers:', error);
+        }
     }
     
     // Set active class on navigation links
@@ -507,6 +633,7 @@ function initializeMap() {
     
     // Display popup for mobile view
     function showMobilePopup(marker) {
+        console.log('Opening mobile popup');
         if (!marker || !marker.establishment) return;
         
         const overlay = document.querySelector('.mobile-popup-overlay');
@@ -517,9 +644,36 @@ function initializeMap() {
             return showMobilePopup(marker);
         }
         
-        // Before showing the popup, disable map interactions to prevent touch issues
-        map.touchZoom.disable();
+        // Store the current map state to restore later
+        window._mapState = {
+            dragging: map.dragging.enabled(),
+            touchZoom: map.touchZoom.enabled(),
+            doubleClickZoom: map.doubleClickZoom.enabled(),
+            scrollWheelZoom: map.scrollWheelZoom.enabled(),
+            boxZoom: map.boxZoom.enabled(),
+            keyboard: map.keyboard.enabled(),
+            tap: map.tap && map.tap.enabled()
+        };
+        
+        console.log('Saving map state:', window._mapState);
+        
+        // Before showing the popup, disable map interactions
         map.dragging.disable();
+        map.touchZoom.disable();
+        map.doubleClickZoom.disable();
+        map.scrollWheelZoom.disable();
+        map.boxZoom.disable();
+        map.keyboard.disable();
+        if (map.tap) map.tap.disable();
+        
+        // Save style states
+        window._bodyStyle = {
+            overflow: document.body.style.overflow,
+            touchAction: document.body.style.touchAction,
+            position: document.body.style.position
+        };
+        
+        console.log('Saving body style:', window._bodyStyle);
         
         // Create content for the popup
         const content = createPopupContent(marker.establishment);
@@ -538,12 +692,27 @@ function initializeMap() {
         
         // Add this to prevent background scrolling/zooming while popup is open
         document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+        
+        // Save map container style
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+            window._mapContainerStyle = {
+                touchAction: mapContainer.style.touchAction,
+                pointerEvents: mapContainer.style.pointerEvents
+            };
+            
+            // Disable touch on map while popup is active
+            mapContainer.style.touchAction = 'none';
+            mapContainer.style.pointerEvents = 'none';
+        }
         
         mobilePopupActive = true;
     }
     
     // Close mobile popup
     function closeMobilePopup() {
+        console.log('Closing mobile popup');
         const overlay = document.querySelector('.mobile-popup-overlay');
         const container = document.querySelector('.mobile-popup-container');
         
@@ -555,30 +724,77 @@ function initializeMap() {
         mobilePopupActive = false;
         activeMarker = null;
         
-        // Fix: More comprehensive restoration of map and touch functionality
+        // First, restore CSS styles immediately
+        document.body.style.overflow = window._bodyStyle?.overflow || '';
+        document.body.style.touchAction = window._bodyStyle?.touchAction || '';
+        document.body.style.position = window._bodyStyle?.position || '';
+        
+        // Restore map container style
+        const mapContainer = document.getElementById('map');
+        if (mapContainer && window._mapContainerStyle) {
+            mapContainer.style.touchAction = window._mapContainerStyle.touchAction || '';
+            mapContainer.style.pointerEvents = window._mapContainerStyle.pointerEvents || '';
+        }
+        
+        // Schedule a complete map re-initialization
         setTimeout(() => {
-            // Force map to recalculate its container size
-            map.invalidateSize();
+            console.log('Restoring map state and functionality');
             
-            // Explicitly enable touch zoom again
-            map.touchZoom.enable();
-            map.dragging.enable();
-            map.tap.enable();
-            
-            // Reset body overflow
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
-            
-            // Re-add touch handlers to the map container
-            const mapContainer = document.getElementById('map');
-            if (mapContainer) {
-                mapContainer.style.touchAction = 'manipulation'; // Better touch handling
+            try {
+                // Force map to recalculate its container size
+                map.invalidateSize({reset: true, animate: false, pan: false});
                 
-                // Remove any "frozen" state that might have been applied
-                mapContainer.classList.remove('leaflet-touch-zoom-frozen');
-                mapContainer.classList.remove('leaflet-grab');
-                mapContainer.classList.add('leaflet-grab');
-                mapContainer.classList.add('leaflet-touch-drag');
+                // Restore all map controls based on saved state
+                if (window._mapState) {
+                    console.log('Restoring from saved state:', window._mapState);
+                    
+                    if (window._mapState.dragging) map.dragging.enable();
+                    if (window._mapState.touchZoom) map.touchZoom.enable();
+                    if (window._mapState.doubleClickZoom) map.doubleClickZoom.enable();
+                    if (window._mapState.scrollWheelZoom) map.scrollWheelZoom.enable();
+                    if (window._mapState.boxZoom) map.boxZoom.enable();
+                    if (window._mapState.keyboard) map.keyboard.enable();
+                    if (window._mapState.tap && map.tap) map.tap.enable();
+                } else {
+                    console.log('No saved state, enabling all controls');
+                    // If no saved state, enable everything
+                    map.dragging.enable();
+                    map.touchZoom.enable();
+                    map.doubleClickZoom.enable();
+                    map.scrollWheelZoom.enable();
+                    map.boxZoom.enable();
+                    map.keyboard.enable();
+                    if (map.tap) map.tap.enable();
+                }
+                
+                // Fix for Leaflet touch handler issues
+                if (L.Browser.touch) {
+                    console.log('Refreshing Leaflet touch handlers');
+                    // Re-create touch handlers by accessing and activating them
+                    map._renderer._update();
+                    map._onResize();
+                    
+                    // Directly check Leaflet's internal state
+                    const mapPane = document.querySelector('.leaflet-map-pane');
+                    if (mapPane) {
+                        mapPane.style.touchAction = '';
+                        mapPane.style.userSelect = '';
+                    }
+                    
+                    // Make container touchable again
+                    mapContainer.classList.add('leaflet-touch');
+                    mapContainer.classList.add('leaflet-touch-drag');
+                    mapContainer.classList.add('leaflet-touch-zoom');
+                }
+                
+                // Force a redraw by triggering a viewport change
+                const center = map.getCenter();
+                const zoom = map.getZoom();
+                map.setView(center, zoom, {animate: false});
+                
+                console.log('Map restoration complete');
+            } catch (error) {
+                console.error('Error restoring map:', error);
             }
         }, 300); // Longer timeout to ensure DOM updates complete
     }

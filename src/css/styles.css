@@ -95,6 +95,26 @@ body {
     top: 0;
     left: 0;
     z-index: 1;
+    touch-action: manipulation; /* Improves touch handling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Ensure proper touch handling on mobile */
+.leaflet-container {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Fix for touch events on markers */
+.leaflet-marker-icon {
+    touch-action: auto !important;
+}
+
+/* Handle touch events properly */
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+    border: 2px solid rgba(0,0,0,0.2);
+    background-clip: padding-box;
 }
 
 /* Reset view button */
