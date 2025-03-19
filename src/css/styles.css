@@ -136,8 +136,8 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 40px;
-    height: 40px;
+    width: 67px;
+    height: 67px;
     background-color: #FF7F50;
     color: white;
     border-radius: 50%;
@@ -149,6 +149,10 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 16px;
+}
+
+.reset-view-btn i {
+    font-size: 33px; /* Sets the icon size to 20px, regardless of the button's font-size */
 }
 
 .reset-view-btn:hover {
