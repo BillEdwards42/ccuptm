@@ -1,21 +1,8 @@
-// Function to set the active state based on current page
+// Function to set the active state based on current page - now just a stub
 function setActiveState() {
-    const page = window.location.pathname.split("/").pop() || 'index.html';
-    
-    document.querySelectorAll('.navbar-links a').forEach(link => {
-        // Clear active state from all links initially
-        link.classList.remove('active');
-        
-        // Set map-nav-btn to active by default on map page
-        if (page === 'map.html' || page === '') {
-            if (link.id === 'map-nav-btn') {
-                link.classList.add('active');
-            }
-        } else if (link.getAttribute('href') === page) {
-            // Set the correct link active for non-map pages
-            link.classList.add('active');
-        }
-    });
+    // We no longer set active states on navbar links
+    // This function kept for compatibility with existing code
+    return;
 }
 
 // Global variable to track currently active hover label
@@ -307,14 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // Reset the active state on all nav links and restore map as active
-            document.querySelectorAll('.navbar-links a').forEach(link => {
-                if (link.id === 'map-nav-btn') {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
+            // No longer setting active states on nav links
         }
     }
     
@@ -533,21 +513,16 @@ function initializeMap() {
             });
         }
 
-        // Map nav button (we're removing its reset functionality for mobile)
+        // Map nav button - no longer associated with active state
         const mapNavButton = document.getElementById('map-nav-btn');
         if (mapNavButton) {
-            // Only for non-touch devices, keep the reset view functionality
-            if (!isTouchDevice()) {
-                mapNavButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Only reset view if map nav button is already active (map is showing)
-                    if (mapNavButton.classList.contains('active')) {
-                        resetView();
-                    }
-                });
-            }
+            // For all devices, just prevent default behavior
+            mapNavButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // No active state check needed, just reset view
+                resetView();
+            });
         }
         
         // Handle window resize
@@ -672,15 +647,10 @@ function initializeMap() {
         }
     }
     
-    // Set active class on navigation links
+    // No longer setting active class on navigation links
     function setActiveNavLink() {
-        const page = window.location.pathname.split("/").pop();
-        
-        document.querySelectorAll('.navbar-links a').forEach(link => {
-            const href = link.getAttribute('href');
-            const isActive = href === page || (page === '' && href === 'index.html');
-            link.classList.toggle('active', isActive);
-        });
+        // We no longer set active states on links
+        return;
     }
     
     // Load establishment data from GeoJSON file
@@ -1278,14 +1248,7 @@ function initializeMap() {
         window.bottomSheetActive = false;
         window.activeMarker = null;
         
-        // Restore the map nav button as active
-        document.querySelectorAll('.navbar-links a').forEach(link => {
-            if (link.id === 'map-nav-btn') {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
+        // No longer setting active states on nav links
     }
     
     // Display popup for mobile view (legacy approach for non-touch devices)

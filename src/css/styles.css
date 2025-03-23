@@ -49,6 +49,7 @@ body {
     align-items: center;
     min-width: 0;
     overflow: hidden;
+    flex: 1; /* Allow logo area to take available space */
 }
 
 .navbar-logo img {
@@ -79,7 +80,7 @@ body {
     align-items: center;
     margin-left: 15px;
     flex-shrink: 0;
-    justify-content: center; /* Center the nav items */
+    justify-content: flex-end; /* Align nav items to the right */
 }
 
 .navbar-links a {
@@ -101,23 +102,20 @@ body {
     transform: translateZ(0); /* Force hardware acceleration */
 }
 
-/* Add active state for touch feedback */
+/* Add active state for touch feedback - only for brief touch moment */
 .navbar-links a:active {
     transform: translateZ(0) scale(0.95);
     background-color: rgba(255, 127, 80, 0.2);
+    color: #FF7F50;
 }
 
-.navbar-links a:hover, .navbar-links a.active {
+.navbar-links a:hover {
     background-color: rgba(255, 127, 80, 0.1); /* Very light coral background */
     transform: translateY(-2px);
     color: #FF7F50; /* Coral - matches marker */
 }
 
-.navbar-links a.active {
-    background-color: rgba(255, 127, 80, 0.15);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    color: #FF7F50;
-}
+/* Remove persistent active state styling */
 
 /* Map container */
 #map {
@@ -218,23 +216,7 @@ html, body {
     background-clip: padding-box;
 }
 
-/* Map Button Active State - Special styling for the map button when active */
-.navbar-links a#map-nav-btn.active {
-    background-color: rgba(255, 127, 80, 0.25); /* Stronger background for active map button */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    color: #FF7F50;
-    font-weight: 700;
-}
-
-.navbar-links a#map-nav-btn.active:hover {
-    background-color: rgba(255, 127, 80, 0.3);
-    transform: translateY(-2px) scale(1.05);
-}
-
-.navbar-links a#map-nav-btn.active:active {
-    transform: scale(0.95);
-    background-color: rgba(255, 127, 80, 0.35);
-}
+/* Remove special styling for map button */
 
 /* Custom map marker */
 .custom-marker {
@@ -881,13 +863,19 @@ html, body {
     }
     
     .navbar-links a {
-        padding: 5px 8px;
-        margin-left: 8px;
+        padding: 8px;
+        margin-left: 5px;
         font-size: 0.9rem;
     }
     
+    /* Always hide text on mobile, only show icons */
+    .navbar-links a span {
+        display: none;
+    }
+    
     .navbar-links a i {
-        margin-right: 0;
+        font-size: 1.1rem;
+        margin: 0;
     }
     
     .info-row .label,
@@ -905,17 +893,12 @@ html, body {
         max-width: 120px;
     }
     
-    .navbar-links a span {
-        display: none;
-    }
-    
     .navbar-links a {
-        padding: 5px 8px;
+        padding: 8px;
     }
     
     .navbar-links a i {
-        font-size: 1.1rem;
-        margin: 0;
+        font-size: 1.2rem;
     }
     
     .update-time {
