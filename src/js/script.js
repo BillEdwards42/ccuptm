@@ -696,8 +696,6 @@ function initializeMap() {
                     window.legalStandard = {
                         year: data.standard.year || '2025',
                         salary: data.standard.salary || 'N/A',
-                        供餐: data.standard.供餐 || false,
-                        試用期: data.standard.試用期 || false,
                         勞健保: data.standard.勞健保 || false,
                         國定雙倍: data.standard.國定雙倍 || false
                     };
@@ -706,8 +704,6 @@ function initializeMap() {
                     window.legalStandard = {
                         year: '2025',
                         salary: 'NT$ 180/小時',
-                        供餐: false,
-                        試用期: false,
                         勞健保: true,
                         國定雙倍: true
                     };
@@ -756,8 +752,6 @@ function initializeMap() {
         window.legalStandard = {
             year: '2025',
             salary: 'NT$ 176/小時',
-            供餐: false,
-            試用期: false,
             勞健保: true,
             國定雙倍: true
         };
@@ -1462,18 +1456,28 @@ function initializeMap() {
         standardsContent.className = 'establishment-popup-content standards-content';
         standardsContent.id = 'legal-standards';
         
-        // Add standards year header
+        // Add standards year header with icon
         const yearHeader = document.createElement('div');
         yearHeader.className = 'standards-year';
-        yearHeader.textContent = `${window.legalStandard.year} 年法定規範`;
+        yearHeader.innerHTML = `<i class="fas fa-balance-scale"></i> ${window.legalStandard.year} 年法定規範`;
         standardsContent.appendChild(yearHeader);
+        
+        // Add explanation text
+        const explanationText = document.createElement('div');
+        explanationText.className = 'standards-explanation';
+        explanationText.innerHTML = '依據勞動基準法規定，以下是雇主應遵守的基本標準：<br><small>法律未規範供餐和試用期</small>';
+        standardsContent.appendChild(explanationText);
         
         // Add comparison rows for objective criteria
         standardsContent.appendChild(createComparisonRow('時薪', window.legalStandard.salary, establishment.salary));
-        standardsContent.appendChild(createComparisonBooleanRow('供餐', window.legalStandard.供餐, establishment.供餐));
-        standardsContent.appendChild(createComparisonBooleanRow('試用期', window.legalStandard.試用期, establishment.試用期));
         standardsContent.appendChild(createComparisonBooleanRow('勞健保', window.legalStandard.勞健保, establishment.勞健保));
         standardsContent.appendChild(createComparisonBooleanRow('國定雙倍', window.legalStandard.國定雙倍, establishment.國定雙倍));
+        
+        // Add footer with info about standards
+        const standardsFooter = document.createElement('div');
+        standardsFooter.className = 'standards-footer';
+        standardsFooter.innerHTML = '<span><i class="fas fa-info-circle"></i> 綠色表示符合或優於標準，紅色表示未達標準</span>';
+        standardsContent.appendChild(standardsFooter);
         
         // Add tab event listeners
         establishmentTab.addEventListener('click', function() {
@@ -1523,7 +1527,7 @@ function initializeMap() {
         establishmentElement.innerHTML = `<span class="value-label">店家：</span>${establishmentValue}`;
         
         // Determine if establishment meets or exceeds standard
-        // For salary, we'd need to parse the values, but for simplicity we'll just do a string comparison
+        // For salary, we'd need to parse the values
         if (standardValue && establishmentValue) {
             const standardNum = parseInt(standardValue.replace(/[^0-9]/g, '')) || 0;
             const establishmentNum = parseInt(establishmentValue.replace(/[^0-9]/g, '')) || 0;
@@ -1568,15 +1572,23 @@ function initializeMap() {
             '<i class="fas fa-check-circle yes"></i> 是' : 
             '<i class="fas fa-times-circle no"></i> 否'}`;
         
-        // Determine if establishment meets standard
-        if (standardValue === true && establishmentValue === true) {
+        // Special case for 試用期 - if standard is false but establishment is true, it's below standard
+        if (label === '試用期' && standardValue === false && establishmentValue === true) {
+            establishmentElement.classList.add('below-standard');
+        }
+        // Normal cases
+        else if (standardValue === true && establishmentValue === true) {
+            // Required true, and establishment is true -> meets standard
             establishmentElement.classList.add('meets-standard');
-        } else if (standardValue === false && establishmentValue === false) {
-            establishmentElement.classList.add('neutral-standard'); // Neutral when both are false
         } else if (standardValue === true && establishmentValue === false) {
+            // Required true, but establishment is false -> below standard
             establishmentElement.classList.add('below-standard');
         } else if (standardValue === false && establishmentValue === true) {
-            establishmentElement.classList.add('exceeds-standard');
+            // Not required, but establishment provides it -> meets standard (exceeds)
+            establishmentElement.classList.add('meets-standard');
+        } else {
+            // Not required, not provided -> meets standard (neutral)
+            establishmentElement.classList.add('meets-standard');
         }
         
         valuesContainer.appendChild(standardElement);

@@ -3,8 +3,6 @@
     "standard": {
         "year": "2025",
         "salary": "NT$ 176/小時",
-        "供餐": false,
-        "試用期": false,
         "勞健保": true,
         "國定雙倍": true
     },
