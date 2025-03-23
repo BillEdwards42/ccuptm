@@ -427,3 +427,124 @@ body.intro-page {
         transform: scale(1.05);
     }
 }
+
+/* Add mobile-specific styles for bottom sheet on touch devices */
+@media (pointer: coarse) {
+    .bottom-sheet-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        z-index: 2000;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
+        visibility: hidden;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    
+    /* Hide the handle for full-screen modal */
+    .bottom-sheet-handle {
+        display: none;
+    }
+    
+    .bottom-sheet-content {
+        padding: 0; /* Change to 0 since we'll add padding to individual elements */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        max-height: 100%;
+        height: 100%;
+    }
+    
+    .bottom-sheet-header {
+        background-color: #FF7F50;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .bottom-sheet-close {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 20px;
+    }
+    
+    /* Improved scrolling experience */
+    .bottom-sheet-content {
+        scrollbar-width: thin;
+    }
+    
+    .bottom-sheet-content::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .bottom-sheet-content::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+    
+    /* Mobile sheet tabs styling */
+    .popup-tabs {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: white;
+    }
+    
+    .popup-tab {
+        padding: 15px 10px; /* Larger touch target on mobile */
+    }
+    
+    /* Mobile sheet content styling */
+    .bottom-sheet-establishment-content {
+        padding: 20px;
+    }
+    
+    /* Comparison rows for mobile */
+    .comparison-row {
+        margin-bottom: 10px;
+        flex-direction: column;
+    }
+    
+    .comparison-row .label {
+        font-size: 15px;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .comparison-values {
+        width: 100%;
+    }
+    
+    .standard-value, .establishment-value {
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 8px;
+    }
+    
+    .value-label {
+        font-size: 13px;
+    }
+    
+    /* Standards year display */
+    .standards-year {
+        font-size: 16px;
+        padding: 10px;
+        margin: 10px;
+        border-radius: 8px;
+    }
+}

@@ -691,6 +691,28 @@ function initializeMap() {
                 return response.json();
             })
             .then(data => {
+                // Extract standard information if available
+                if (data.standard) {
+                    window.legalStandard = {
+                        year: data.standard.year || '2025',
+                        salary: data.standard.salary || 'N/A',
+                        供餐: data.standard.供餐 || false,
+                        試用期: data.standard.試用期 || false,
+                        勞健保: data.standard.勞健保 || false,
+                        國定雙倍: data.standard.國定雙倍 || false
+                    };
+                } else {
+                    // Default standard if not provided
+                    window.legalStandard = {
+                        year: '2025',
+                        salary: 'NT$ 180/小時',
+                        供餐: false,
+                        試用期: false,
+                        勞健保: true,
+                        國定雙倍: true
+                    };
+                }
+                
                 window.establishments = data.features.map(feature => {
                     // Convert GeoJSON coordinates [lng, lat] to Leaflet coordinates [lat, lng]
                     const [lng, lat] = feature.geometry.coordinates;
@@ -730,6 +752,16 @@ function initializeMap() {
     
     // Setup default establishments if data fails to load
     function setupDefaultEstablishments() {
+        // Default legal standard
+        window.legalStandard = {
+            year: '2025',
+            salary: 'NT$ 176/小時',
+            供餐: false,
+            試用期: false,
+            勞健保: true,
+            國定雙倍: true
+        };
+        
         window.establishments = [
             {
                 name: "咖啡廳工讀",
@@ -1361,7 +1393,7 @@ function initializeMap() {
         });
     }
     
-    // Create popup content with establishment data
+    // Create popup content with establishment data and legal standards
     function createPopupContent(establishment) {
         const container = document.createElement('div');
         container.className = 'establishment-popup';
@@ -1386,28 +1418,174 @@ function initializeMap() {
         
         header.appendChild(titleContainer);
         
+        // Create tabs for toggling between establishment info and legal standards
+        const tabsContainer = document.createElement('div');
+        tabsContainer.className = 'popup-tabs';
+        
+        const establishmentTab = document.createElement('div');
+        establishmentTab.className = 'popup-tab active';
+        establishmentTab.textContent = '店家資訊';
+        establishmentTab.dataset.target = 'establishment-info';
+        
+        const standardsTab = document.createElement('div');
+        standardsTab.className = 'popup-tab';
+        standardsTab.textContent = '法定規範';
+        standardsTab.dataset.target = 'legal-standards';
+        
+        tabsContainer.appendChild(establishmentTab);
+        tabsContainer.appendChild(standardsTab);
+        
         // Create content section with all details
-        const content = document.createElement('div');
-        content.className = 'establishment-popup-content';
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'popup-content-wrapper';
+        
+        // Establishment info content
+        const establishmentContent = document.createElement('div');
+        establishmentContent.className = 'establishment-popup-content active';
+        establishmentContent.id = 'establishment-info';
         
         // Add salary info
-        content.appendChild(createInfoRowWithUpdate('時薪', establishment.salary, establishment.updates.salary));
+        establishmentContent.appendChild(createInfoRowWithUpdate('時薪', establishment.salary, establishment.updates.salary));
         
         // Add boolean values with icons
-        content.appendChild(createBooleanRowWithUpdate('供餐', establishment.供餐, establishment.updates.供餐));
-        content.appendChild(createBooleanRowWithUpdate('試用期', establishment.試用期, establishment.updates.試用期));
-        content.appendChild(createBooleanRowWithUpdate('勞健保', establishment.勞健保, establishment.updates.勞健保));
-        content.appendChild(createBooleanRowWithUpdate('國定雙倍', establishment.國定雙倍, establishment.updates.國定雙倍));
+        establishmentContent.appendChild(createBooleanRowWithUpdate('供餐', establishment.供餐, establishment.updates.供餐));
+        establishmentContent.appendChild(createBooleanRowWithUpdate('試用期', establishment.試用期, establishment.updates.試用期));
+        establishmentContent.appendChild(createBooleanRowWithUpdate('勞健保', establishment.勞健保, establishment.updates.勞健保));
+        establishmentContent.appendChild(createBooleanRowWithUpdate('國定雙倍', establishment.國定雙倍, establishment.updates.國定雙倍));
         
         // Add star ratings
-        content.appendChild(createStarRatingRowWithUpdate('環境評分', establishment.環境評分, establishment.updates.環境評分));
-        content.appendChild(createStarRatingRowWithUpdate('滿意度評分', establishment.滿意度評分, establishment.updates.滿意度評分));
+        establishmentContent.appendChild(createStarRatingRowWithUpdate('環境評分', establishment.環境評分, establishment.updates.環境評分));
+        establishmentContent.appendChild(createStarRatingRowWithUpdate('滿意度評分', establishment.滿意度評分, establishment.updates.滿意度評分));
         
-        // Combine elements
+        // Legal standards content
+        const standardsContent = document.createElement('div');
+        standardsContent.className = 'establishment-popup-content standards-content';
+        standardsContent.id = 'legal-standards';
+        
+        // Add standards year header
+        const yearHeader = document.createElement('div');
+        yearHeader.className = 'standards-year';
+        yearHeader.textContent = `${window.legalStandard.year} 年法定規範`;
+        standardsContent.appendChild(yearHeader);
+        
+        // Add comparison rows for objective criteria
+        standardsContent.appendChild(createComparisonRow('時薪', window.legalStandard.salary, establishment.salary));
+        standardsContent.appendChild(createComparisonBooleanRow('供餐', window.legalStandard.供餐, establishment.供餐));
+        standardsContent.appendChild(createComparisonBooleanRow('試用期', window.legalStandard.試用期, establishment.試用期));
+        standardsContent.appendChild(createComparisonBooleanRow('勞健保', window.legalStandard.勞健保, establishment.勞健保));
+        standardsContent.appendChild(createComparisonBooleanRow('國定雙倍', window.legalStandard.國定雙倍, establishment.國定雙倍));
+        
+        // Add tab event listeners
+        establishmentTab.addEventListener('click', function() {
+            establishmentTab.classList.add('active');
+            standardsTab.classList.remove('active');
+            establishmentContent.classList.add('active');
+            standardsContent.classList.remove('active');
+        });
+        
+        standardsTab.addEventListener('click', function() {
+            standardsTab.classList.add('active');
+            establishmentTab.classList.remove('active');
+            standardsContent.classList.add('active');
+            establishmentContent.classList.remove('active');
+        });
+        
+        // Add all content
+        contentWrapper.appendChild(establishmentContent);
+        contentWrapper.appendChild(standardsContent);
+        
+        // Combine all elements
         container.appendChild(header);
-        container.appendChild(content);
+        container.appendChild(tabsContainer);
+        container.appendChild(contentWrapper);
         
         return container;
+    }
+    
+    // Create a comparison row that shows standard vs establishment value
+    function createComparisonRow(label, standardValue, establishmentValue) {
+        const row = document.createElement('div');
+        row.className = 'comparison-row';
+        
+        const labelElement = document.createElement('div');
+        labelElement.className = 'label';
+        labelElement.textContent = label;
+        
+        const valuesContainer = document.createElement('div');
+        valuesContainer.className = 'comparison-values';
+        
+        const standardElement = document.createElement('div');
+        standardElement.className = 'standard-value';
+        standardElement.innerHTML = `<span class="value-label">標準：</span>${standardValue}`;
+        
+        const establishmentElement = document.createElement('div');
+        establishmentElement.className = 'establishment-value';
+        establishmentElement.innerHTML = `<span class="value-label">店家：</span>${establishmentValue}`;
+        
+        // Determine if establishment meets or exceeds standard
+        // For salary, we'd need to parse the values, but for simplicity we'll just do a string comparison
+        if (standardValue && establishmentValue) {
+            const standardNum = parseInt(standardValue.replace(/[^0-9]/g, '')) || 0;
+            const establishmentNum = parseInt(establishmentValue.replace(/[^0-9]/g, '')) || 0;
+            
+            if (establishmentNum >= standardNum) {
+                establishmentElement.classList.add('meets-standard');
+            } else {
+                establishmentElement.classList.add('below-standard');
+            }
+        }
+        
+        valuesContainer.appendChild(standardElement);
+        valuesContainer.appendChild(establishmentElement);
+        
+        row.appendChild(labelElement);
+        row.appendChild(valuesContainer);
+        
+        return row;
+    }
+    
+    // Create a comparison row for boolean values
+    function createComparisonBooleanRow(label, standardValue, establishmentValue) {
+        const row = document.createElement('div');
+        row.className = 'comparison-row';
+        
+        const labelElement = document.createElement('div');
+        labelElement.className = 'label';
+        labelElement.textContent = label;
+        
+        const valuesContainer = document.createElement('div');
+        valuesContainer.className = 'comparison-values';
+        
+        const standardElement = document.createElement('div');
+        standardElement.className = 'standard-value';
+        standardElement.innerHTML = `<span class="value-label">標準：</span>${standardValue ? 
+            '<i class="fas fa-check-circle yes"></i> 是' : 
+            '<i class="fas fa-times-circle no"></i> 否'}`;
+        
+        const establishmentElement = document.createElement('div');
+        establishmentElement.className = 'establishment-value';
+        establishmentElement.innerHTML = `<span class="value-label">店家：</span>${establishmentValue ? 
+            '<i class="fas fa-check-circle yes"></i> 是' : 
+            '<i class="fas fa-times-circle no"></i> 否'}`;
+        
+        // Determine if establishment meets standard
+        if (standardValue === true && establishmentValue === true) {
+            establishmentElement.classList.add('meets-standard');
+        } else if (standardValue === false && establishmentValue === false) {
+            establishmentElement.classList.add('neutral-standard'); // Neutral when both are false
+        } else if (standardValue === true && establishmentValue === false) {
+            establishmentElement.classList.add('below-standard');
+        } else if (standardValue === false && establishmentValue === true) {
+            establishmentElement.classList.add('exceeds-standard');
+        }
+        
+        valuesContainer.appendChild(standardElement);
+        valuesContainer.appendChild(establishmentElement);
+        
+        row.appendChild(labelElement);
+        row.appendChild(valuesContainer);
+        
+        return row;
     }
     
     // Create an info row with label, value and update time
