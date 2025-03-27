@@ -1428,7 +1428,7 @@ function initializeMap() {
         // Add explanation text
         const explanationText = document.createElement('div');
         explanationText.className = 'standards-explanation';
-        explanationText.innerHTML = '依據勞動基準法規定，以下是雇主應遵守的基本標準：<br><small>法律未規範供餐和試用期</small>';
+        explanationText.innerHTML = '依據勞動基準法規定，\n以下是雇主應遵守的基本標準：<br><small>法律未規範供餐和試用期</small>';
         standardsContent.appendChild(explanationText);
         
         // Add comparison rows for objective criteria
