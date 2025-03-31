@@ -320,59 +320,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize joystick controls for touch devices
 function initializeJoystickControls() {
-    console.log('Initializing joystick controls for touch devices');
+    console.log('Initializing true joystick controls for touch devices');
+    
+    // Touch overlay to prevent map interaction
+    const touchOverlay = document.getElementById('map-touch-overlay');
+    if (touchOverlay) {
+        // Allow touch events to pass through only for specific elements
+        touchOverlay.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // Prevent map panning
+            e.stopPropagation();
+        }, { passive: false });
+        
+        touchOverlay.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent map interactions
+            e.stopPropagation();
+        }, { passive: false });
+    }
     
     // Get joystick elements
-    const joystickUp = document.getElementById('joystick-up');
-    const joystickDown = document.getElementById('joystick-down');
-    const joystickLeft = document.getElementById('joystick-left');
-    const joystickRight = document.getElementById('joystick-right');
-    const joystickCenter = document.getElementById('joystick-center');
+    const joystickBase = document.getElementById('joystick-base');
+    const joystickStick = document.getElementById('joystick-stick');
     const joystickZoomIn = document.getElementById('joystick-zoom-in');
     const joystickZoomOut = document.getElementById('joystick-zoom-out');
+    const joystickReset = document.getElementById('joystick-reset');
     
-    if (!joystickUp || !joystickDown || !joystickLeft || !joystickRight || !joystickCenter || !joystickZoomIn || !joystickZoomOut) {
+    if (!joystickBase || !joystickStick || !joystickZoomIn || !joystickZoomOut || !joystickReset) {
         console.error('Could not find joystick elements');
         return;
     }
     
-    // Constants for pan and zoom operations
-    const PAN_STEP = 100; // Pixels to pan
+    // Constants for joystick operations
     const ZOOM_STEP = 1; // Zoom level step
+    const MAX_JOYSTICK_DISTANCE = 40; // Maximum distance the stick can move from center
+    const PAN_THRESHOLD = 0.25; // Minimum joystick movement to trigger panning (0-1)
+    const PAN_SPEED_FACTOR = 5; // How fast the map pans based on joystick distance
     
-    // Pan the map in a specific direction
-    function panMap(direction) {
-        if (!map) return;
-        
-        // Get current center point in pixels
-        const centerPoint = map.latLngToContainerPoint(map.getCenter());
-        let newPoint;
-        
-        // Calculate new center point based on direction
-        switch(direction) {
-            case 'up':
-                newPoint = L.point(centerPoint.x, centerPoint.y - PAN_STEP);
-                break;
-            case 'down':
-                newPoint = L.point(centerPoint.x, centerPoint.y + PAN_STEP);
-                break;
-            case 'left':
-                newPoint = L.point(centerPoint.x - PAN_STEP, centerPoint.y);
-                break;
-            case 'right':
-                newPoint = L.point(centerPoint.x + PAN_STEP, centerPoint.y);
-                break;
-            default:
-                return;
-        }
-        
-        // Convert back to lat/lng and pan map
-        const newCenter = map.containerPointToLatLng(newPoint);
-        map.panTo(newCenter, {
-            animate: true,
-            duration: 0.25
-        });
-    }
+    // State variables for joystick
+    let joystickActive = false;
+    let joystickInterval = null;
+    let joystickStartPosition = { x: 0, y: 0 };
+    let joystickCurrentPosition = { x: 0, y: 0 };
     
     // Reset view to default position
     function resetMapView() {
@@ -410,57 +397,170 @@ function initializeJoystickControls() {
         });
     }
     
-    // Add touch event listeners to joystick buttons
-    // We're using touchstart/touchend for better responsiveness on mobile
+    // Pan the map based on joystick position
+    function panMapWithJoystick() {
+        if (!map || !joystickActive) return;
+        
+        // Calculate joystick offset from center (normalized -1 to 1)
+        const offsetX = joystickCurrentPosition.x - joystickStartPosition.x;
+        const offsetY = joystickCurrentPosition.y - joystickStartPosition.y;
+        
+        // Normalize to range -1 to 1
+        const normalizedX = Math.max(-1, Math.min(1, offsetX / MAX_JOYSTICK_DISTANCE));
+        const normalizedY = Math.max(-1, Math.min(1, offsetY / MAX_JOYSTICK_DISTANCE));
+        
+        // Only pan if joystick is moved beyond the threshold
+        if (Math.abs(normalizedX) > PAN_THRESHOLD || Math.abs(normalizedY) > PAN_THRESHOLD) {
+            // Get current center point in pixels
+            const centerPoint = map.latLngToContainerPoint(map.getCenter());
+            
+            // Calculate new center point based on joystick position
+            // Invert Y since positive Y is down in screen coordinates but up in map coordinates
+            const panX = normalizedX * PAN_SPEED_FACTOR;
+            const panY = -normalizedY * PAN_SPEED_FACTOR;
+            
+            const newPoint = L.point(
+                centerPoint.x + panX,
+                centerPoint.y + panY
+            );
+            
+            // Convert back to lat/lng and pan map
+            const newCenter = map.containerPointToLatLng(newPoint);
+            map.panTo(newCenter, {
+                animate: false // No animation for smoother joystick control
+            });
+        }
+    }
     
-    // Direction buttons
-    joystickUp.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Prevent default touch behavior
-        panMap('up');
-    });
-    
-    joystickDown.addEventListener('touchstart', (e) => {
+    // Set up joystick touch events
+    joystickBase.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        panMap('down');
-    });
+        e.stopPropagation();
+        
+        // Record starting position
+        const touch = e.touches[0];
+        const rect = joystickBase.getBoundingClientRect();
+        joystickStartPosition = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+        };
+        joystickCurrentPosition = {
+            x: touch.clientX,
+            y: touch.clientY
+        };
+        
+        // Calculate initial offset
+        const offsetX = joystickCurrentPosition.x - joystickStartPosition.x;
+        const offsetY = joystickCurrentPosition.y - joystickStartPosition.y;
+        
+        // Limit movement to MAX_JOYSTICK_DISTANCE
+        const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+        const limitedDistance = Math.min(distance, MAX_JOYSTICK_DISTANCE);
+        
+        // If distance is not 0, calculate the limited position
+        if (distance > 0) {
+            const ratio = limitedDistance / distance;
+            const limitedX = offsetX * ratio;
+            const limitedY = offsetY * ratio;
+            
+            // Position the joystick stick
+            joystickStick.style.transform = `translate(calc(-50% + ${limitedX}px), calc(-50% + ${limitedY}px))`;
+        }
+        
+        // Activate joystick and start panning interval
+        joystickActive = true;
+        if (joystickInterval) clearInterval(joystickInterval);
+        joystickInterval = setInterval(panMapWithJoystick, 16); // ~60fps
+    }, { passive: false });
     
-    joystickLeft.addEventListener('touchstart', (e) => {
+    joystickBase.addEventListener('touchmove', (e) => {
+        if (!joystickActive) return;
+        
         e.preventDefault();
-        panMap('left');
-    });
+        e.stopPropagation();
+        
+        // Update current position
+        const touch = e.touches[0];
+        joystickCurrentPosition = {
+            x: touch.clientX,
+            y: touch.clientY
+        };
+        
+        // Calculate offset from start position
+        const offsetX = joystickCurrentPosition.x - joystickStartPosition.x;
+        const offsetY = joystickCurrentPosition.y - joystickStartPosition.y;
+        
+        // Limit movement to MAX_JOYSTICK_DISTANCE
+        const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+        const limitedDistance = Math.min(distance, MAX_JOYSTICK_DISTANCE);
+        
+        // If distance is not 0, calculate the limited position
+        if (distance > 0) {
+            const ratio = limitedDistance / distance;
+            const limitedX = offsetX * ratio;
+            const limitedY = offsetY * ratio;
+            
+            // Position the joystick stick
+            joystickStick.style.transform = `translate(calc(-50% + ${limitedX}px), calc(-50% + ${limitedY}px))`;
+        }
+    }, { passive: false });
     
-    joystickRight.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        panMap('right');
-    });
+    // Handle joystick release
+    const endJoystick = () => {
+        joystickActive = false;
+        if (joystickInterval) {
+            clearInterval(joystickInterval);
+            joystickInterval = null;
+        }
+        
+        // Reset joystick position with animation
+        joystickStick.style.transition = 'transform 0.2s ease-out';
+        joystickStick.style.transform = 'translate(-50%, -50%)';
+        
+        // Reset transition after animation completes
+        setTimeout(() => {
+            joystickStick.style.transition = '';
+        }, 200);
+    };
     
-    // Center reset button
-    joystickCenter.addEventListener('touchstart', (e) => {
+    joystickBase.addEventListener('touchend', (e) => {
         e.preventDefault();
-        resetMapView();
-    });
+        e.stopPropagation();
+        endJoystick();
+    }, { passive: false });
+    
+    joystickBase.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        endJoystick();
+    }, { passive: false });
     
     // Zoom buttons
     joystickZoomIn.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         zoomMap('in');
-    });
+    }, { passive: false });
     
     joystickZoomOut.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         zoomMap('out');
-    });
+    }, { passive: false });
+    
+    // Reset button
+    joystickReset.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        resetMapView();
+    }, { passive: false });
     
     // Also add regular click events for testing on non-touch devices
-    joystickUp.addEventListener('click', () => panMap('up'));
-    joystickDown.addEventListener('click', () => panMap('down'));
-    joystickLeft.addEventListener('click', () => panMap('left'));
-    joystickRight.addEventListener('click', () => panMap('right'));
-    joystickCenter.addEventListener('click', resetMapView);
     joystickZoomIn.addEventListener('click', () => zoomMap('in'));
     joystickZoomOut.addEventListener('click', () => zoomMap('out'));
+    joystickReset.addEventListener('click', resetMapView);
     
-    console.log('Joystick controls initialized');
+    console.log('True joystick controls initialized');
 }
 
 // Only initialize map if on map page
@@ -541,12 +641,25 @@ function initializeMap() {
     // Create a new map instance with modified config for touch devices
     const mapInitConfig = {...MAP_CONFIG};
     
-    // Disable drag and touch zoom on touch devices to prevent conflicts
+    // Disable ALL touch interactions on map for touch devices
     if (isTouchDevice()) {
         mapInitConfig.dragging = false;
         mapInitConfig.touchZoom = false;
         mapInitConfig.tap = false; // Disable tap handler
         mapInitConfig.inertia = false; // Disable inertia
+        mapInitConfig.keyboard = false; // Disable keyboard navigation
+        mapInitConfig.scrollWheelZoom = false; // Disable scroll wheel
+        mapInitConfig.doubleClickZoom = false; // Disable double click zoom
+        
+        // Add overlay to block all map interactions except for markers
+        const touchOverlay = document.getElementById('map-touch-overlay');
+        if (touchOverlay) {
+            touchOverlay.style.display = 'block';
+            touchOverlay.style.position = 'absolute';
+            touchOverlay.style.zIndex = '400';
+            touchOverlay.style.touchAction = 'none';
+            touchOverlay.style.pointerEvents = 'all';
+        }
     }
     
     // Create a new map instance
@@ -563,14 +676,27 @@ function initializeMap() {
         subdomains: 'abcd'
     }).addTo(map);
     
-    // Create a new marker cluster group
+    // Create a new marker cluster group with enhanced options for touch
     window.markerClusterGroup = window.markerClusterGroup || L.markerClusterGroup({
         maxClusterRadius: 40,
         iconCreateFunction: function(cluster) {
             const count = cluster.getChildCount();
+            
+            // Create a custom div to ensure touch interactions work well
+            const container = document.createElement('div');
+            container.className = 'marker-cluster';
+            if (isTouchDevice()) {
+                container.style.zIndex = '500';
+                container.style.pointerEvents = 'auto';
+            }
+            
+            const span = document.createElement('span');
+            span.textContent = count;
+            container.appendChild(span);
+            
             return L.divIcon({
-                html: `<div><span>${count}</span></div>`,
-                className: 'marker-cluster',
+                html: container.outerHTML,
+                className: '',
                 iconSize: L.point(40, 40)
             });
         },
@@ -981,6 +1107,14 @@ function initializeMap() {
             const markerContainer = document.createElement('div');
             markerContainer.className = 'custom-marker';
             markerContainer.appendChild(markerIcon);
+            
+            // For touch devices, ensure markers are above the touch overlay
+            if (isTouchDevice()) {
+                markerContainer.style.zIndex = '500';
+                markerIcon.style.zIndex = '500';
+                markerContainer.style.pointerEvents = 'auto';
+                markerIcon.style.pointerEvents = 'auto';
+            }
             
             // Create custom icon and marker
             const customIcon = L.divIcon({
