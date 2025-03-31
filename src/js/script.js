@@ -318,7 +318,152 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Only initialize map if on map page
+    // Initialize joystick controls for touch devices
+function initializeJoystickControls() {
+    console.log('Initializing joystick controls for touch devices');
+    
+    // Get joystick elements
+    const joystickUp = document.getElementById('joystick-up');
+    const joystickDown = document.getElementById('joystick-down');
+    const joystickLeft = document.getElementById('joystick-left');
+    const joystickRight = document.getElementById('joystick-right');
+    const joystickCenter = document.getElementById('joystick-center');
+    const joystickZoomIn = document.getElementById('joystick-zoom-in');
+    const joystickZoomOut = document.getElementById('joystick-zoom-out');
+    
+    if (!joystickUp || !joystickDown || !joystickLeft || !joystickRight || !joystickCenter || !joystickZoomIn || !joystickZoomOut) {
+        console.error('Could not find joystick elements');
+        return;
+    }
+    
+    // Constants for pan and zoom operations
+    const PAN_STEP = 100; // Pixels to pan
+    const ZOOM_STEP = 1; // Zoom level step
+    
+    // Pan the map in a specific direction
+    function panMap(direction) {
+        if (!map) return;
+        
+        // Get current center point in pixels
+        const centerPoint = map.latLngToContainerPoint(map.getCenter());
+        let newPoint;
+        
+        // Calculate new center point based on direction
+        switch(direction) {
+            case 'up':
+                newPoint = L.point(centerPoint.x, centerPoint.y - PAN_STEP);
+                break;
+            case 'down':
+                newPoint = L.point(centerPoint.x, centerPoint.y + PAN_STEP);
+                break;
+            case 'left':
+                newPoint = L.point(centerPoint.x - PAN_STEP, centerPoint.y);
+                break;
+            case 'right':
+                newPoint = L.point(centerPoint.x + PAN_STEP, centerPoint.y);
+                break;
+            default:
+                return;
+        }
+        
+        // Convert back to lat/lng and pan map
+        const newCenter = map.containerPointToLatLng(newPoint);
+        map.panTo(newCenter, {
+            animate: true,
+            duration: 0.25
+        });
+    }
+    
+    // Reset view to default position
+    function resetMapView() {
+        console.log('Resetting map view');
+        
+        // Close any open popups or sheets
+        if (window.bottomSheetActive) {
+            closeBottomSheet();
+        }
+        
+        map.closePopup();
+        
+        // Reset the view with animation
+        map.setView(DEFAULT_VIEW, DEFAULT_ZOOM, {
+            animate: true,
+            duration: 0.5
+        });
+    }
+    
+    // Zoom map in or out
+    function zoomMap(direction) {
+        if (!map) return;
+        
+        const currentZoom = map.getZoom();
+        let newZoom;
+        
+        if (direction === 'in') {
+            newZoom = Math.min(map.getMaxZoom(), currentZoom + ZOOM_STEP);
+        } else {
+            newZoom = Math.max(map.getMinZoom(), currentZoom - ZOOM_STEP);
+        }
+        
+        map.setZoom(newZoom, {
+            animate: true
+        });
+    }
+    
+    // Add touch event listeners to joystick buttons
+    // We're using touchstart/touchend for better responsiveness on mobile
+    
+    // Direction buttons
+    joystickUp.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Prevent default touch behavior
+        panMap('up');
+    });
+    
+    joystickDown.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        panMap('down');
+    });
+    
+    joystickLeft.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        panMap('left');
+    });
+    
+    joystickRight.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        panMap('right');
+    });
+    
+    // Center reset button
+    joystickCenter.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        resetMapView();
+    });
+    
+    // Zoom buttons
+    joystickZoomIn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        zoomMap('in');
+    });
+    
+    joystickZoomOut.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        zoomMap('out');
+    });
+    
+    // Also add regular click events for testing on non-touch devices
+    joystickUp.addEventListener('click', () => panMap('up'));
+    joystickDown.addEventListener('click', () => panMap('down'));
+    joystickLeft.addEventListener('click', () => panMap('left'));
+    joystickRight.addEventListener('click', () => panMap('right'));
+    joystickCenter.addEventListener('click', resetMapView);
+    joystickZoomIn.addEventListener('click', () => zoomMap('in'));
+    joystickZoomOut.addEventListener('click', () => zoomMap('out'));
+    
+    console.log('Joystick controls initialized');
+}
+
+// Only initialize map if on map page
     if (document.getElementById('map')) {
         initializeMap();
         
@@ -393,8 +538,19 @@ function initializeMap() {
         map = null;
     }
     
+    // Create a new map instance with modified config for touch devices
+    const mapInitConfig = {...MAP_CONFIG};
+    
+    // Disable drag and touch zoom on touch devices to prevent conflicts
+    if (isTouchDevice()) {
+        mapInitConfig.dragging = false;
+        mapInitConfig.touchZoom = false;
+        mapInitConfig.tap = false; // Disable tap handler
+        mapInitConfig.inertia = false; // Disable inertia
+    }
+    
     // Create a new map instance
-    map = L.map('map', MAP_CONFIG).setView(
+    map = L.map('map', mapInitConfig).setView(
         mapState.center || DEFAULT_VIEW, 
         mapState.zoom || DEFAULT_ZOOM
     );
@@ -425,6 +581,11 @@ function initializeMap() {
     
     // Add the cluster group to the map
     map.addLayer(window.markerClusterGroup);
+    
+    // Initialize joystick controls for touch devices
+    if (isTouchDevice()) {
+        initializeJoystickControls();
+    }
     
     // State variables (keep these outside the function so they persist)
     window.activeMarker = window.activeMarker || null;
