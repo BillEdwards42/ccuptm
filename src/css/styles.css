@@ -170,33 +170,14 @@ body {
 }
 
 /* True Joystick Control for Touch Devices */
-.map-touch-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 400;
-    background-color: transparent;
-    display: none;
-    pointer-events: all;
-    touch-action: none;
-}
-
-@media (pointer: coarse) {
-    .map-touch-overlay {
-        display: block;
-    }
-}
-
 .map-true-joystick {
     position: fixed;
     bottom: 100px;
-    left: 60px;
-    z-index: 500;
+    left: 20px;
+    z-index: 1000;
     display: none;
     touch-action: none;
-    pointer-events: all;
+    pointer-events: auto;
     user-select: none;
 }
 
@@ -207,8 +188,8 @@ body {
 }
 
 .joystick-base {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     background-color: rgba(255, 127, 80, 0.3);
     border: 3px solid rgba(255, 127, 80, 0.5);
     border-radius: 50%;
@@ -217,13 +198,13 @@ body {
     justify-content: center;
     align-items: center;
     touch-action: none;
-    pointer-events: all;
+    pointer-events: auto;
     user-select: none;
 }
 
 .joystick-stick {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background-color: #FF7F50;
     border-radius: 50%;
     position: absolute;
@@ -259,6 +240,7 @@ body {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     margin-bottom: 10px;
+    pointer-events: auto;
 }
 
 .joystick-button:active {
@@ -266,20 +248,51 @@ body {
     background-color: #FF6347;
 }
 
-.joystick-zoom-container {
+/* Map control buttons moved to bottom right */
+.map-control-buttons {
     position: fixed;
     bottom: 20px;
-    left: 20px;
+    right: 20px;
     display: none;
     flex-direction: column;
-    z-index: 500;
+    z-index: 1000;
     gap: 10px;
+    pointer-events: auto;
 }
 
 @media (pointer: coarse) {
-    .joystick-zoom-container {
+    .map-control-buttons {
         display: flex;
     }
+}
+
+/* Fix marker cluster appearance */
+.marker-cluster {
+    background-color: rgba(255, 127, 80, 0.6);
+    border-radius: 50%;
+    width: 40px !important;
+    height: 40px !important;
+    text-align: center;
+    line-height: 37px;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    border: 2px solid rgba(255, 127, 80, 0.8);
+    pointer-events: auto !important;
+    touch-action: auto !important;
+    z-index: 900 !important;
+}
+
+.marker-cluster div {
+    background-color: rgba(255, 127, 80, 0.8);
+    border-radius: 50%;
+    width: 30px !important;
+    height: 30px !important;
+    margin: 5px auto;
+    text-align: center;
+    line-height: 30px;
+    pointer-events: auto !important;
+    touch-action: auto !important;
 }
 
 /* Marker styles */
@@ -300,27 +313,61 @@ body {
 /* Fix for touch events on markers */
 .leaflet-marker-icon {
     touch-action: auto !important;
-    z-index: 500 !important; /* Ensure markers are above touch overlay */
-    pointer-events: auto !important; /* Make markers always clickable */
+    z-index: 900 !important; 
+    pointer-events: auto !important; 
 }
 
-/* Improve touch handling for clusters */
-.marker-cluster {
-    touch-action: auto !important;
+/* Custom marker styling */
+.marker-icon {
+    width: 30px;
+    height: 30px;
+    background-color: #FF7F50;
+    color: white;
+    border-radius: 50%;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
     pointer-events: auto !important;
-    z-index: 500 !important; /* Ensure clusters are above touch overlay */
+    touch-action: auto !important;
+    z-index: 900 !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-/* Make sure marker popup is above overlay */
+/* Make sure marker popup is above everything */
 .leaflet-popup {
-    z-index: 600 !important;
+    z-index: 1100 !important;
 }
 
-/* Ensure marker containers are clickable */
-.custom-marker, .marker-icon {
+/* Fix for marker containers */
+.custom-marker {
     pointer-events: auto !important;
     touch-action: auto !important;
-    z-index: 500 !important;
+    z-index: 900 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Fix for leaflet container */
+.leaflet-container {
+    z-index: 1 !important; /* Lower z-index for the base map */
+}
+
+/* Ensure panes have correct z-index */
+.leaflet-map-pane {
+    z-index: 200 !important;
+}
+
+.leaflet-marker-pane {
+    z-index: 900 !important;
+}
+
+.leaflet-popup-pane {
+    z-index: 1100 !important;
+}
+
+.leaflet-overlay-pane {
+    z-index: 400 !important;
 }
 
 /* Fix for Android touch handling */
