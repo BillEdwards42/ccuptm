@@ -318,280 +318,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialize joystick controls for touch devices
-function initializeJoystickControls() {
-    console.log('Initializing true joystick controls for touch devices');
+    // Helper function to force refresh touch handling on markers
+function refreshMapTouchHandling() {
+    if (!map) return;
     
-    // Make sure the UI wrapper is above everything
-    const uiWrapper = document.getElementById('map-ui-controls-wrapper');
-    if (uiWrapper) {
-        uiWrapper.style.zIndex = '1500';
-    }
+    console.log('Refreshing map touch handling');
     
-    // Update container references since we changed ID and class names
-    const mapControlButtons = document.getElementById('map-control-buttons');
-    if (mapControlButtons) {
-        // Ensure the buttons container is visible and interactive 
-        mapControlButtons.style.display = 'flex';
-        mapControlButtons.style.zIndex = '1500';
-        mapControlButtons.style.pointerEvents = 'auto';
-    }
+    // Force a reflow and refresh of the map
+    map.invalidateSize({reset: true, pan: false});
     
-    // Make sure joystick is visible and interactive
-    const joystickContainer = document.getElementById('map-joystick-container');
-    if (joystickContainer) {
-        joystickContainer.style.display = 'block';
-        joystickContainer.style.zIndex = '1500';
-        joystickContainer.style.pointerEvents = 'auto';
-    }
-    
-    // Get joystick elements
-    const joystickBase = document.getElementById('joystick-base');
-    const joystickStick = document.getElementById('joystick-stick');
-    const joystickZoomIn = document.getElementById('joystick-zoom-in');
-    const joystickZoomOut = document.getElementById('joystick-zoom-out');
-    const joystickReset = document.getElementById('joystick-reset');
-    
-    if (!joystickBase || !joystickStick || !joystickZoomIn || !joystickZoomOut || !joystickReset) {
-        console.error('Could not find joystick elements');
-        return;
-    }
-    
-    // Force these elements to have maximum z-index and be interactive
-    [joystickBase, joystickStick, joystickZoomIn, joystickZoomOut, joystickReset].forEach(el => {
-        if (el) {
-            el.style.zIndex = '1000';
-            el.style.pointerEvents = 'auto';
-            el.style.touchAction = 'auto';
-        }
-    });
-    
-    // Constants for joystick operations
-    const ZOOM_STEP = 1; // Zoom level step
-    const MAX_JOYSTICK_DISTANCE = 40; // Maximum distance the stick can move from center
-    const PAN_THRESHOLD = 0.25; // Minimum joystick movement to trigger panning (0-1)
-    const PAN_SPEED_FACTOR = 5; // How fast the map pans based on joystick distance
-    
-    // State variables for joystick
-    let joystickActive = false;
-    let joystickInterval = null;
-    let joystickStartPosition = { x: 0, y: 0 };
-    let joystickCurrentPosition = { x: 0, y: 0 };
-    
-    // Reset view to default position
-    function resetMapView() {
-        console.log('Resetting map view');
-        
-        // Close any open popups or sheets
-        if (window.bottomSheetActive) {
-            closeBottomSheet();
-        }
-        
-        map.closePopup();
-        
-        // Reset the view with animation
-        map.setView(DEFAULT_VIEW, DEFAULT_ZOOM, {
-            animate: true,
-            duration: 0.5
-        });
-        
-        // Ensure map remains non-draggable on touch devices
-        if (isTouchDevice()) {
-            setTimeout(() => {
-                // Re-disable all map handlers to ensure they stay disabled
-                map.dragging.disable();
-                map.touchZoom.disable();
-                map.doubleClickZoom.disable();
-                map.scrollWheelZoom.disable();
-                map.boxZoom.disable();
-                map.keyboard.disable();
-            }, 600); // After animation completes
+    // Force a rebinding of markers
+    if (window.markerClusterGroup) {
+        try {
+            window.markerClusterGroup.refreshClusters();
+        } catch (e) {
+            console.error('Error refreshing clusters:', e);
         }
     }
     
-    // Zoom map in or out
-    function zoomMap(direction) {
-        if (!map) return;
-        
-        const currentZoom = map.getZoom();
-        let newZoom;
-        
-        if (direction === 'in') {
-            newZoom = Math.min(map.getMaxZoom(), currentZoom + ZOOM_STEP);
-        } else {
-            newZoom = Math.max(map.getMinZoom(), currentZoom - ZOOM_STEP);
-        }
-        
-        map.setZoom(newZoom, {
-            animate: true
-        });
-    }
-    
-    // Pan the map based on joystick position
-    function panMapWithJoystick() {
-        if (!map || !joystickActive) return;
-        
-        // Calculate joystick offset from center (normalized -1 to 1)
-        const offsetX = joystickCurrentPosition.x - joystickStartPosition.x;
-        const offsetY = joystickCurrentPosition.y - joystickStartPosition.y;
-        
-        // Normalize to range -1 to 1
-        const normalizedX = Math.max(-1, Math.min(1, offsetX / MAX_JOYSTICK_DISTANCE));
-        const normalizedY = Math.max(-1, Math.min(1, offsetY / MAX_JOYSTICK_DISTANCE));
-        
-        // Only pan if joystick is moved beyond the threshold
-        if (Math.abs(normalizedX) > PAN_THRESHOLD || Math.abs(normalizedY) > PAN_THRESHOLD) {
-            // Get current center point in pixels
-            const centerPoint = map.latLngToContainerPoint(map.getCenter());
-            
-            // Calculate new center point based on joystick position
-            // Invert Y since positive Y is down in screen coordinates but up in map coordinates
-            const panX = normalizedX * PAN_SPEED_FACTOR;
-            const panY = -normalizedY * PAN_SPEED_FACTOR;
-            
-            const newPoint = L.point(
-                centerPoint.x + panX,
-                centerPoint.y + panY
-            );
-            
-            // Convert back to lat/lng and pan map
-            const newCenter = map.containerPointToLatLng(newPoint);
-            map.panTo(newCenter, {
-                animate: false // No animation for smoother joystick control
-            });
-        }
-    }
-    
-    // Set up joystick touch events with focus on preventing propagation
-    joystickBase.addEventListener('touchstart', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        
-        // Record starting position
-        const touch = e.touches[0];
-        const rect = joystickBase.getBoundingClientRect();
-        joystickStartPosition = {
-            x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2
-        };
-        joystickCurrentPosition = {
-            x: touch.clientX,
-            y: touch.clientY
-        };
-        
-        // Calculate initial offset
-        const offsetX = joystickCurrentPosition.x - joystickStartPosition.x;
-        const offsetY = joystickCurrentPosition.y - joystickStartPosition.y;
-        
-        // Limit movement to MAX_JOYSTICK_DISTANCE
-        const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
-        const limitedDistance = Math.min(distance, MAX_JOYSTICK_DISTANCE);
-        
-        // If distance is not 0, calculate the limited position
-        if (distance > 0) {
-            const ratio = limitedDistance / distance;
-            const limitedX = offsetX * ratio;
-            const limitedY = offsetY * ratio;
-            
-            // Position the joystick stick
-            joystickStick.style.transform = `translate(calc(-50% + ${limitedX}px), calc(-50% + ${limitedY}px))`;
-        }
-        
-        // Activate joystick and start panning interval
-        joystickActive = true;
-        if (joystickInterval) clearInterval(joystickInterval);
-        joystickInterval = setInterval(panMapWithJoystick, 16); // ~60fps
-    }, { passive: false });
-    
-    joystickBase.addEventListener('touchmove', (e) => {
-        if (!joystickActive) return;
-        
-        // Stop propagation and prevent default to ensure no map interaction
-        e.stopPropagation();
-        e.preventDefault();
-        
-        // Update current position
-        const touch = e.touches[0];
-        joystickCurrentPosition = {
-            x: touch.clientX,
-            y: touch.clientY
-        };
-        
-        // Calculate offset from start position
-        const offsetX = joystickCurrentPosition.x - joystickStartPosition.x;
-        const offsetY = joystickCurrentPosition.y - joystickStartPosition.y;
-        
-        // Limit movement to MAX_JOYSTICK_DISTANCE
-        const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
-        const limitedDistance = Math.min(distance, MAX_JOYSTICK_DISTANCE);
-        
-        // If distance is not 0, calculate the limited position
-        if (distance > 0) {
-            const ratio = limitedDistance / distance;
-            const limitedX = offsetX * ratio;
-            const limitedY = offsetY * ratio;
-            
-            // Position the joystick stick
-            joystickStick.style.transform = `translate(calc(-50% + ${limitedX}px), calc(-50% + ${limitedY}px))`;
-        }
-    }, { passive: false });
-    
-    // Handle joystick release
-    const endJoystick = () => {
-        joystickActive = false;
-        if (joystickInterval) {
-            clearInterval(joystickInterval);
-            joystickInterval = null;
-        }
-        
-        // Reset joystick position with animation
-        joystickStick.style.transition = 'transform 0.2s ease-out';
-        joystickStick.style.transform = 'translate(-50%, -50%)';
-        
-        // Reset transition after animation completes
-        setTimeout(() => {
-            joystickStick.style.transition = '';
-        }, 200);
-    };
-    
-    joystickBase.addEventListener('touchend', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        endJoystick();
-    }, {passive: false});
-    
-    joystickBase.addEventListener('touchcancel', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        endJoystick();
-    }, {passive: false});
-    
-    // Zoom buttons with explicit event handling
-    joystickZoomIn.addEventListener('touchstart', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        zoomMap('in');
-    }, {passive: false});
-    
-    joystickZoomOut.addEventListener('touchstart', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        zoomMap('out');
-    }, {passive: false});
-    
-    // Reset button
-    joystickReset.addEventListener('touchstart', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        resetMapView();
-    }, {passive: false});
-    
-    // Also add regular click events for testing on non-touch devices
-    joystickZoomIn.addEventListener('click', () => zoomMap('in'));
-    joystickZoomOut.addEventListener('click', () => zoomMap('out'));
-    joystickReset.addEventListener('click', resetMapView);
-    
-    console.log('True joystick controls initialized');
+    // Force a tiny move to reset Leaflet's internal touch state
+    const center = map.getCenter();
+    map.panBy([1, 1], {animate: false});
+    setTimeout(() => {
+        map.panBy([-1, -1], {animate: false});
+    }, 10);
 }
 
 // Only initialize map if on map page
@@ -669,21 +419,19 @@ function initializeMap() {
         map = null;
     }
     
-    // Create a new map instance with stripped-down config for touch devices
+    // Create a new map instance with optimized config for touch devices
     const mapInitConfig = {...MAP_CONFIG};
     
-    // Disable ALL map interactions for touch devices
+    // Enhance touch device configuration
     if (isTouchDevice()) {
-        // First disable everything in the config
-        mapInitConfig.dragging = false;
-        mapInitConfig.touchZoom = false;
-        mapInitConfig.doubleClickZoom = false;
-        mapInitConfig.scrollWheelZoom = false;
-        mapInitConfig.boxZoom = false;
-        mapInitConfig.keyboard = false;
-        // We'll need to handle taps manually for better control
-        mapInitConfig.tap = false;
-        mapInitConfig.zoomControl = false;
+        // Enable tap with higher tolerance for better marker clicking
+        mapInitConfig.tap = true;
+        mapInitConfig.tapTolerance = 30;
+        
+        // Enable all touch interactions
+        mapInitConfig.dragging = true;
+        mapInitConfig.touchZoom = true;
+        mapInitConfig.doubleClickZoom = true;
     }
     
     // Create a new map instance
@@ -719,46 +467,26 @@ function initializeMap() {
     // Add the cluster group to the map
     map.addLayer(window.markerClusterGroup);
     
-    // Initialize joystick controls for touch devices
+    // For touch devices, we'll apply specific optimizations
     if (isTouchDevice()) {
-        // FORCEFULLY disable ALL map handlers after initialization
-        map.dragging.disable();
-        map.touchZoom.disable();
-        map.doubleClickZoom.disable();
-        map.scrollWheelZoom.disable();
-        map.boxZoom.disable();
-        map.keyboard.disable();
+        // Ensure Leaflet's tap handling is properly configured
+        map.options.tap = true;
+        map.options.tapTolerance = 30; // More tolerant tap detection
         
-        // Create a transparent div that covers the entire map to intercept ALL touch events
-        const mapOverlay = document.createElement('div');
-        mapOverlay.style.position = 'absolute';
-        mapOverlay.style.top = '0';
-        mapOverlay.style.left = '0';
-        mapOverlay.style.width = '100%';
-        mapOverlay.style.height = '100%';
-        mapOverlay.style.zIndex = '800'; // Between map (100) and markers (900)
-        mapOverlay.style.backgroundColor = 'transparent';
-        mapOverlay.id = 'map-event-overlay';
-        document.getElementById('map').appendChild(mapOverlay);
+        // Make sure all touch handlers are enabled
+        map.dragging.enable();
+        map.touchZoom.enable();
+        map.doubleClickZoom.enable();
         
-        // Intercept ALL touch events on map to prevent scrolling
-        mapOverlay.addEventListener('touchstart', function(e) {
-            e.stopPropagation();
-        }, {capture: true, passive: false});
-        
-        mapOverlay.addEventListener('touchmove', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-        }, {capture: true, passive: false});
-        
-        mapOverlay.addEventListener('touchend', function(e) {
-            e.stopPropagation();
-        }, {capture: true, passive: false});
-        
-        // Wait for DOM to be fully ready before initializing the joystick
-        setTimeout(() => {
-            initializeJoystickControls();
-        }, 500);
+        // Add a special touch handler to the map container for debugging
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+            mapContainer.addEventListener('touchend', function(e) {
+                // When the user touches the map, refresh handling
+                // This helps unstick any frozen touch state
+                setTimeout(refreshMapTouchHandling, 50);
+            }, {passive: true});
+        }
     }
     
     // State variables (keep these outside the function so they persist)
@@ -1295,31 +1023,13 @@ function initializeMap() {
                 });
             }
             
-            // Completely revamped click event listener for markers with better touch handling
+            // Improved click event listener with focus on reliable touch handling
             marker.on('click', (e) => {
-                // Aggressively prevent event propagation to avoid map interactions
-                if (e && e.originalEvent) {
-                    e.originalEvent.stopPropagation();
-                    e.originalEvent.preventDefault();
-                }
-                
+                // Don't aggressively block propagation - allows scrolling to work
                 console.log('Marker clicked', marker.establishment.name);
                 
-                // Immediately close any open popups first
+                // Immediately close any open popups
                 map.closePopup();
-                
-                // If another marker was active, deactivate it
-                if (activeMarker && activeMarker !== marker) {
-                    // Reset any visual states
-                    const oldMarkerElement = activeMarker.getElement();
-                    if (oldMarkerElement) {
-                        const oldIconElement = oldMarkerElement.querySelector('.marker-icon');
-                        if (oldIconElement) {
-                            oldIconElement.style.transform = '';
-                            oldIconElement.style.backgroundColor = '';
-                        }
-                    }
-                }
                 
                 // For touch devices, provide visual feedback
                 const markerElement = marker.getElement();
@@ -1338,7 +1048,7 @@ function initializeMap() {
                     }
                 }
                 
-                // Small delay to ensure any previous popups are fully closed
+                // Use a small delay to ensure any previous popups are closed
                 setTimeout(() => {
                     // Determine which popup method to use based on device
                     if (window.innerWidth <= 768) {
@@ -1587,8 +1297,8 @@ function initializeMap() {
             bottomSheet.style.visibility = 'hidden';
             bottomSheet.style.pointerEvents = 'none';
             
-            // DO NOT re-enable map interactions for touch devices!
-            // We want the map to remain non-interactive
+            // CRITICAL: Force a touch refresh to make establishments clickable again
+            refreshMapTouchHandling();
         }, 300);
         
         // Clear state variables

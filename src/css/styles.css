@@ -169,111 +169,43 @@ body {
     }
 }
 
-/* UI Controls Wrapper to ensure proper event handling */
-.map-ui-controls-wrapper {
-    pointer-events: none; /* Let events pass through to map by default */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1500; /* Above everything */
-}
-
-/* True Joystick Control for Touch Devices */
-.map-true-joystick {
-    position: fixed;
-    bottom: 100px;
-    left: 20px;
-    z-index: 1500;
-    display: none;
-    touch-action: none;
-    pointer-events: auto !important; /* Override wrapper */
-    user-select: none;
-}
-
-@media (pointer: coarse) {
-    .map-true-joystick {
-        display: block;
-    }
-}
-
-.joystick-base {
-    width: 100px;
-    height: 100px;
-    background-color: rgba(255, 127, 80, 0.3);
-    border: 3px solid rgba(255, 127, 80, 0.5);
-    border-radius: 50%;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    touch-action: none;
-    pointer-events: auto !important;
-    user-select: none;
-}
-
-.joystick-stick {
-    width: 50px;
-    height: 50px;
-    background-color: #FF7F50;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    color: white;
-    font-size: 20px;
-    touch-action: none;
-    pointer-events: none;
-    user-select: none;
-    will-change: transform;
-    transition: transform 0.1s ease-out;
-}
-
-.joystick-button {
-    width: 50px;
-    height: 50px;
-    background-color: #FF7F50;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 20px;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    margin-bottom: 10px;
-    pointer-events: auto !important;
-}
-
-.joystick-button:active {
-    transform: scale(0.9);
-    background-color: #FF6347;
-}
-
-/* Map control buttons moved to bottom right */
-.map-control-buttons {
+/* Reset view button (non-mobile) */
+.reset-view-btn {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    display: none;
-    flex-direction: column;
-    z-index: 1500;
-    gap: 10px;
-    pointer-events: auto !important;
+    width: 67px;
+    height: 67px;
+    background-color: #FF7F50;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
 }
 
+.reset-view-btn i {
+    font-size: 33px; /* Sets the icon size to 20px, regardless of the button's font-size */
+}
+
+.reset-view-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.reset-view-btn:active {
+    transform: scale(0.95);
+}
+
+/* Only show reset button on non-touch devices */
 @media (pointer: coarse) {
-    .map-control-buttons {
-        display: flex;
+    .reset-view-btn {
+        display: none;
     }
 }
 
@@ -324,7 +256,7 @@ body {
 /* Fix for touch events on markers */
 .leaflet-marker-icon {
     touch-action: auto !important;
-    z-index: 1200 !important; /* Above overlay but below UI controls */
+    z-index: 900 !important;
     pointer-events: auto !important; 
 }
 
@@ -346,7 +278,7 @@ body {
 
 /* Make sure marker popup is above everything */
 .leaflet-popup {
-    z-index: 1400 !important; /* Just below UI controls */
+    z-index: 1000 !important;
 }
 
 /* Fix for marker containers */
