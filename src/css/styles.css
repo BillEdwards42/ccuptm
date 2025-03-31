@@ -169,15 +169,26 @@ body {
     }
 }
 
+/* UI Controls Wrapper to ensure proper event handling */
+.map-ui-controls-wrapper {
+    pointer-events: none; /* Let events pass through to map by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1500; /* Above everything */
+}
+
 /* True Joystick Control for Touch Devices */
 .map-true-joystick {
     position: fixed;
     bottom: 100px;
     left: 20px;
-    z-index: 1000;
+    z-index: 1500;
     display: none;
     touch-action: none;
-    pointer-events: auto;
+    pointer-events: auto !important; /* Override wrapper */
     user-select: none;
 }
 
@@ -198,7 +209,7 @@ body {
     justify-content: center;
     align-items: center;
     touch-action: none;
-    pointer-events: auto;
+    pointer-events: auto !important;
     user-select: none;
 }
 
@@ -218,7 +229,7 @@ body {
     color: white;
     font-size: 20px;
     touch-action: none;
-    pointer-events: none; /* Let events pass through to the base */
+    pointer-events: none;
     user-select: none;
     will-change: transform;
     transition: transform 0.1s ease-out;
@@ -240,7 +251,7 @@ body {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     margin-bottom: 10px;
-    pointer-events: auto;
+    pointer-events: auto !important;
 }
 
 .joystick-button:active {
@@ -255,9 +266,9 @@ body {
     right: 20px;
     display: none;
     flex-direction: column;
-    z-index: 1000;
+    z-index: 1500;
     gap: 10px;
-    pointer-events: auto;
+    pointer-events: auto !important;
 }
 
 @media (pointer: coarse) {
@@ -313,7 +324,7 @@ body {
 /* Fix for touch events on markers */
 .leaflet-marker-icon {
     touch-action: auto !important;
-    z-index: 900 !important; 
+    z-index: 1200 !important; /* Above overlay but below UI controls */
     pointer-events: auto !important; 
 }
 
@@ -335,7 +346,7 @@ body {
 
 /* Make sure marker popup is above everything */
 .leaflet-popup {
-    z-index: 1100 !important;
+    z-index: 1400 !important; /* Just below UI controls */
 }
 
 /* Fix for marker containers */
