@@ -1283,6 +1283,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     try {
                         // Use Leaflet's built-in method to ensure animations and bounds
                         window.map.zoomIn(1, {animate: true});
+                        // Simulate one mouse wheel scroll for non-touch devices
+                        if (!('ontouchstart' in window)) {
+                            const zoomEvent = new WheelEvent('wheel', {
+                                bubbles: true,
+                                cancelable: true,
+                                deltaY: -100 // Negative deltaY means zoom in
+                            });
+                            window.map.getContainer().dispatchEvent(zoomEvent);
+                        }
                         console.log('Zoomed in to level:', window.map.getZoom());
                     } catch (err) {
                         console.error('Zoom in error:', err);
@@ -1306,6 +1315,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     try {
                         // Use Leaflet's built-in method to ensure animations and bounds
                         window.map.zoomOut(1, {animate: true});
+                        // Simulate one mouse wheel scroll for non-touch devices
+                        if (!('ontouchstart' in window)) {
+                            const zoomEvent = new WheelEvent('wheel', {
+                                bubbles: true,
+                                cancelable: true,
+                                deltaY: 100 // Positive deltaY means zoom out
+                            });
+                            window.map.getContainer().dispatchEvent(zoomEvent);
+                        }
                         console.log('Zoomed out to level:', window.map.getZoom());
                     } catch (err) {
                         console.error('Zoom out error:', err);
@@ -3229,7 +3247,7 @@ function initializeMap() {
         
         // Add tooltip to show exact rating number on hover
         ratingElement.title = `評分: ${rating.toFixed(1)}/5.0`;
-        ratingElement.style.cursor = 'help';
+        ratingElement.style.cursor = 'default';
         
         valueContainer.appendChild(ratingElement);
         
