@@ -27,7 +27,63 @@ function hideAllHoverLabels() {
 }
 
 // Radical function to completely reset touch handling by reinitializing the map
+// With optimization to prevent excessive resets
 function resetTouchSystem(callback) {
+    // Prevent multiple resets within a short time window
+    const currentTime = Date.now();
+    if (window._lastResetTime && (currentTime - window._lastResetTime < 2000)) {
+        console.log('Skipping reset - too soon after previous reset');
+        
+        // Still execute callback if provided
+        if (typeof callback === 'function') {
+            setTimeout(callback, 100);
+        }
+        return;
+    }
+    
+    // Set time of this reset
+    window._lastResetTime = currentTime;
+    
+    // Also check if user has manually scrolled recently (which fixes the issue naturally)
+    if (window._lastMapScrollTime && (currentTime - window._lastMapScrollTime < 1000)) {
+        console.log('Skipping reset - user recently scrolled the map');
+        
+        // Just do a light reset instead of full reinitialization
+        if (map) {
+            try {
+                // Quick cleanup of any visual states
+                const markerElements = document.querySelectorAll('.leaflet-marker-icon');
+                markerElements.forEach(marker => {
+                    marker.style.transform = '';
+                    marker.style.zIndex = '';
+                    marker.style.pointerEvents = 'auto';
+                    
+                    const customMarker = marker.querySelector('.marker-icon');
+                    if (customMarker) {
+                        customMarker.style.transform = '';
+                        customMarker.style.backgroundColor = '';
+                    }
+                });
+                
+                // Basic handler reset
+                if (map.dragging) map.dragging.enable();
+                if (map.touchZoom) map.touchZoom.enable();
+                if (map.doubleClickZoom) map.doubleClickZoom.enable();
+                
+                // Quick map refresh
+                map.invalidateSize({reset: true, pan: false});
+            } catch (e) {
+                console.warn('Error during light reset:', e);
+            }
+        }
+        
+        // Execute callback if provided
+        if (typeof callback === 'function') {
+            setTimeout(callback, 100);
+        }
+        return;
+    }
+    
     console.log('Radical touch system reset initiated');
     
     // Hide any visible hover labels
@@ -74,15 +130,6 @@ function resetTouchSystem(callback) {
                         map.dragging._draggable._newPos = null;
                         map.dragging._draggable._startTime = 0;
                         map.dragging._draggable._lastPos = null;
-                        
-                        // If _onMove exists, try to reset it
-                        if (map.dragging._draggable._onMove) {
-                            const originalOnMove = map.dragging._draggable._onMove;
-                            map.dragging._draggable._onMove = null;
-                            setTimeout(() => {
-                                map.dragging._draggable._onMove = originalOnMove;
-                            }, 10);
-                        }
                     }
                     
                     // Reset touch zoom handler
@@ -225,7 +272,20 @@ function resetTouchSystem(callback) {
                         // 9. Setup event listeners
                         setupEventListeners();
                         
-                        // 10. Execute callback if provided
+                        // 10. Add scroll detection to track when user manually scrolls
+                        // This helps us avoid unnecessary resets
+                        if (map && map.dragging && map.dragging._draggable) {
+                            // Track touchmove events on the map to detect scrolling
+                            const mapElement = document.getElementById('map');
+                            if (mapElement) {
+                                mapElement.addEventListener('touchmove', function() {
+                                    // Update the last scroll timestamp
+                                    window._lastMapScrollTime = Date.now();
+                                }, { passive: true });
+                            }
+                        }
+                        
+                        // Execute callback if provided
                         if (typeof callback === 'function') {
                             callback();
                         }
@@ -464,6 +524,14 @@ function forceCompleteGhostTouches() {
         return;
     }
     
+    // Also protect against too frequent calls
+    const currentTime = Date.now();
+    if (window._lastGhostTouchReset && (currentTime - window._lastGhostTouchReset < 1000)) {
+        console.log('Skipping ghost touch reset - too soon after previous reset');
+        return;
+    }
+    
+    window._lastGhostTouchReset = currentTime;
     window._forceCompleteGhostTouchesActive = true;
     
     // Method 1: Create and dispatch more realistic synthetic touch events
@@ -801,7 +869,7 @@ function forceCompleteGhostTouches() {
         // Add handler for mobile browsers to reset map if touch issues are detected
         if ('ontouchstart' in window || navigator.maxTouchPoints) {
             // Make the reset view button also reset the map instance if needed
-            const resetViewBtn = document.getElementById('reset-view');
+            const resetViewBtn = document.getElementById('reset-view-btn');
             if (resetViewBtn) {
                 const originalClickHandler = resetViewBtn.onclick;
                 resetViewBtn.onclick = function(e) {
@@ -820,6 +888,14 @@ function forceCompleteGhostTouches() {
                         loadEstablishmentsData();
                     }, 100);
                 };
+            }
+            
+            // Track when user manually scrolls to avoid unnecessary resets
+            const mapContainer = document.getElementById('map');
+            if (mapContainer) {
+                mapContainer.addEventListener('touchmove', function() {
+                    window._lastMapScrollTime = Date.now();
+                }, { passive: true });
             }
         }
     }
