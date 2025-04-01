@@ -410,6 +410,48 @@ html, body {
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
     width: 300px; /* Back to original width */
     max-width: 95vw;
+    z-index: 1000;
+    pointer-events: auto !important;
+}
+
+/* Popup tabs */
+.popup-tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    z-index: 1001;
+    position: relative;
+}
+
+.popup-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f8f8;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    will-change: background-color, color;
+    position: relative;
+    z-index: 1002;
+    user-select: none;
+}
+
+.popup-tab.active {
+    background-color: #FF7F50;
+    color: white;
+}
+
+.popup-tab:hover:not(.active) {
+    background-color: #f0f0f0;
+}
+
+/* Visual feedback for tab touches */
+.popup-tab:active {
+    transform: scale(0.98);
+    background-color: #FF6347; /* Slightly darker orange */
 }
 
 .leaflet-popup-tip {
