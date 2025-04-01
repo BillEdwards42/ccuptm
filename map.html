@@ -35,7 +35,6 @@
             <h1>CCU - 打工地圖</h1>
         </div>
         <div class="navbar-links">
-            <a href="#" id="map-nav-btn"><i class="fas fa-map-marked-alt"></i> <span>地圖</span></a>
             <a href="#" id="info-guide-btn"><i class="fas fa-question-circle"></i> <span>資訊導引</span></a>
         </div>
     </nav>
@@ -43,8 +42,24 @@
     <!-- Map container -->
     <div id="map"></div>
     
+    <!-- Map Control Buttons -->
+    <!-- Zoom In Button -->
+    <div id="zoom-in-btn" class="zoom-btn">
+        <i class="fas fa-plus"></i>
+    </div>
+    
+    <!-- Zoom Out Button -->
+    <div id="zoom-out-btn" class="zoom-btn">
+        <i class="fas fa-minus"></i>
+    </div>
+    
+    <!-- Search Button -->
+    <div id="search-btn" class="search-btn map-control-btn" onclick="if(typeof openSearchModal==='function'){openSearchModal();console.log('Search button clicked (inline)');}else{console.error('openSearchModal not found');}">
+        <i class="fas fa-search"></i>
+    </div>
+    
     <!-- Reset View Button -->
-    <div id="reset-view-btn" class="reset-view-btn">
+    <div id="reset-view-btn" class="reset-view-btn map-control-btn" onclick="if(typeof resetView==='function'){resetView();console.log('Reset button clicked (inline)');}else{console.error('resetView not found');}">
         <i class="fas fa-crosshairs"></i>
     </div>
     
