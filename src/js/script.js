@@ -355,11 +355,42 @@ function forceCompleteGhostTouches() {
             if (map.dragging && map.dragging._draggable) {
                 map.dragging._draggable._onUp = map.dragging._draggable._onUp || function() {};
                 map.dragging._draggable._onUp({ type: 'touchend' });
+                
+                // Force reset dragging state flags
+                if (map.dragging._draggable._moved) {
+                    map.dragging._draggable._moved = false;
+                }
+                if (map.dragging._draggable._enabled) {
+                    map.dragging.enable(); // Re-enable to ensure clean state
+                }
             }
             
             // Reset touch zoom handler if it exists
             if (map.touchZoom && map.touchZoom._onTouchEnd) {
                 map.touchZoom._onTouchEnd();
+                // Force reset any touch zoom state flags
+                map.touchZoom._zooming = false;
+            }
+            
+            // Reset tap handler state if it exists
+            if (map.tap && map.tap._fireClick) {
+                map.tap.enable(); // Force re-enable tap handling
+            }
+            
+            // Try to directly access _handlers if available and reset them
+            if (map._handlers) {
+                for (let i = 0; i < map._handlers.length; i++) {
+                    const handler = map._handlers[i];
+                    if (handler.enabled) {
+                        try {
+                            // Disable and re-enable to reset state
+                            handler.disable();
+                            handler.enable();
+                        } catch (e) {
+                            console.warn('Failed to reset handler state:', e);
+                        }
+                    }
+                }
             }
         } catch (e) {
             console.warn('Failed to reset Leaflet internal handlers:', e);
@@ -373,20 +404,34 @@ function forceCompleteGhostTouches() {
         
         // Refresh all marker clusters
         if (window.markerClusterGroup) {
+            window.markerClusterGroup.clearLayers();
+            window.markerClusterGroup.addLayers(markerClusterGroup.getLayers());
             window.markerClusterGroup.refreshClusters();
         }
         
         // Perform tiny map movements to reset internal state machine
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        
+        // Small movements in different directions to fully reset internal state
         map.panBy([1, 1], {animate: false, duration: 0.01, noMoveStart: true});
         setTimeout(() => {
             map.panBy([-1, -1], {animate: false, duration: 0.01, noMoveStart: true});
             
-            // Slight zoom in/out to fully reset touch zoom state
-            const currentZoom = map.getZoom();
-            if (currentZoom < map.getMaxZoom()) {
-                map.setZoom(currentZoom + 0.0001, {animate: false});
+            // Ensure we're back at the exact original position
+            map.setView(center, zoom, {animate: false, duration: 0.01, noMoveStart: true});
+            
+            // Tiny zoom in/out to reset zoom handlers
+            if (zoom < map.getMaxZoom()) {
+                map.setZoom(zoom + 0.001, {animate: false, duration: 0.01});
                 setTimeout(() => {
-                    map.setZoom(currentZoom, {animate: false});
+                    map.setZoom(zoom, {animate: false, duration: 0.01});
+                    
+                    // Additional timer to ensure all internal timers are cleared
+                    setTimeout(() => {
+                        // Final position reset to make sure we're at the right place
+                        map.setView(center, zoom, {animate: false});
+                    }, 10);
                 }, 10);
             }
         }, 10);
@@ -403,7 +448,48 @@ function forceCompleteGhostTouches() {
         if (map.boxZoom) map.boxZoom.enable();
         if (map.keyboard) map.keyboard.enable();
         if (map.tap) map.tap.enable();
+        
+        // Reset DOM elements that might be in hover/active states
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+            // Clear any pointer events or touch action styles
+            mapContainer.style.pointerEvents = 'auto';
+            mapContainer.style.touchAction = 'manipulation';
+            
+            // Force redraw of marker icons
+            const markers = document.querySelectorAll('.marker-icon');
+            markers.forEach(marker => {
+                marker.style.transform = '';
+                marker.style.backgroundColor = '';
+            });
+        }
     }, 50);
+    
+    // Method 5: Intercept and fix marker elements directly
+    setTimeout(() => {
+        const markerElements = document.querySelectorAll('.leaflet-marker-icon');
+        markerElements.forEach(marker => {
+            // Reset any stuck hover states on markers
+            marker.style.transform = '';
+            marker.style.zIndex = '';
+            
+            // Re-enable pointer events
+            marker.style.pointerEvents = 'auto';
+            
+            // Force redraw by minimal DOM manipulation
+            const originalDisplay = marker.style.display;
+            marker.style.display = 'none';
+            void marker.offsetHeight; // Force reflow
+            marker.style.display = originalDisplay;
+            
+            // Reset any custom markers inside
+            const customMarker = marker.querySelector('.marker-icon');
+            if (customMarker) {
+                customMarker.style.transform = '';
+                customMarker.style.backgroundColor = '';
+            }
+        });
+    }, 100);
 }
 
 // Only initialize map if on map page
@@ -1401,9 +1487,42 @@ function initializeMap() {
             // Second round of ghost touch cleanup after animation
             forceCompleteGhostTouches();
             
+            // Important: Reset all marker elements to normal state
+            const markerElements = document.querySelectorAll('.leaflet-marker-icon');
+            markerElements.forEach(marker => {
+                // Reset any stuck hover states on markers
+                marker.style.transform = '';
+                marker.style.zIndex = '';
+                
+                // Re-enable pointer events
+                marker.style.pointerEvents = 'auto';
+                
+                // Reset any custom markers inside
+                const customMarker = marker.querySelector('.marker-icon');
+                if (customMarker) {
+                    customMarker.style.transform = '';
+                    customMarker.style.backgroundColor = '';
+                }
+            });
+            
             // Ensure map is in good state after all transitions
             setTimeout(() => {
-                forceCompleteGhostTouches();
+                // Re-enable all map handlers
+                if (map) {
+                    if (map.dragging) map.dragging.enable();
+                    if (map.touchZoom) map.touchZoom.enable();
+                    if (map.doubleClickZoom) map.doubleClickZoom.enable();
+                    if (map.scrollWheelZoom) map.scrollWheelZoom.enable();
+                    if (map.boxZoom) map.boxZoom.enable();
+                    if (map.keyboard) map.keyboard.enable();
+                    if (map.tap) map.tap.enable();
+                    
+                    // Final ghost touch cleanup
+                    forceCompleteGhostTouches();
+                    
+                    // Triple-check with a small map refresh
+                    map.invalidateSize({reset: true, pan: false});
+                }
             }, 100);
         }, 300);
         
