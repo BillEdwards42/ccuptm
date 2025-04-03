@@ -2153,8 +2153,8 @@ function initializeMap() {
                     }
                     
                     // Define default rating counts if not available
-                    const envRatingCount = feature.properties.環境評分人數 || 5;
-                    const satRatingCount = feature.properties.滿意度評分人數 || 5;
+                    const envRatingCount = feature.properties.環境評分人數 || 0;
+                    const satRatingCount = feature.properties.滿意度評分人數 || 0;
                     
                     return {
                         name: feature.properties.name,
