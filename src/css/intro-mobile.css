@@ -521,6 +521,30 @@ body.intro-page {
         padding: 20px;
     }
     
+    /* Owner message mobile styling - full width with reduced height */
+    .owner-message-wrapper {
+        height: 60px; /* Even smaller height for mobile */
+        padding: 0 15px;
+    }
+    
+    .owner-message-container {
+        width: 100%; /* Full width */
+    }
+    
+    .owner-message {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .owner-message-container {
+        background-color: #f9f9f9;
+    }
+    
+    .owner-message {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
     /* Comparison rows for mobile */
     .comparison-row {
         margin-bottom: 12px;

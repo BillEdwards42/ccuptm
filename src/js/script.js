@@ -946,19 +946,37 @@ function filterEstablishments(params) {
                 return;
             }
             
-            if (params.filters.holidayPay && est.國定雙倍 !== true) {
+            if (params.filters.holidayPay && est.國定雙倍 !== true && est.國定雙倍 !== "放假") {
                 if (debug) console.log('Failed holiday pay filter');
                 return;
             }
             
-            // Legal compliance filter (all must be green)
+            // Legal compliance filter with improved logic for 勞健保 based on employee count
             if (params.filters.legalCompliance) {
-                // Check if legal standards exist and all three are true
-                if (!est.legalStandards || 
-                    !est.legalStandards.hourlyWage || 
-                    !est.legalStandards.laborInsurance || 
-                    !est.legalStandards.holidayPay) {
-                    if (debug) console.log('Failed legal compliance filter');
+                // Check the hourly wage compliance
+                const meetsWageStandard = est.hourlyWage >= parseInt(window.legalStandard.salary.replace(/[^0-9]/g, ''));
+                
+                // Check the 勞健保 compliance based on 勞工人數
+                let meetsInsuranceStandard = true;
+                if (est.勞工人數 > 5) {
+                    // For establishments with more than 5 employees, 勞健保 must be true
+                    meetsInsuranceStandard = est.勞健保 === true;
+                } else {
+                    // For establishments with 5 or fewer employees, both true and false are acceptable
+                    meetsInsuranceStandard = true;
+                }
+                
+                // Check 國定雙倍 compliance - now string "放假" is also compliant
+                const meetsHolidayStandard = (est.國定雙倍 === true || est.國定雙倍 === "放假");
+                
+                // All conditions must be met
+                if (!meetsWageStandard || !meetsInsuranceStandard || !meetsHolidayStandard) {
+                    if (debug) {
+                        console.log('Failed legal compliance filter:');
+                        console.log('- Wage standard:', meetsWageStandard);
+                        console.log('- Insurance standard:', meetsInsuranceStandard, 'Employee count:', est.勞工人數);
+                        console.log('- Holiday standard:', meetsHolidayStandard);
+                    }
                     return;
                 }
             }
@@ -2126,7 +2144,7 @@ function initializeMap() {
                     window.legalStandard = {
                         year: data.standard.year || '2025',
                         salary: data.standard.salary || 'N/A',
-                        勞健保: data.standard.勞健保 || false,
+                        勞健保: data.standard.勞健保 || "是 5人以上需保",
                         國定雙倍: data.standard.國定雙倍 || false
                     };
                 } else {
@@ -2134,7 +2152,7 @@ function initializeMap() {
                     window.legalStandard = {
                         year: '2025',
                         salary: 'NT$ 180/小時',
-                        勞健保: true,
+                        勞健保: "是 5人以上需保",
                         國定雙倍: true
                     };
                 }
@@ -2171,7 +2189,10 @@ function initializeMap() {
                         滿意度評分: feature.properties.滿意度評分 || feature.properties.managementRating || 0,
                         環境評分人數: envRatingCount,
                         滿意度評分人數: satRatingCount,
-                        certified: feature.properties.certified || false,
+                        勞工人數: feature.properties.勞工人數 || 3, // Default to 3 if not specified
+                        老闆的話: feature.properties.老闆的話 || "無店家留言", // Default to "無店家留言"
+                        store_auth: feature.properties.store_auth || false, // Information provided by store
+                        question_auth: feature.properties.question_auth || true, // Information collected via questionnaire
                         updates: feature.properties.updates || {
                             salary: '', 
                             供餐: '', 
@@ -2217,7 +2238,8 @@ function initializeMap() {
                 滿意度評分: 4,
                 環境評分人數: 5,
                 滿意度評分人數: 5,
-                certified: true,
+                store_auth: false,
+                question_auth: true,
                 updates: {
                     salary: "2023/10/15",
                     供餐: "2023/10/15", 
@@ -2242,7 +2264,8 @@ function initializeMap() {
                 滿意度評分: 3,
                 環境評分人數: 5,
                 滿意度評分人數: 5,
-                certified: true,
+                store_auth: false,
+                question_auth: true,
                 updates: {
                     salary: "2023/10/10",
                     供餐: "2023/10/10", 
@@ -2612,15 +2635,81 @@ function initializeMap() {
         const title = document.createElement('h3');
         title.className = 'bottom-sheet-title';
         title.textContent = marker.establishment.name;
+        title.style.whiteSpace = 'nowrap'; // Keep on one line
+        title.style.overflow = 'hidden'; // Hide overflow
+        title.style.textOverflow = 'ellipsis'; // Add ellipsis
         titleContainer.appendChild(title);
         
-        // Add certification badge if needed
-        const certBadge = document.createElement('div');
-        certBadge.className = marker.establishment.certified ? 'certification-badge' : 'certification-badge inactive';
-        certBadge.innerHTML = '<i class="fas fa-award"></i>';
-        certBadge.title = marker.establishment.certified ? '店家協助認證此資訊' : '店家尚未協助認證此資訊';
-        titleContainer.appendChild(certBadge);
+        // Add auth icons container
+        const authContainer = document.createElement('div');
+        authContainer.className = 'bottom-sheet-auth-icons';
         
+        // Create tooltip container that will be dynamically positioned
+        const tooltipContainer = document.createElement('div');
+        tooltipContainer.className = 'tooltip-container';
+        document.body.appendChild(tooltipContainer);
+        
+        // Add store auth icon if applicable
+        if (marker.establishment.store_auth) {
+            const storeIcon = document.createElement('div');
+            storeIcon.className = 'auth-icon store-auth-icon';
+            
+            const iconInner = document.createElement('div');
+            iconInner.className = 'auth-icon-inner';
+            iconInner.innerHTML = '<i class="fas fa-store"></i>';
+            storeIcon.appendChild(iconInner);
+            
+            // Dynamic tooltip positioning
+            storeIcon.addEventListener('mouseenter', (e) => {
+                tooltipContainer.textContent = '此資訊由店家提供';
+                tooltipContainer.classList.add('visible');
+                
+                // Get position of the icon
+                const rect = storeIcon.getBoundingClientRect();
+                
+                // Position tooltip 10px below the icon and centered
+                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+            });
+            
+            storeIcon.addEventListener('mouseleave', () => {
+                tooltipContainer.classList.remove('visible');
+            });
+            
+            authContainer.appendChild(storeIcon);
+        }
+        
+        // Add questionnaire auth icon if applicable
+        if (marker.establishment.question_auth) {
+            const questionIcon = document.createElement('div');
+            questionIcon.className = 'auth-icon question-auth-icon';
+            
+            const iconInner = document.createElement('div');
+            iconInner.className = 'auth-icon-inner';
+            iconInner.innerHTML = '<i class="fas fa-clipboard-list"></i>';
+            questionIcon.appendChild(iconInner);
+            
+            // Dynamic tooltip positioning
+            questionIcon.addEventListener('mouseenter', (e) => {
+                tooltipContainer.textContent = '此資訊由問卷蒐集';
+                tooltipContainer.classList.add('visible');
+                
+                // Get position of the icon
+                const rect = questionIcon.getBoundingClientRect();
+                
+                // Position tooltip 10px below the icon and centered
+                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+            });
+            
+            questionIcon.addEventListener('mouseleave', () => {
+                tooltipContainer.classList.remove('visible');
+            });
+            
+            authContainer.appendChild(questionIcon);
+        }
+        
+        titleContainer.appendChild(authContainer);
         header.appendChild(titleContainer);
         
         // Add close button that returns to map
@@ -2898,18 +2987,89 @@ function initializeMap() {
         
         const titleContainer = document.createElement('div');
         titleContainer.style.display = 'flex';
-        titleContainer.style.alignItems = 'center';
+        titleContainer.style.flexDirection = 'column';
+        titleContainer.style.justifyContent = 'center';
+        titleContainer.style.flex = '1';
+        titleContainer.style.overflow = 'hidden'; // Ensure container doesn't overflow
         
         const title = document.createElement('h3');
         title.textContent = establishment.name;
+        title.style.whiteSpace = 'nowrap'; // Keep on one line
+        title.style.overflow = 'hidden'; // Hide overflow
+        title.style.textOverflow = 'ellipsis'; // Add ellipsis
+        title.style.margin = '0'; // Remove default margin
         titleContainer.appendChild(title);
         
-        const certBadge = document.createElement('div');
-        certBadge.className = establishment.certified ? 'certification-badge' : 'certification-badge inactive';
-        certBadge.innerHTML = '<i class="fas fa-award"></i>';
-        certBadge.title = establishment.certified ? '店家協助認證此資訊' : '店家尚未協助認證此資訊';
-        titleContainer.appendChild(certBadge);
+        // Add auth icons container
+        const authContainer = document.createElement('div');
+        authContainer.className = 'auth-icons-container';
         
+        // Create tooltip container that will be dynamically positioned
+        const tooltipContainer = document.createElement('div');
+        tooltipContainer.className = 'tooltip-container';
+        document.body.appendChild(tooltipContainer);
+        
+        // Add store auth icon if applicable
+        if (establishment.store_auth) {
+            const storeIcon = document.createElement('div');
+            storeIcon.className = 'auth-icon store-auth-icon';
+            
+            const iconInner = document.createElement('div');
+            iconInner.className = 'auth-icon-inner';
+            iconInner.innerHTML = '<i class="fas fa-store"></i>';
+            storeIcon.appendChild(iconInner);
+            
+            // Dynamic tooltip positioning
+            storeIcon.addEventListener('mouseenter', (e) => {
+                tooltipContainer.textContent = '此資訊由店家提供';
+                tooltipContainer.classList.add('visible');
+                
+                // Get position of the icon
+                const rect = storeIcon.getBoundingClientRect();
+                
+                // Position tooltip 10px below the icon and centered
+                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+            });
+            
+            storeIcon.addEventListener('mouseleave', () => {
+                tooltipContainer.classList.remove('visible');
+            });
+            
+            authContainer.appendChild(storeIcon);
+        }
+        
+        // Add questionnaire auth icon if applicable
+        if (establishment.question_auth) {
+            const questionIcon = document.createElement('div');
+            questionIcon.className = 'auth-icon question-auth-icon';
+            
+            const iconInner = document.createElement('div');
+            iconInner.className = 'auth-icon-inner';
+            iconInner.innerHTML = '<i class="fas fa-clipboard-list"></i>';
+            questionIcon.appendChild(iconInner);
+            
+            // Dynamic tooltip positioning
+            questionIcon.addEventListener('mouseenter', (e) => {
+                tooltipContainer.textContent = '此資訊由問卷蒐集';
+                tooltipContainer.classList.add('visible');
+                
+                // Get position of the icon
+                const rect = questionIcon.getBoundingClientRect();
+                
+                // Position tooltip 10px below the icon and centered
+                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+            });
+            
+            questionIcon.addEventListener('mouseleave', () => {
+                tooltipContainer.classList.remove('visible');
+            });
+            
+            authContainer.appendChild(questionIcon);
+        }
+        
+        titleContainer.appendChild(authContainer);
         header.appendChild(titleContainer);
         
         // Create tabs for toggling between establishment info and legal standards
@@ -2959,7 +3119,14 @@ function initializeMap() {
         
         // Add star ratings with rater counts
         establishmentContent.appendChild(createStarRatingRowWithUpdate('環境評分', establishment.環境評分, establishment.updates.環境評分, establishment.環境評分人數));
-        establishmentContent.appendChild(createStarRatingRowWithUpdate('滿意度評分', establishment.滿意度評分, establishment.updates.滿意度評分, establishment.滿意度評分人數));
+        
+        // Get the satisfaction rating row and mark it as last (for CSS targeting)
+        const satisfactionRow = createStarRatingRowWithUpdate('滿意度評分', establishment.滿意度評分, establishment.updates.滿意度評分, establishment.滿意度評分人數);
+        satisfactionRow.className += ' last-info-row'; // Add class to target with CSS
+        establishmentContent.appendChild(satisfactionRow);
+        
+        // Add 老闆的話 section - always add it, the function will handle empty case
+        establishmentContent.appendChild(createOwnerMessageRow(establishment.老闆的話));
         
         // Legal standards content
         const standardsContent = document.createElement('div');
@@ -2983,10 +3150,10 @@ function initializeMap() {
         standardsContent.appendChild(createComparisonBooleanRow('勞健保', window.legalStandard.勞健保, establishment.勞健保));
         standardsContent.appendChild(createComparisonBooleanRow('國定雙倍', window.legalStandard.國定雙倍, establishment.國定雙倍));
         
-        // Add footer with info about standards
+        // Footer for standards without color coding description
         const standardsFooter = document.createElement('div');
         standardsFooter.className = 'standards-footer';
-        standardsFooter.innerHTML = '<span><i class="fas fa-info-circle"></i> 綠色表示符合或優於標準，紅色表示未達標準</span>';
+        standardsFooter.innerHTML = '<span><i class="fas fa-info-circle"></i> 依據勞基法規定的基本標準</span>';
         standardsContent.appendChild(standardsFooter);
         
         // Add optimized tab event listeners with touch-specific handling
@@ -3104,33 +3271,32 @@ function initializeMap() {
         
         const standardElement = document.createElement('div');
         standardElement.className = 'standard-value';
-        standardElement.innerHTML = `<span class="value-label">標準：</span>${standardValue ? 
-            '<i class="fas fa-check-circle yes"></i> 是' : 
-            '<i class="fas fa-times-circle no"></i> 否'}`;
+        
+        // Special case for 勞健保 to show both icon and text
+        if (label === '勞健保' && standardValue === "是 5人以上需保") {
+            standardElement.innerHTML = `<span class="value-label">標準：</span><i class="fas fa-check-circle yes"></i> 5人以上需保`;
+        }
+        // Other string values
+        else if (typeof standardValue === 'string') {
+            standardElement.innerHTML = `<span class="value-label">標準：</span>${standardValue}`;
+        } 
+        // Boolean values
+        else {
+            standardElement.innerHTML = `<span class="value-label">標準：</span>${standardValue ? 
+                '<i class="fas fa-check-circle yes"></i> 是' : 
+                '<i class="fas fa-times-circle no"></i> 否'}`;
+        }
         
         const establishmentElement = document.createElement('div');
         establishmentElement.className = 'establishment-value';
-        establishmentElement.innerHTML = `<span class="value-label">店家：</span>${establishmentValue ? 
-            '<i class="fas fa-check-circle yes"></i> 是' : 
-            '<i class="fas fa-times-circle no"></i> 否'}`;
         
-        // Special case for 試用期 - if standard is false but establishment is true, it's below standard
-        if (label === '試用期' && standardValue === false && establishmentValue === true) {
-            establishmentElement.classList.add('below-standard');
-        }
-        // Normal cases
-        else if (standardValue === true && establishmentValue === true) {
-            // Required true, and establishment is true -> meets standard
-            establishmentElement.classList.add('meets-standard');
-        } else if (standardValue === true && establishmentValue === false) {
-            // Required true, but establishment is false -> below standard
-            establishmentElement.classList.add('below-standard');
-        } else if (standardValue === false && establishmentValue === true) {
-            // Not required, but establishment provides it -> meets standard (exceeds)
-            establishmentElement.classList.add('meets-standard');
+        // Special handling for 國定雙倍 with "放假" option
+        if (typeof establishmentValue === 'string' && label === '國定雙倍') {
+            establishmentElement.innerHTML = `<span class="value-label">店家：</span><i class="fas fa-calendar-alt holiday"></i> ${establishmentValue}`;
         } else {
-            // Not required, not provided -> meets standard (neutral)
-            establishmentElement.classList.add('meets-standard');
+            establishmentElement.innerHTML = `<span class="value-label">店家：</span>${establishmentValue ? 
+                '<i class="fas fa-check-circle yes"></i> 是' : 
+                '<i class="fas fa-times-circle no"></i> 否'}`;
         }
         
         valuesContainer.appendChild(standardElement);
@@ -3172,7 +3338,7 @@ function initializeMap() {
         return row;
     }
     
-    // Create a boolean row with icon and update time
+    // Create a boolean row with icon and update time - enhanced to handle special values like "放假"
     function createBooleanRowWithUpdate(label, value, updateTime) {
         const row = document.createElement('div');
         row.className = 'info-row';
@@ -3185,10 +3351,17 @@ function initializeMap() {
         valueContainer.className = 'value';
         
         const valueElement = document.createElement('div');
-        valueElement.className = 'boolean-value ' + (value ? 'yes' : 'no');
-        valueElement.innerHTML = value ? 
-            '<i class="fas fa-check-circle yes"></i> 是' : 
-            '<i class="fas fa-times-circle no"></i> 否';
+        
+        // Check if value is a string - special case for "國定雙倍" with "放假" option
+        if (typeof value === 'string') {
+            valueElement.className = 'boolean-value holiday';
+            valueElement.innerHTML = '<i class="fas fa-calendar-alt holiday"></i> ' + value;
+        } else {
+            valueElement.className = 'boolean-value ' + (value ? 'yes' : 'no');
+            valueElement.innerHTML = value ? 
+                '<i class="fas fa-check-circle yes"></i> 是' : 
+                '<i class="fas fa-times-circle no"></i> 否';
+        }
         
         valueContainer.appendChild(valueElement);
         
@@ -3204,6 +3377,34 @@ function initializeMap() {
         row.appendChild(valueContainer);
         
         return row;
+    }
+    
+    // Create a container for 老闆的話 - showing the actual value
+    function createOwnerMessageRow(message) {
+        // Create a wrapper with top border for separation
+        const wrapper = document.createElement('div');
+        wrapper.className = 'owner-message-wrapper';
+        
+        // Create the message container
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'owner-message-container';
+        
+        // Create the message element
+        const messageElement = document.createElement('div');
+        
+        // Set message and styling
+        if (message === "無店家留言") {
+            messageElement.className = 'owner-message empty';
+        } else {
+            messageElement.className = 'owner-message';
+        }
+        messageElement.textContent = message;
+        
+        // Assemble the components
+        messageContainer.appendChild(messageElement);
+        wrapper.appendChild(messageContainer);
+        
+        return wrapper;
     }
     
     // Create a star rating row with update time and rater count

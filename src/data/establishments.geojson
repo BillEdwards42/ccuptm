@@ -3,7 +3,7 @@
     "standard": {
         "year": "2025",
         "salary": "NT$ 190/小時",
-        "勞健保": true,
+        "勞健保": "5人以上需保",
         "國定雙倍": true
     },
     "features": [
@@ -20,12 +20,15 @@
                 "供餐": true,
                 "試用期": true,
                 "勞健保": true,
+                "勞工人數": 3,
                 "國定雙倍": false,
                 "環境評分": 5,
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -55,7 +58,9 @@
                 "滿意度評分": 1.5,
                 "環境評分人數": 2,
                 "滿意度評分人數": 2,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -85,7 +90,9 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -115,7 +122,9 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -145,7 +154,9 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -175,7 +186,9 @@
                 "滿意度評分": 3,
                 "環境評分人數": 2,
                 "滿意度評分人數": 2,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -205,7 +218,9 @@
                 "滿意度評分": 3,
                 "環境評分人數": 2,
                 "滿意度評分人數": 2,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -235,7 +250,10 @@
                 "滿意度評分": 1.5,
                 "環境評分人數": 2,
                 "滿意度評分人數": 2,
-                "certified": false,
+                "勞工人數": 7,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -265,7 +283,10 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "勞工人數": 8,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2023/10",
                     "供餐": "2023/10", 
@@ -290,12 +311,15 @@
                 "供餐": false,
                 "試用期": true,
                 "勞健保": false,
-                "國定雙倍": false,
+                "國定雙倍": "放假",
                 "環境評分": 5,
                 "滿意度評分": 5,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "勞工人數": 4,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -325,7 +349,9 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/02",
                     "供餐": "2025/02", 
@@ -355,7 +381,9 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -385,7 +413,9 @@
                 "滿意度評分": 1,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2024/06",
                     "供餐": "2024/06", 
@@ -415,7 +445,9 @@
                 "滿意度評分": 2,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -445,7 +477,9 @@
                 "滿意度評分": 5,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -475,7 +509,9 @@
                 "滿意度評分": 1,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2020/10",
                     "供餐": "2020/10", 
@@ -505,7 +541,9 @@
                 "滿意度評分": 2,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2024/03",
                     "供餐": "2024/03", 
@@ -517,7 +555,7 @@
                 }
             }
         },
-		{
+        {
             "type": "Feature",
             "geometry": {
                 "type": "Point",
@@ -535,7 +573,9 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
@@ -547,7 +587,7 @@
                 }
             }
         },
-		{
+        {
             "type": "Feature",
             "geometry": {
                 "type": "Point",
@@ -565,7 +605,9 @@
                 "滿意度評分": 1,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2024/04",
                     "供餐": "2024/04", 
@@ -595,7 +637,9 @@
                 "滿意度評分": 3,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2024/10",
                     "供餐": "2024/10", 
@@ -607,7 +651,7 @@
                 }
             }
         },
-		{
+        {
             "type": "Feature",
             "geometry": {
                 "type": "Point",
@@ -625,7 +669,9 @@
                 "滿意度評分": 5,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "certified": false,
+                "老闆的話": "無店家留言",
+                "store_auth": false,
+                "question_auth": true,
                 "updates": {
                     "salary": "2025/03",
                     "供餐": "2025/03", 
