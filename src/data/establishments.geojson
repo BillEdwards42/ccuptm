@@ -2,11 +2,521 @@
     "type": "FeatureCollection",
     "standard": {
         "year": "2025",
-        "salary": "NT$ 190/小時",
+        "salary": "NT$ 190",
         "勞健保": "5人以上需保",
         "國定雙倍": true
     },
     "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47126, 23.55728]
+            },
+            "properties": {
+                "name": "韓金湯匙 － 中正大學店",
+                "icon": "store",
+                "salary": "NT$ 190，若過夜NT$ 220",
+                "供餐": false,
+                "試用期": false,
+                "勞健保": true,
+                "國定雙倍": false,
+                "環境評分": 3,
+                "滿意度評分": 4,
+                "環境評分人數": 1,
+                "滿意度評分人數": 1,
+                "老闆的話": "希望可以找到自主能力強、誠實、不偷的學生。",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "2025/03",
+                    "滿意度評分": "2025/03"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47149, 23.55695]
+            },
+            "properties": {
+                "name": "早安山丘 - 中正大學店",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": true,
+                "試用期": true,
+                "勞健保": false,
+                "國定雙倍": "休假",
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.4709, 23.55665]
+            },
+            "properties": {
+                "name": "茶湯會 - 民雄神農店",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": true,
+                "試用期": false,
+                "勞健保": true,
+                "國定雙倍": true,
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.471048, 23.55728]
+            },
+            "properties": {
+                "name": "久聚",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": true,
+                "試用期": false,
+                "勞健保": false,
+                "國定雙倍": true,
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "希望你喜歡調酒、善於交際又會閃酒。",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47186, 23.55717]
+            },
+            "properties": {
+                "name": "農閒時刻的粥",
+                "icon": "store",
+                "salary": "NT$ 200",
+                "供餐": false,
+                "試用期": true,
+                "勞健保": true,
+                "國定雙倍": "休假",
+                "環境評分": 5,
+                "滿意度評分": 5,
+                "環境評分人數": 1,
+                "滿意度評分人數": 1,
+                "勞工人數": 4,
+                "老闆的話": "來打工邏輯要好一點，點餐、結帳的時候很忙。",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "2025/03",
+                    "滿意度評分": "2025/03"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47187, 23.55652]
+            },
+            "properties": {
+                "name": "丼飽處",
+                "icon": "store",
+                "salary": "NT$ 190起",
+                "供餐": true,
+                "試用期": false,
+                "勞健保": true,
+                "國定雙倍": true,
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "勞工人數": 4,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47149, 23.55638]
+            },
+            "properties": {
+                "name": "地中海美食",
+                "icon": "store",
+                "salary": "NT$ 285，1.5小時",
+                "供餐": true,
+                "試用期": false,
+                "勞健保": false,
+                "國定雙倍": "休假",
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "勞工人數": 4,
+                "老闆的話": "0911196137 是老闆號碼，用簡訊/電話詢問打工。",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47327, 23.55726]
+            },
+            "properties": {
+                "name": "阿基鍋燒麵 - 中正大學店",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": false,
+                "試用期": true,
+                "勞健保": false,
+                "國定雙倍": false,
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "勞工人數": 4,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.470965, 23.557278]
+            },
+            "properties": {
+                "name": "Simple Fit 簡單瘦．健身餐",
+                "icon": "store",
+                "salary": "NT$ 190起",
+                "供餐": true,
+                "試用期": true,
+                "勞健保": true,
+                "國定雙倍": "休假",
+                "環境評分": 1,
+                "滿意度評分": 1,
+                "環境評分人數": 1,
+                "滿意度評分人數": 1,
+                "老闆的話": "比較忙，適合喜歡挑戰的同學，老闆電話是0936664113，姓張。",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "2020/10",
+                    "滿意度評分": "2020/10"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47264, 23.55681]
+            },
+            "properties": {
+                "name": "鹿初Brunch",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": true,
+                "試用期": true,
+                "勞健保": false,
+                "國定雙倍": false,
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47185, 23.55475]
+            },
+            "properties": {
+                "name": "食凡",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": false,
+                "試用期": false,
+                "勞健保": true,
+                "國定雙倍": true,
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "歡迎大家來食凡打工 ~",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47185, 23.55475]
+            },
+            "properties": {
+                "name": "艾絲 Ice Tea",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": true,
+                "試用期": false,
+                "勞健保": false,
+                "國定雙倍": "休假",
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47218, 23.55668]
+            },
+            "properties": {
+                "name": "a咖美食平價牛排",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": false,
+                "試用期": false,
+                "勞健保": false,
+                "國定雙倍": "休假",
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47035, 23.55425]
+            },
+            "properties": {
+                "name": "81HOME",
+                "icon": "store",
+                "salary": "NT$ 190",
+                "供餐": false,
+                "試用期": false,
+                "勞健保": true,
+                "國定雙倍": "休假",
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [120.47145, 23.55549]
+            },
+            "properties": {
+                "name": "早叄早午餐",
+                "icon": "store",
+                "salary": "NT$ 190-200",
+                "供餐": true,
+                "試用期": true,
+                "勞健保": false,
+                "國定雙倍": true,
+                "環境評分": 0,
+                "滿意度評分": 0,
+                "環境評分人數": 0,
+                "滿意度評分人數": 0,
+                "老闆的話": "無店家留言",
+                "store_auth": true,
+                "question_auth": false,
+                "updates": {
+                    "salary": "2025/04",
+                    "供餐": "2025/04", 
+                    "試用期": "2025/04",
+                    "勞健保": "2025/04",
+                    "國定雙倍": "2025/04",
+                    "環境評分": "N/A",
+                    "滿意度評分": "N/A"
+                }
+            }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         {
             "type": "Feature",
             "geometry": {
@@ -16,7 +526,7 @@
             "properties": {
                 "name": "Tea's 原味 - 中正大學店",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": true,
                 "試用期": true,
                 "勞健保": true,
@@ -49,7 +559,7 @@
             "properties": {
                 "name": "旺萊山 - 鳳梨文化園區",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": true,
@@ -72,38 +582,7 @@
                 }
             }
         },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [120.47126, 23.55729]
-            },
-            "properties": {
-                "name": "韓湯匙 － 中正店",
-                "icon": "store",
-                "salary": "NT$ 190/小時",
-                "供餐": false,
-                "試用期": false,
-                "勞健保": false,
-                "國定雙倍": true,
-                "環境評分": 3,
-                "滿意度評分": 4,
-                "環境評分人數": 1,
-                "滿意度評分人數": 1,
-                "老闆的話": "無店家留言",
-                "store_auth": false,
-                "question_auth": true,
-                "updates": {
-                    "salary": "2025/03",
-                    "供餐": "2025/03", 
-                    "試用期": "2025/03",
-                    "勞健保": "2025/03",
-                    "國定雙倍": "2025/03",
-                    "環境評分": "2025/03",
-                    "滿意度評分": "2025/03"
-                }
-            }
-        },
+        
         {
             "type": "Feature",
             "geometry": {
@@ -113,41 +592,9 @@
             "properties": {
                 "name": "嘉農小館",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": true,
                 "試用期": true,
-                "勞健保": false,
-                "國定雙倍": false,
-                "環境評分": 4,
-                "滿意度評分": 4,
-                "環境評分人數": 1,
-                "滿意度評分人數": 1,
-                "老闆的話": "無店家留言",
-                "store_auth": false,
-                "question_auth": true,
-                "updates": {
-                    "salary": "2025/03",
-                    "供餐": "2025/03", 
-                    "試用期": "2025/03",
-                    "勞健保": "2025/03",
-                    "國定雙倍": "2025/03",
-                    "環境評分": "2025/03",
-                    "滿意度評分": "2025/03"
-                }
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [120.4732, 23.55614]
-            },
-            "properties": {
-                "name": "早餐好樂-中正大學店",
-                "icon": "store",
-                "salary": "NT$ 190/小時",
-                "供餐": true,
-                "試用期": false,
                 "勞健保": false,
                 "國定雙倍": false,
                 "環境評分": 4,
@@ -177,26 +624,26 @@
             "properties": {
                 "name": "洵香麻辣燙",
                 "icon": "store",
-                "salary": "NT$ 160/小時",
+                "salary": "NT$ 176",
                 "供餐": true,
                 "試用期": false,
                 "勞健保": false,
                 "國定雙倍": false,
                 "環境評分": 4,
                 "滿意度評分": 3,
-                "環境評分人數": 2,
-                "滿意度評分人數": 2,
+                "環境評分人數": 1,
+                "滿意度評分人數": 1,
                 "老闆的話": "無店家留言",
                 "store_auth": false,
                 "question_auth": true,
                 "updates": {
-                    "salary": "2025/03",
-                    "供餐": "2025/03", 
-                    "試用期": "2025/03",
-                    "勞健保": "2025/03",
-                    "國定雙倍": "2025/03",
-                    "環境評分": "2025/03",
-                    "滿意度評分": "2025/03"
+                    "salary": "2022/01",
+                    "供餐": "2022/01", 
+                    "試用期": "2022/01",
+                    "勞健保": "2022/01",
+                    "國定雙倍": "2022/01",
+                    "環境評分": "2022/01",
+                    "滿意度評分": "2022/01"
                 }
             }
         },
@@ -209,7 +656,7 @@
             "properties": {
                 "name": "ㄎㄎ韓食",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": true,
                 "試用期": true,
                 "勞健保": false,
@@ -222,13 +669,13 @@
                 "store_auth": false,
                 "question_auth": true,
                 "updates": {
-                    "salary": "2025/03",
-                    "供餐": "2025/03", 
-                    "試用期": "2025/03",
-                    "勞健保": "2025/03",
-                    "國定雙倍": "2025/03",
-                    "環境評分": "2025/03",
-                    "滿意度評分": "2025/03"
+                    "salary": "2025/01",
+                    "供餐": "2025/01", 
+                    "試用期": "2025/01",
+                    "勞健保": "2025/01",
+                    "國定雙倍": "2025/01",
+                    "環境評分": "2025/01",
+                    "滿意度評分": "2025/01"
                 }
             }
         },
@@ -241,7 +688,7 @@
             "properties": {
                 "name": "美廉社 - 民雄裕農店",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": true,
@@ -250,7 +697,7 @@
                 "滿意度評分": 1.5,
                 "環境評分人數": 2,
                 "滿意度評分人數": 2,
-                "勞工人數": 7,
+                "勞工人數": 4,
                 "老闆的話": "無店家留言",
                 "store_auth": false,
                 "question_auth": true,
@@ -274,7 +721,7 @@
             "properties": {
                 "name": "7-ELEVEN 中正大學門市",
                 "icon": "store",
-                "salary": "NT$ 176/小時",
+                "salary": "NT$ 176",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": true,
@@ -283,7 +730,7 @@
                 "滿意度評分": 4,
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
-                "勞工人數": 8,
+                "勞工人數": 4,
                 "老闆的話": "無店家留言",
                 "store_auth": false,
                 "question_auth": true,
@@ -302,45 +749,12 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47186, 23.55717]
-            },
-            "properties": {
-                "name": "農閒時刻的粥",
-                "icon": "store",
-                "salary": "NT$ 200/小時",
-                "供餐": false,
-                "試用期": true,
-                "勞健保": false,
-                "國定雙倍": "放假",
-                "環境評分": 5,
-                "滿意度評分": 5,
-                "環境評分人數": 1,
-                "滿意度評分人數": 1,
-                "勞工人數": 4,
-                "老闆的話": "無店家留言",
-                "store_auth": true,
-                "question_auth": true,
-                "updates": {
-                    "salary": "2025/03",
-                    "供餐": "2025/03", 
-                    "試用期": "2025/03",
-                    "勞健保": "2025/03",
-                    "國定雙倍": "2025/03",
-                    "環境評分": "2025/03",
-                    "滿意度評分": "2025/03"
-                }
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
                 "coordinates": [120.4722, 23.5568]
             },
             "properties": {
                 "name": "一番食堂 - 中正店",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": false,
                 "試用期": true,
                 "勞健保": false,
@@ -372,7 +786,7 @@
             "properties": {
                 "name": "侯記中式早餐",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190起",
                 "供餐": true,
                 "試用期": false,
                 "勞健保": true,
@@ -404,7 +818,7 @@
             "properties": {
                 "name": "牛筋伯爵",
                 "icon": "store",
-                "salary": "NT$ 183/小時",
+                "salary": "NT$ 183",
                 "供餐": true,
                 "試用期": true,
                 "勞健保": false,
@@ -436,7 +850,7 @@
             "properties": {
                 "name": "八鍋",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": true,
                 "試用期": true,
                 "勞健保": false,
@@ -468,7 +882,7 @@
             "properties": {
                 "name": "富成屋拉麵",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": false,
@@ -495,44 +909,12 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47098, 23.55727]
-            },
-            "properties": {
-                "name": "Simple Fit 簡單瘦．健身餐",
-                "icon": "store",
-                "salary": "NT$ 160/小時",
-                "供餐": true,
-                "試用期": false,
-                "勞健保": false,
-                "國定雙倍": true,
-                "環境評分": 1,
-                "滿意度評分": 1,
-                "環境評分人數": 1,
-                "滿意度評分人數": 1,
-                "老闆的話": "無店家留言",
-                "store_auth": false,
-                "question_auth": true,
-                "updates": {
-                    "salary": "2020/10",
-                    "供餐": "2020/10", 
-                    "試用期": "2020/10",
-                    "勞健保": "2020/10",
-                    "國定雙倍": "2020/10",
-                    "環境評分": "2020/10",
-                    "滿意度評分": "2020/10"
-                }
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
                 "coordinates": [120.47309, 23.55515]
             },
             "properties": {
                 "name": "海派鹽酥雞 中正大學店",
                 "icon": "store",
-                "salary": "NT$ 160/小時",
+                "salary": "NT$ 160",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": false,
@@ -564,7 +946,7 @@
             "properties": {
                 "name": "高點網路學院-中正班",
                 "icon": "store",
-                "salary": "NT$ 190/小時",
+                "salary": "NT$ 190",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": true,
@@ -591,12 +973,12 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47103, 23.55734]
+                "coordinates": [120.471025, 23.55722]
             },
             "properties": {
                 "name": "橙堡早午餐 - 中正大學旗艦店",
                 "icon": "store",
-                "salary": "NT$ 183/小時",
+                "salary": "NT$ 183",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": false,
@@ -628,7 +1010,7 @@
             "properties": {
                 "name": "財哥鹹酥雞",
                 "icon": "store",
-                "salary": "NT$ 200/小時",
+                "salary": "NT$ 200",
                 "供餐": false,
                 "試用期": false,
                 "勞健保": false,
@@ -660,7 +1042,7 @@
             "properties": {
                 "name": "Mr.夏 泰式餐廳＆泰式健康餐盒",
                 "icon": "store",
-                "salary": "NT$ 200/小時",
+                "salary": "NT$ 200",
                 "供餐": true,
                 "試用期": false,
                 "勞健保": false,

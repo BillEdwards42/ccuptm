@@ -2192,7 +2192,7 @@ function initializeMap() {
                         勞工人數: feature.properties.勞工人數 || 3, // Default to 3 if not specified
                         老闆的話: feature.properties.老闆的話 || "無店家留言", // Default to "無店家留言"
                         store_auth: feature.properties.store_auth || false, // Information provided by store
-                        question_auth: feature.properties.question_auth || true, // Information collected via questionnaire
+                        question_auth: feature.properties.question_auth !== false, // Information collected via questionnaire
                         updates: feature.properties.updates || {
                             salary: '', 
                             供餐: '', 
