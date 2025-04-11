@@ -117,7 +117,7 @@
                 "icon": "store",
                 "salary": "NT$ 190",
                 "供餐": true,
-                "試用期": false,
+                "試用期": true,
                 "勞健保": false,
                 "國定雙倍": true,
                 "環境評分": 0,
