@@ -973,10 +973,12 @@ html, body {
     font-size: 14px;
 }
 
-/* Hover effect */
-.auth-icon:hover .auth-icon-inner {
-    transform: scale(1.2);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+/* Hover effect - only for non-touch devices */
+@media (hover: hover) {
+    .auth-icon:hover .auth-icon-inner {
+        transform: scale(1.2);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
 }
 
 /* New tooltip positioning - below the icon */
@@ -2356,4 +2358,45 @@ h2 {
 
 .marker-cluster span {
     line-height: 28px;
+}
+
+/* Additional styles for info guide category headers */
+.info-category .category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.info-category .category-header h4 {
+    margin: 0;
+    color: #654321;
+}
+
+.info-category .category-header .auth-icon {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+.info-category .category-header .auth-icon-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.info-category .category-header .auth-icon-inner i {
+    color: white;
+    font-size: 14px;
+    padding-left: 7px;
+}
+
+.info-category .category-header .auth-icon-inner i {
+    color: white;
+    font-size: 14px;
+    margin-left: 3px;
 }

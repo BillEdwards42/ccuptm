@@ -2659,22 +2659,24 @@ function initializeMap() {
             iconInner.innerHTML = '<i class="fas fa-store"></i>';
             storeIcon.appendChild(iconInner);
             
-            // Dynamic tooltip positioning
-            storeIcon.addEventListener('mouseenter', (e) => {
-                tooltipContainer.textContent = '此資訊由店家提供';
-                tooltipContainer.classList.add('visible');
+            // Dynamic tooltip positioning - only for non-touch devices
+            if (!('ontouchstart' in window)) {
+                storeIcon.addEventListener('mouseenter', (e) => {
+                    tooltipContainer.textContent = '此資訊由店家提供';
+                    tooltipContainer.classList.add('visible');
+                    
+                    // Get position of the icon
+                    const rect = storeIcon.getBoundingClientRect();
+                    
+                    // Position tooltip 10px below the icon and centered
+                    tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                    tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+                });
                 
-                // Get position of the icon
-                const rect = storeIcon.getBoundingClientRect();
-                
-                // Position tooltip 10px below the icon and centered
-                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
-                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
-            });
-            
-            storeIcon.addEventListener('mouseleave', () => {
-                tooltipContainer.classList.remove('visible');
-            });
+                storeIcon.addEventListener('mouseleave', () => {
+                    tooltipContainer.classList.remove('visible');
+                });
+            }
             
             authContainer.appendChild(storeIcon);
         }
@@ -2689,22 +2691,24 @@ function initializeMap() {
             iconInner.innerHTML = '<i class="fas fa-clipboard-list"></i>';
             questionIcon.appendChild(iconInner);
             
-            // Dynamic tooltip positioning
-            questionIcon.addEventListener('mouseenter', (e) => {
-                tooltipContainer.textContent = '此資訊由問卷蒐集';
-                tooltipContainer.classList.add('visible');
+            // Dynamic tooltip positioning - only for non-touch devices
+            if (!('ontouchstart' in window)) {
+                questionIcon.addEventListener('mouseenter', (e) => {
+                    tooltipContainer.textContent = '此資訊由問卷蒐集';
+                    tooltipContainer.classList.add('visible');
+                    
+                    // Get position of the icon
+                    const rect = questionIcon.getBoundingClientRect();
+                    
+                    // Position tooltip 10px below the icon and centered
+                    tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                    tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+                });
                 
-                // Get position of the icon
-                const rect = questionIcon.getBoundingClientRect();
-                
-                // Position tooltip 10px below the icon and centered
-                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
-                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
-            });
-            
-            questionIcon.addEventListener('mouseleave', () => {
-                tooltipContainer.classList.remove('visible');
-            });
+                questionIcon.addEventListener('mouseleave', () => {
+                    tooltipContainer.classList.remove('visible');
+                });
+            }
             
             authContainer.appendChild(questionIcon);
         }
@@ -3019,22 +3023,24 @@ function initializeMap() {
             iconInner.innerHTML = '<i class="fas fa-store"></i>';
             storeIcon.appendChild(iconInner);
             
-            // Dynamic tooltip positioning
-            storeIcon.addEventListener('mouseenter', (e) => {
-                tooltipContainer.textContent = '此資訊由店家提供';
-                tooltipContainer.classList.add('visible');
+            // Dynamic tooltip positioning - only for non-touch devices
+            if (!('ontouchstart' in window)) {
+                storeIcon.addEventListener('mouseenter', (e) => {
+                    tooltipContainer.textContent = '此資訊由店家提供';
+                    tooltipContainer.classList.add('visible');
+                    
+                    // Get position of the icon
+                    const rect = storeIcon.getBoundingClientRect();
+                    
+                    // Position tooltip 10px below the icon and centered
+                    tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                    tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+                });
                 
-                // Get position of the icon
-                const rect = storeIcon.getBoundingClientRect();
-                
-                // Position tooltip 10px below the icon and centered
-                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
-                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
-            });
-            
-            storeIcon.addEventListener('mouseleave', () => {
-                tooltipContainer.classList.remove('visible');
-            });
+                storeIcon.addEventListener('mouseleave', () => {
+                    tooltipContainer.classList.remove('visible');
+                });
+            }
             
             authContainer.appendChild(storeIcon);
         }
@@ -3049,22 +3055,24 @@ function initializeMap() {
             iconInner.innerHTML = '<i class="fas fa-clipboard-list"></i>';
             questionIcon.appendChild(iconInner);
             
-            // Dynamic tooltip positioning
-            questionIcon.addEventListener('mouseenter', (e) => {
-                tooltipContainer.textContent = '此資訊由問卷蒐集';
-                tooltipContainer.classList.add('visible');
+            // Dynamic tooltip positioning - only for non-touch devices
+            if (!('ontouchstart' in window)) {
+                questionIcon.addEventListener('mouseenter', (e) => {
+                    tooltipContainer.textContent = '此資訊由問卷蒐集';
+                    tooltipContainer.classList.add('visible');
+                    
+                    // Get position of the icon
+                    const rect = questionIcon.getBoundingClientRect();
+                    
+                    // Position tooltip 10px below the icon and centered
+                    tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
+                    tooltipContainer.style.top = (rect.bottom + 10) + 'px';
+                });
                 
-                // Get position of the icon
-                const rect = questionIcon.getBoundingClientRect();
-                
-                // Position tooltip 10px below the icon and centered
-                tooltipContainer.style.left = (rect.left + rect.width/2 - tooltipContainer.offsetWidth/2) + 'px';
-                tooltipContainer.style.top = (rect.bottom + 10) + 'px';
-            });
-            
-            questionIcon.addEventListener('mouseleave', () => {
-                tooltipContainer.classList.remove('visible');
-            });
+                questionIcon.addEventListener('mouseleave', () => {
+                    tooltipContainer.classList.remove('visible');
+                });
+            }
             
             authContainer.appendChild(questionIcon);
         }
