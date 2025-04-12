@@ -341,7 +341,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47189, 23.55553]
+                "coordinates": [120.47189, 23.55475]
             },
             "properties": {
                 "name": "食凡",
@@ -374,7 +374,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47185, 23.55475]
+                "coordinates": [120.47185, 23.55553]
             },
             "properties": {
                 "name": "艾絲 Ice Tea",
