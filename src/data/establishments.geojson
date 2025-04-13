@@ -446,7 +446,7 @@
                 "name": "81HOME",
                 "icon": "store",
                 "salary": "NT$ 190",
-                "供餐": false,
+                "供餐": true,
                 "試用期": false,
                 "勞健保": true,
                 "國定雙倍": "休假",
