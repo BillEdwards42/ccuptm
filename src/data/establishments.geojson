@@ -214,7 +214,7 @@
             "properties": {
                 "name": "地中海美食",
                 "icon": "store",
-                "salary": "NT$ 285，1.5小時",
+                "salary": "NT$ 285/1.5小時",
                 "供餐": true,
                 "試用期": false,
                 "勞健保": false,
@@ -224,7 +224,7 @@
                 "環境評分人數": 0,
                 "滿意度評分人數": 0,
                 "勞工人數": 4,
-                "老闆的話": "0911196137 是老闆號碼，用簡訊/電話詢問打工。",
+                "老闆的話": "歡迎應徵，電話為 0911196137，用簡訊/電話詢問打工（開學期間缺人）。",
                 "store_auth": true,
                 "question_auth": false,
                 "updates": {
@@ -290,7 +290,7 @@
                 "環境評分人數": 1,
                 "滿意度評分人數": 1,
                 "勞工人數": 4,
-                "老闆的話": "比較忙，適合喜歡挑戰的同學，老闆電話是0936664113，姓張。",
+                "老闆的話": "比較忙，適合喜歡挑戰的同學。歡迎前來應徵，請聯絡0936664113，張先生。",
                 "store_auth": true,
                 "question_auth": false,
                 "updates": {
@@ -341,7 +341,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47185, 23.55475]
+                "coordinates": [120.47189, 23.55475]
             },
             "properties": {
                 "name": "食凡",
@@ -374,7 +374,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47185, 23.55475]
+                "coordinates": [120.47185, 23.55553]
             },
             "properties": {
                 "name": "艾絲 Ice Tea",
