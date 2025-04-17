@@ -539,7 +539,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47150, 23.55690]
+                "coordinates": [120.47150, 23.55688]
             },
             "properties": {
                 "name": "品味香",
@@ -572,7 +572,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47148, 23.55726]
+                "coordinates": [120.47148, 23.55724]
             },
             "properties": {
                 "name": "楊家豆漿",
@@ -638,7 +638,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47149, 23.55722]
+                "coordinates": [120.47149, 23.55716]
             },
             "properties": {
                 "name": "双醬咖哩",
@@ -671,7 +671,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47127, 23.55730]
+                "coordinates": [120.47120, 23.55728]
             },
             "properties": {
                 "name": "伊卓島",
@@ -733,6 +733,7 @@
                 }
             }
         },
+        
 
 
 
@@ -752,7 +753,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [120.47148, 23.5569]
+                "coordinates": [120.47150, 23.55683]
             },
             "properties": {
                 "name": "Tea's 原味 - 中正大學店",
