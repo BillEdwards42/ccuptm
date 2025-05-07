@@ -2133,7 +2133,7 @@ function initializeMap() {
     
     // Load establishment data from GeoJSON file
     function loadEstablishmentsData() {
-        fetch('src/data/establishments.geojson')
+        fetch('../src/data/establishments.geojson')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
