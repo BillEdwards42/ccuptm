@@ -296,6 +296,11 @@ body {
     z-index: 1 !important; /* Lower z-index for the base map */
 }
 
+/* Rent map specific styling with color shift */
+.rent-map .leaflet-tile-pane {
+    filter: hue-rotate(60deg) saturate(1) brightness(1);
+}
+
 /* Ensure panes have correct z-index */
 .leaflet-map-pane {
     z-index: 200 !important;
@@ -346,6 +351,25 @@ html, body {
 
 .marker-icon {
     background-color: #FF7F50; /* Coral color */
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 5;
+    /* Better touch handling */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform, background-color;
+}
+
+/* Rent marker - light green */
+.rent-marker-icon {
+    background-color: #4CAF50; /* Light green color */
     color: white;
     width: 30px;
     height: 30px;

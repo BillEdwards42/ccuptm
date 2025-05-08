@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47126, 23.55728]
+      },
+      "properties": {
+        "name": "宿舍巷舒適小套房",
+        "address": "嘉義縣民雄鄉大學路一段168巷15號",
+        "contact": "0912-345-678",
+        "rent": "8000",
+        "deposit": "8000",
+        "type": "套房",
+        "subsidy": true,
+        "elec": "依台電計費",
+        "sex": "none",
+        "pet": "none",
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "disaster": true,
+        "alarm": "unknown",
+        "stuff": "床、書桌、衣櫃、冷氣、熱水器、網路",
+        "note": "距離校門口5分鐘，環境安靜適合念書"
+      }
+    }
+  ]
+}
