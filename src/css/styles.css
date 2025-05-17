@@ -44,6 +44,12 @@ body {
     border-bottom: 2px solid rgba(255, 127, 80, 0.3); /* Subtle coral border */
 }
 
+/* Rent map specific navbar styling */
+.rent-map-navbar {
+    background-color: rgba(245, 255, 245, 0.95); /* Light green tint with transparency */
+    border-bottom: 2px solid rgba(76, 175, 80, 0.3); /* Light green border to match rent-marker-icon */
+}
+
 .navbar-logo {
     display: flex;
     align-items: center;
@@ -64,6 +70,11 @@ body {
     box-shadow: 0 2px 8px rgba(255, 127, 80, 0.3);
 }
 
+.rent-map-navbar .navbar-logo img {
+    border: 3px solid #4CAF50; /* Green border matching rent-marker-icon */
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
 .navbar-logo h1 {
     font-size: 1.4rem;
     margin: 0;
@@ -73,6 +84,10 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     letter-spacing: 1px;
+}
+
+.rent-map-navbar .navbar-logo h1 {
+    color: #2E7D32; /* Darker green for better readability */
 }
 
 .navbar-links {
@@ -102,6 +117,10 @@ body {
     transform: translateZ(0); /* Force hardware acceleration */
 }
 
+.rent-map-navbar .navbar-links a {
+    color: #2E7D32; /* Darker green for better readability */
+}
+
 /* Add active state for touch feedback - only for brief touch moment */
 .navbar-links a:active {
     transform: translateZ(0) scale(0.95);
@@ -113,6 +132,18 @@ body {
     background-color: rgba(255, 127, 80, 0.1); /* Very light coral background */
     transform: translateY(-2px);
     color: #FF7F50; /* Coral - matches marker */
+}
+
+/* Rent map navbar hover and active states */
+.rent-map-navbar .navbar-links a:active {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.rent-map-navbar .navbar-links a:hover {
+    background-color: rgba(76, 175, 80, 0.1); /* Very light green background */
+    transform: translateY(-2px);
+    color: #4CAF50; /* Green - matches rent marker */
 }
 
 /* Remove persistent active state styling */
@@ -384,6 +415,12 @@ html, body {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     will-change: transform, background-color;
+}
+
+/* Hover effect for rent marker */
+.rent-marker-icon:hover {
+    transform: scale(1.2);
+    background-color: #2E7D32; /* Slightly darker green on hover */
 }
 
 .marker-icon i {
@@ -754,6 +791,11 @@ html, body {
     bottom: 20px;
     right: 20px;
     background-color: #FF7F50;
+}
+
+/* Green reset view button for rent map */
+.rent-map ~ .reset-view-btn {
+    background-color: #4CAF50;
 }
 
 /* Search button (non-mobile) */

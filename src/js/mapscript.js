@@ -83,6 +83,10 @@ function forceCompleteGhostTouches() {
 function initializeMap() {
     console.log('Initializing map...');
     
+    // Detect iOS device specifically
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    console.log('Is iOS device:', isIOS);
+    
     // Setup default map options
     const mapInitConfig = {
         zoomControl: false,  // We'll add custom zoom controls
@@ -466,6 +470,31 @@ function loadRentalsData() {
             
             // Store original markers for later reference
             window.originalMarkers = markers;
+            
+            // Add a global popup close handler for iOS refresh issue
+            map.on('popupclose', function(e) {
+                // Detect iOS specifically
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                
+                if (isIOS) {
+                    console.log('iOS popup close detected - triggering map refresh');
+                    // Force a redraw of the map after popup closes
+                    setTimeout(() => {
+                        map.invalidateSize({reset: true, animate: false, pan: false});
+                        
+                        // Additional fix: trigger a small pan to force tile reload if needed
+                        const center = map.getCenter();
+                        map.panBy([1, 1], {
+                            animate: false,
+                            duration: 0.1
+                        });
+                        map.panBy([-1, -1], {
+                            animate: false,
+                            duration: 0.1
+                        });
+                    }, 100);
+                }
+            });
         })
         .catch(error => {
             console.error('Error loading rentals data:', error);
