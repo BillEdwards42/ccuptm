@@ -21,7 +21,6 @@
         "fire": true,
         "light": true,
         "exit": true,
-        "disaster": true,
         "alarm": "unknown",
         "stuff": "床、書桌、衣櫃、冷氣、熱水器、網路",
         "note": "距離校門口5分鐘，環境安靜適合念書"

@@ -806,6 +806,12 @@ html, body {
     color: #333; /* Darker text for contrast */
 }
 
+/* Green search button for rent map */
+.rent-map ~ .search-btn {
+    background-color: #E8F5E9; /* Light green background */
+    color: #2E7D32; /* Darker green text for contrast */
+}
+
 
 
 .zoom-btn i {
@@ -887,6 +893,15 @@ html, body {
     pointer-events: auto !important;
 }
 
+/* Wider popup for rent-popup to fit more information */
+.rent-popup-wrapper {
+    width: 440px !important; /* Wider for rent information, but not full screen */
+}
+
+.rent-popup .leaflet-popup-content-wrapper {
+    width: 440px !important; /* Adjust this value as needed */
+}
+
 /* Fix for popup header layout */
 .leaflet-popup-content {
     margin: 0 !important;
@@ -920,24 +935,38 @@ html, body {
 }
 
 .popup-tab.active {
-    background-color: #FF7F50;
-    color: white;
+    background-color: white;
+    color: #FF7F50;
+    border-bottom: 3px solid #FF7F50;
+    font-weight: 600;
+}
+
+/* Green active state for rent popup tabs */
+.rent-popup .popup-tab.active {
+    background-color: white;
+    color: #4CAF50;
+    border-bottom: 3px solid #4CAF50;
 }
 
 .popup-tab:hover:not(.active) {
     background-color: #f0f0f0;
 }
 
-/* Visual feedback for tab touches */
+/* Visual feedback for tab touches - scale only, no color change */
 .popup-tab:active {
     transform: scale(0.98);
-    background-color: #FF6347; /* Slightly darker orange */
 }
 
 .leaflet-popup-tip {
     background-color: #FF7F50; /* Match header color */
     width: 12px;
     height: 12px;
+}
+
+/* Green popup tip for rent popups */
+.rent-popup + .leaflet-popup-tip-container .leaflet-popup-tip,
+.rent-popup .leaflet-popup-tip-container .leaflet-popup-tip {
+    background-color: #4CAF50; /* Green */
 }
 
 .leaflet-popup-close-button {
@@ -973,6 +1002,11 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Green header for rent popups */
+.rent-popup .establishment-popup-header {
+    background-color: #4CAF50; /* Green */
 }
 
 .establishment-popup-header h3 {
@@ -1114,21 +1148,21 @@ html, body {
     font-weight: 600;
 }
 
-.popup-tab.active::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #FF7F50;
-    transform: scaleX(1);
-    transform-origin: bottom left;
-    transition: transform 0.3s ease;
+/* Green tabs for rent-map popups */
+.rent-popup .popup-tab.active {
+    color: #4CAF50;
+    border-bottom: 3px solid #4CAF50;
 }
+
+/* Remove the ::before pseudo-element to avoid conflicts with the border-bottom styling */
 
 .popup-tab:hover {
     background-color: rgba(255, 127, 80, 0.05);
+}
+
+/* Green hover state for rent popup tabs */
+.rent-popup .popup-tab:hover:not(.active) {
+    background-color: rgba(76, 175, 80, 0.05);
 }
 
 .popup-tab:active {
@@ -1143,13 +1177,134 @@ html, body {
 }
 
 .establishment-popup-content {
-    padding: 15px 15px 5px 15px; /* Reduced bottom padding */
+    padding: 15px 15px 15px 15px; /* Equal padding on all sides */
     background-color: white;
     display: none;
+    min-height: 300px; /* Minimum height to ensure consistent size */
+    box-sizing: border-box; /* Include padding in height calculation */
 }
 
 .establishment-popup-content.active {
     display: block;
+}
+
+/* Rent popup specific content */
+.rent-info-section {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+}
+
+.rent-info-section:last-child {
+    margin-bottom: 0;
+}
+
+.rent-info-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #2E7D32;
+    font-weight: 600;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* Safety features section */
+.safety-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Safety feature item */
+.safety-feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    background-color: #f5f5f5;
+}
+
+.safety-feature.available {
+    background-color: #E8F5E9;
+}
+
+.safety-feature.unavailable {
+    background-color: #FFEBEE;
+    color: #757575;
+}
+
+.safety-feature.no-data {
+    background-color: #f5f5f5;
+    color: #757575;
+}
+
+.safety-feature i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.safety-feature.available i {
+    color: #4CAF50;
+}
+
+.safety-feature.unavailable i {
+    color: #F44336;
+}
+
+.safety-feature.no-data i {
+    color: #9E9E9E;
+}
+
+/* Main info grid layout */
+.main-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.main-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-info-item .label {
+    font-size: 12px;
+    color: #757575;
+    margin-bottom: 4px;
+}
+
+.main-info-item .value {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Feature description styling */
+.feature-description {
+    font-size: 12px;
+    color: #757575;
+    margin-top: 2px;
+}
+
+/* Requirements note */
+.requirements-note {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+/* Notes content */
+.notes-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #4CAF50;
 }
 
 /* Standards content specific styles */
@@ -1532,6 +1687,11 @@ html, body {
     top: 0;
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Green header for rent popups mobile sheet */
+.rent-popup .bottom-sheet-header {
+    background-color: #4CAF50; /* Green */
 }
 
 .bottom-sheet-header h3 {
@@ -2420,6 +2580,16 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* Custom styles for rent map marker clusters */
+.rent-map .marker-cluster {
+    background-color: rgba(76, 175, 80, 0.6);
+    border: 3px solid rgba(76, 175, 80, 0.8);
+}
+
+.rent-map .marker-cluster div {
+    background-color: rgba(76, 175, 80, 0.8);
 }
 
 .marker-cluster span {

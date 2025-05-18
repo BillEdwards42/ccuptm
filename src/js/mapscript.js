@@ -398,6 +398,36 @@ function loadRentalsData() {
                 // Store rental data in marker
                 marker.rentalData = rental.properties;
                 
+                // Add click handler for marker to show popup
+                marker.on('click', function() {
+                    // For touch devices, show the full-screen modal instead of popup
+                    if (isTouchDevice()) {
+                        // Show mobile popup (bottom sheet)
+                        showMobilePopup(this);
+                    } else {
+                        // Create popup content for desktop
+                        const popupContent = createRentalPopup(this.rentalData);
+                        
+                        // Add popup to marker
+                        this.unbindPopup();
+                        this.bindPopup(popupContent, {
+                            className: 'rent-popup',
+                            maxWidth: 500,
+                            minWidth: 300,
+                            offset: [0, -15],
+                            autoPan: true,
+                            closeButton: true,
+                            autoClose: true,
+                            closeOnEscapeKey: true,
+                        }).openPopup();
+                        
+                        // Initialize tabs in popup
+                        setTimeout(() => {
+                            setupPopupTabs();
+                        }, 10);
+                    }
+                });
+                
                 // Add hover events for name label
                 marker.on('mouseover', function(e) {
                     // Create hover label if it doesn't exist
@@ -427,7 +457,7 @@ function loadRentalsData() {
                     const point = map.latLngToContainerPoint(markerPos);
                     
                     this.hoverLabel.style.left = point.x + 'px';
-                    this.hoverLabel.style.top = (point.y - 30) + 'px';
+                    this.hoverLabel.style.top = (point.y + 35) + 'px'; // Position further below the marker
                     this.hoverLabel.style.display = 'block';
                     
                     // Trigger reflow for transition to work
@@ -458,7 +488,7 @@ function loadRentalsData() {
                         const point = map.latLngToContainerPoint(markerPos);
                         
                         marker.hoverLabel.style.left = point.x + 'px';
-                        marker.hoverLabel.style.top = (point.y - 30) + 'px';
+                        marker.hoverLabel.style.top = (point.y + 35) + 'px'; // Position further below the marker
                     }
                 });
                 
@@ -501,23 +531,522 @@ function loadRentalsData() {
         });
 }
 
-// Function for mobile popup (stub for now, will implement later)
+// Function to create rental popup content
+function createRentalPopup(rentalData) {
+    // Create main popup container
+    const popupContainer = document.createElement('div');
+    popupContainer.className = 'establishment-popup rent-popup-wrapper';
+    
+    // Create header
+    const header = document.createElement('div');
+    header.className = 'establishment-popup-header';
+    header.innerHTML = `<h3>${rentalData.name || '未命名的住所'}</h3>`;
+    popupContainer.appendChild(header);
+    
+    // Create tabs
+    const tabsContainer = document.createElement('div');
+    tabsContainer.className = 'popup-tabs';
+    tabsContainer.innerHTML = `
+        <div class="popup-tab active" data-tab="house-info">房屋資訊</div>
+        <div class="popup-tab" data-tab="safety-info">設備資訊</div>
+    `;
+    popupContainer.appendChild(tabsContainer);
+    
+    // Create content wrapper
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'popup-content-wrapper';
+    
+    // Create house info content (first tab)
+    const houseInfoContent = document.createElement('div');
+    houseInfoContent.className = 'establishment-popup-content active';
+    houseInfoContent.id = 'house-info-content';
+    
+    // Main info section
+    const mainInfoSection = document.createElement('div');
+    mainInfoSection.className = 'rent-info-section';
+    mainInfoSection.innerHTML = `<h4>基礎資訊</h4>`;
+    
+    const mainInfoGrid = document.createElement('div');
+    mainInfoGrid.className = 'main-info-grid';
+    
+    // Add main information items
+    const mainInfoItems = [
+        { label: '地址', value: rentalData.address || '未提供', icon: 'map-marker-alt' },
+        { label: '房東電話', value: rentalData.contact || '未提供', icon: 'phone' },
+        { label: '月租金', value: rentalData.rent || '未提供', icon: 'dollar-sign' },
+        { label: '押金', value: rentalData.deposit || '未提供', icon: 'money-bill-wave' },
+        { label: '房屋類型', value: rentalData.type || '未提供', icon: 'home' },
+        { label: '電費計價', value: rentalData.elec || '未提供', icon: 'bolt' }
+    ];
+    
+    mainInfoItems.forEach(item => {
+        const infoItem = document.createElement('div');
+        infoItem.className = 'main-info-item';
+        infoItem.innerHTML = `
+            <div class="label"><i class="fas fa-${item.icon}"></i> ${item.label}</div>
+            <div class="value">${item.value}</div>
+        `;
+        mainInfoGrid.appendChild(infoItem);
+    });
+    
+    mainInfoSection.appendChild(mainInfoGrid);
+    houseInfoContent.appendChild(mainInfoSection);
+    
+    // Secondary info section
+    const secondaryInfoSection = document.createElement('div');
+    secondaryInfoSection.className = 'rent-info-section';
+    secondaryInfoSection.innerHTML = `<h4>安全設備</h4>`;
+    
+    const safetyFeaturesContainer = document.createElement('div');
+    safetyFeaturesContainer.className = 'safety-features';
+    
+    // Create safety features
+    const safetyFeatures = [
+        { name: '滅火器', key: 'fire', icon: 'fire-extinguisher' },
+        { name: '緊急照明燈', key: 'light', icon: 'lightbulb' },
+        { name: '方向指示燈', key: 'exit', icon: 'sign-out-alt' },
+        { name: '火災警報器', key: 'alarm', icon: 'bell' }
+    ];
+    
+    safetyFeatures.forEach(feature => {
+        const value = rentalData[feature.key];
+        let className = 'safety-feature';
+        let displayText = '';
+        
+        if (value === '有' || value === true) {
+            className += ' available';
+            displayText = `${feature.name}: 有`;
+        } else if (value === '無' || value === false) {
+            className += ' unavailable';
+            displayText = `${feature.name}: 無`;
+        } else {
+            className += ' no-data';
+            displayText = `${feature.name}: ${value || ''}`;
+        }
+        
+        const featureEl = document.createElement('div');
+        featureEl.className = className;
+        featureEl.innerHTML = `
+            <i class="fas fa-${feature.icon}"></i>
+            <span>${displayText}</span>
+        `;
+        safetyFeaturesContainer.appendChild(featureEl);
+    });
+    
+    secondaryInfoSection.appendChild(safetyFeaturesContainer);
+    houseInfoContent.appendChild(secondaryInfoSection);
+    
+    // Third info section - restrictions
+    const restrictionsSection = document.createElement('div');
+    restrictionsSection.className = 'rent-info-section';
+    restrictionsSection.innerHTML = `<h4>特殊要求</h4>`;
+    
+    // Create restrictions grid
+    const restrictionsGrid = document.createElement('div');
+    restrictionsGrid.className = 'main-info-grid';
+    
+    // Add restrictions items
+    const restrictionsItems = [
+        { label: '性別限制', value: rentalData.sex || '未提供', icon: 'venus-mars' },
+        { label: '寵物友善', value: rentalData.pet || '未提供', icon: 'paw' }
+    ];
+    
+    restrictionsItems.forEach(item => {
+        const restrictionItem = document.createElement('div');
+        restrictionItem.className = 'main-info-item';
+        restrictionItem.innerHTML = `
+            <div class="label"><i class="fas fa-${item.icon}"></i> ${item.label}</div>
+            <div class="value">${item.value}</div>
+        `;
+        restrictionsGrid.appendChild(restrictionItem);
+    });
+    
+    restrictionsSection.appendChild(restrictionsGrid);
+    houseInfoContent.appendChild(restrictionsSection);
+    
+    contentWrapper.appendChild(houseInfoContent);
+    
+    // Create equipment/safety info content (second tab)
+    const safetyInfoContent = document.createElement('div');
+    safetyInfoContent.className = 'establishment-popup-content';
+    safetyInfoContent.id = 'safety-info-content';
+    
+    // Government requirements section
+    const governmentRequirementsSection = document.createElement('div');
+    governmentRequirementsSection.className = 'rent-info-section';
+    governmentRequirementsSection.innerHTML = `
+        <h4>政府安全設備要求</h4>
+        <p class="requirements-note">根據消防法規定，合法出租住宅應具備以下安全設備：</p>
+    `;
+    
+    // Create government requirements list
+    const requirementsList = document.createElement('div');
+    requirementsList.className = 'safety-features';
+    
+    // Define required safety features by government
+    const requiredSafetyFeatures = [
+        { name: '滅火器', description: '用於撲滅小型火災', icon: 'fire-extinguisher' },
+        { name: '緊急照明燈', description: '停電時提供照明', icon: 'lightbulb' },
+        { name: '方向指示燈', description: '指引逃生方向', icon: 'sign-out-alt' },
+        { name: '火災警報器', description: '偵測火災並警報', icon: 'bell' }
+    ];
+    
+    requiredSafetyFeatures.forEach(feature => {
+        const isAvailable = rentalData[feature.key] === '有';
+        const featureEl = document.createElement('div');
+        featureEl.className = 'safety-feature';
+        featureEl.innerHTML = `
+            <i class="fas fa-${feature.icon}"></i>
+            <div>
+                <div><strong>${feature.name}</strong></div>
+                <div class="feature-description">${feature.description}</div>
+            </div>
+        `;
+        requirementsList.appendChild(featureEl);
+    });
+    
+    governmentRequirementsSection.appendChild(requirementsList);
+    safetyInfoContent.appendChild(governmentRequirementsSection);
+    
+    // Removed "此房屋安全設備" section
+    
+    // Equipment/Stuff section (if available)
+    if (rentalData.stuff) {
+        const stuffSection = document.createElement('div');
+        stuffSection.className = 'rent-info-section';
+        stuffSection.innerHTML = `
+            <h4>設備清單</h4>
+            <p class="notes-content">${rentalData.stuff}</p>
+        `;
+        safetyInfoContent.appendChild(stuffSection);
+    }
+    
+    // Notes section (if available)
+    if (rentalData.note) {
+        const notesSection = document.createElement('div');
+        notesSection.className = 'rent-info-section no-border';
+        notesSection.innerHTML = `
+            <h4>備註</h4>
+            <p class="notes-content">${rentalData.note}</p>
+        `;
+        safetyInfoContent.appendChild(notesSection);
+    }
+    
+    contentWrapper.appendChild(safetyInfoContent);
+    popupContainer.appendChild(contentWrapper);
+    
+    return popupContainer;
+}
+
+// Function to handle popup tabs
+function setupPopupTabs() {
+    const tabs = document.querySelectorAll('.rent-popup .popup-tab');
+    if (!tabs.length) return;
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Get the tab id
+            const tabId = this.getAttribute('data-tab');
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.rent-popup .popup-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all content
+            document.querySelectorAll('.rent-popup .establishment-popup-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show the corresponding content
+            document.getElementById(`${tabId}-content`).classList.add('active');
+        });
+    });
+}
+
+// Function for mobile popup handling
 function setupMobilePopup() {
     window.mobilePopupActive = false;
     window.bottomSheetActive = false;
     
-    // These will be implemented fully when the popup design is ready
+    // Setup bottom sheet for rentals on mobile
     window.showMobilePopup = function(marker) {
-        console.log('Mobile popup would show here');
-    };
-    
-    window.closeMobilePopup = function() {
-        console.log('Mobile popup would close here');
+        if (!marker || !marker.rentalData) return;
+        
+        const bottomSheetContainer = document.getElementById('bottom-sheet-container');
+        const bottomSheetContent = document.getElementById('bottom-sheet-content');
+        
+        if (!bottomSheetContainer || !bottomSheetContent) return;
+        
+        // Create mobile popup content (similar to desktop popup but adapted for mobile)
+        const mobileContent = document.createElement('div');
+        mobileContent.className = 'bottom-sheet-establishment-content rent-popup';
+        
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'bottom-sheet-header';
+        header.innerHTML = `
+            <div class="bottom-sheet-title-container">
+                <h3 class="bottom-sheet-title">${marker.rentalData.name || '未命名的住所'}</h3>
+            </div>
+            <div class="bottom-sheet-close" id="bottom-sheet-close">
+                <i class="fas fa-times"></i>
+            </div>
+        `;
+        mobileContent.appendChild(header);
+        
+        // Create tabs (similar to desktop)
+        const tabsContainer = document.createElement('div');
+        tabsContainer.className = 'popup-tabs';
+        tabsContainer.innerHTML = `
+            <div class="popup-tab active" data-tab="mobile-house-info">房屋資訊</div>
+            <div class="popup-tab" data-tab="mobile-safety-info">設備資訊</div>
+        `;
+        mobileContent.appendChild(tabsContainer);
+        
+        // Create content wrapper
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'popup-content-wrapper';
+        
+        // House info content (first tab)
+        const houseInfoContent = document.createElement('div');
+        houseInfoContent.className = 'establishment-popup-content active';
+        houseInfoContent.id = 'mobile-house-info-content';
+        
+        // Main info section
+        const mainInfoSection = document.createElement('div');
+        mainInfoSection.className = 'rent-info-section';
+        mainInfoSection.innerHTML = `<h4>基礎資訊</h4>`;
+        
+        // Add main information items
+        const mainInfoItems = [
+            { label: '地址', value: marker.rentalData.address || '未提供', icon: 'map-marker-alt' },
+            { label: '房東電話', value: marker.rentalData.contact || '未提供', icon: 'phone' },
+            { label: '月租金', value: marker.rentalData.rent || '未提供', icon: 'dollar-sign' },
+            { label: '押金', value: marker.rentalData.deposit || '未提供', icon: 'money-bill-wave' },
+            { label: '房屋類型', value: marker.rentalData.type || '未提供', icon: 'home' },
+            { label: '電費計價', value: marker.rentalData.elec || '未提供', icon: 'bolt' }
+        ];
+        
+        // Create mobile-friendly list instead of grid for main info
+        mainInfoItems.forEach(item => {
+            const infoRow = document.createElement('div');
+            infoRow.className = 'info-row';
+            infoRow.innerHTML = `
+                <div class="label"><i class="fas fa-${item.icon}"></i> ${item.label}</div>
+                <div class="value">${item.value}</div>
+            `;
+            mainInfoSection.appendChild(infoRow);
+        });
+        
+        houseInfoContent.appendChild(mainInfoSection);
+        
+        // Secondary info section - safety features
+        const secondaryInfoSection = document.createElement('div');
+        secondaryInfoSection.className = 'rent-info-section';
+        secondaryInfoSection.innerHTML = `<h4>安全設備</h4>`;
+        
+        const safetyFeaturesContainer = document.createElement('div');
+        safetyFeaturesContainer.className = 'safety-features';
+        
+        // Create safety features
+        const safetyFeatures = [
+            { name: '滅火器', key: 'fire', icon: 'fire-extinguisher' },
+            { name: '緊急照明燈', key: 'light', icon: 'lightbulb' },
+            { name: '方向指示燈', key: 'exit', icon: 'sign-out-alt' },
+            { name: '火災警報器', key: 'alarm', icon: 'bell' }
+        ];
+        
+        safetyFeatures.forEach(feature => {
+            const value = marker.rentalData[feature.key];
+            let className = 'safety-feature';
+            let displayText = '';
+            
+            if (value === '有' || value === true) {
+                className += ' available';
+                displayText = `${feature.name}: 有`;
+            } else if (value === '無' || value === false) {
+                className += ' unavailable';
+                displayText = `${feature.name}: 無`;
+            } else {
+                className += ' no-data';
+                displayText = `${feature.name}: ${value || ''}`;
+            }
+            
+            const featureEl = document.createElement('div');
+            featureEl.className = className;
+            featureEl.innerHTML = `
+                <i class="fas fa-${feature.icon}"></i>
+                <span>${displayText}</span>
+            `;
+            safetyFeaturesContainer.appendChild(featureEl);
+        });
+        
+        secondaryInfoSection.appendChild(safetyFeaturesContainer);
+        houseInfoContent.appendChild(secondaryInfoSection);
+        
+        // Restrictions info
+        const restrictionsSection = document.createElement('div');
+        restrictionsSection.className = 'rent-info-section';
+        restrictionsSection.innerHTML = `<h4>特殊要求</h4>`;
+        
+        // Add restrictions items as rows for better mobile display
+        const restrictionsItems = [
+            { label: '性別限制', value: marker.rentalData.sex || '未提供', icon: 'venus-mars' },
+            { label: '寵物友善', value: marker.rentalData.pet || '未提供', icon: 'paw' }
+        ];
+        
+        restrictionsItems.forEach(item => {
+            const infoRow = document.createElement('div');
+            infoRow.className = 'info-row';
+            infoRow.innerHTML = `
+                <div class="label"><i class="fas fa-${item.icon}"></i> ${item.label}</div>
+                <div class="value">${item.value}</div>
+            `;
+            restrictionsSection.appendChild(infoRow);
+        });
+        
+        houseInfoContent.appendChild(restrictionsSection);
+        contentWrapper.appendChild(houseInfoContent);
+        
+        // Safety info content (second tab)
+        const safetyInfoContent = document.createElement('div');
+        safetyInfoContent.className = 'establishment-popup-content';
+        safetyInfoContent.id = 'mobile-safety-info-content';
+        
+        // Government requirements section
+        const governmentRequirementsSection = document.createElement('div');
+        governmentRequirementsSection.className = 'rent-info-section';
+        governmentRequirementsSection.innerHTML = `
+            <h4>政府安全設備要求</h4>
+            <p class="requirements-note">根據消防法規定，合法出租住宅應具備以下安全設備：</p>
+        `;
+        
+        // Create government requirements list
+        const requirementsList = document.createElement('div');
+        requirementsList.className = 'safety-features safety-features-mobile';
+        
+        // Define required safety features
+        const requiredSafetyFeatures = [
+            { name: '滅火器', description: '用於撲滅小型火災', icon: 'fire-extinguisher' },
+            { name: '緊急照明燈', description: '停電時提供照明', icon: 'lightbulb' },
+            { name: '方向指示燈', description: '指引逃生方向', icon: 'sign-out-alt' },
+            { name: '火災警報器', description: '偵測火災並警報', icon: 'bell' }
+        ];
+        
+        requiredSafetyFeatures.forEach(feature => {
+            const featureEl = document.createElement('div');
+            featureEl.className = 'safety-feature';
+            featureEl.innerHTML = `
+                <i class="fas fa-${feature.icon}"></i>
+                <div>
+                    <div><strong>${feature.name}</strong></div>
+                    <div class="feature-description">${feature.description}</div>
+                </div>
+            `;
+            requirementsList.appendChild(featureEl);
+        });
+        
+        governmentRequirementsSection.appendChild(requirementsList);
+        safetyInfoContent.appendChild(governmentRequirementsSection);
+        
+        // Removed "此房屋安全設備" section
+        
+        // Equipment/Stuff section (if available)
+        if (marker.rentalData.stuff) {
+            const stuffSection = document.createElement('div');
+            stuffSection.className = 'rent-info-section';
+            stuffSection.innerHTML = `
+                <h4>設備清單</h4>
+                <p class="notes-content">${marker.rentalData.stuff}</p>
+            `;
+            safetyInfoContent.appendChild(stuffSection);
+        }
+        
+        // Notes section (if available)
+        if (marker.rentalData.note) {
+            const notesSection = document.createElement('div');
+            notesSection.className = 'rent-info-section no-border';
+            notesSection.innerHTML = `
+                <h4>備註</h4>
+                <p class="notes-content">${marker.rentalData.note}</p>
+            `;
+            safetyInfoContent.appendChild(notesSection);
+        }
+        
+        contentWrapper.appendChild(safetyInfoContent);
+        mobileContent.appendChild(contentWrapper);
+        
+        // Clear previous content and add new content
+        bottomSheetContent.innerHTML = '';
+        bottomSheetContent.appendChild(mobileContent);
+        
+        // Setup mobile tabs
+        setupMobilePopupTabs();
+        
+        // Show bottom sheet
+        bottomSheetContainer.classList.add('active');
+        window.bottomSheetActive = true;
+        
+        // Add close handler
+        const closeBtn = document.getElementById('bottom-sheet-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeBottomSheet);
+        }
     };
     
     window.closeBottomSheet = function() {
-        console.log('Bottom sheet would close here');
+        const bottomSheetContainer = document.getElementById('bottom-sheet-container');
+        if (bottomSheetContainer) {
+            bottomSheetContainer.classList.remove('active');
+            window.bottomSheetActive = false;
+            
+            // Clear content after animation
+            setTimeout(() => {
+                const bottomSheetContent = document.getElementById('bottom-sheet-content');
+                if (bottomSheetContent) {
+                    bottomSheetContent.innerHTML = '';
+                }
+            }, 300);
+        }
     };
+    
+    // Stub for legacy code
+    window.closeMobilePopup = function() {
+        closeBottomSheet();
+    };
+}
+
+// Function to handle mobile popup tabs
+function setupMobilePopupTabs() {
+    const tabs = document.querySelectorAll('.bottom-sheet-establishment-content .popup-tab');
+    if (!tabs.length) return;
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Get the tab id
+            const tabId = this.getAttribute('data-tab');
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.bottom-sheet-establishment-content .popup-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all content
+            document.querySelectorAll('.bottom-sheet-establishment-content .establishment-popup-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show the corresponding content
+            document.getElementById(`${tabId}-content`).classList.add('active');
+        });
+    });
 }
 
 // Setup global info guide popup for all pages
