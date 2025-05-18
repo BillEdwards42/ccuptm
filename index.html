@@ -1,4 +1,3 @@
-<!-- git reset --hard 20137b6 -->
 <!DOCTYPE html>
 <html lang="zh-Hant-TW">
 <head>
@@ -18,70 +17,897 @@
     <!-- Favicon -->
     <link rel="icon" href="src/images/p_logo.png" type="image/png" sizes="48x48">
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <!-- Our custom styles -->
     <link rel="stylesheet" href="src/css/styles.css" />
     <!-- Special intro styles -->
     <link rel="stylesheet" href="src/css/intro-mobile.css" />
+    
+    <style>
+        /* Custom styles for this page only */
+        :root {
+            --job-color: #FF7F50;
+            --job-color-dark: #F05E23;
+            --rent-color: #4CAF50;
+            --rent-color-dark: #3B8A3E;
+            --text-color: #333333;
+            --text-light: #757575;
+            --bg-light: #f9f9f9;
+            --bg-dark: #333333;
+            --transition-speed: 0.3s;
+        }
+        
+        /* Section styles with unique colors for each */
+        .about-section {
+            border-left: 4px solid #8B5A2B; /* Brown */
+        }
+        
+        .about-section .section-title {
+            color: #8B5A2B;
+        }
+        
+        .about-section .section-title::after {
+            background-color: #8B5A2B;
+            opacity: 0.7;
+        }
+        
+        .update-section {
+            border-left: 4px solid #607D8B; /* Blue-gray */
+        }
+        
+        .update-section .section-title {
+            color: #455A64;
+        }
+        
+        .update-section .section-title::after {
+            background-color: #607D8B;
+            opacity: 0.7;
+        }
+        
+        .contact-section {
+            border-left: 4px solid #9C27B0;
+        }
+        
+        .contact-section .section-title::after {
+            background-color: #9C27B0;
+            opacity: 0.7;
+        }
+        
+        .contact-section .section-title {
+            color: #7B1FA2;
+        }
+        
+        .contact-section p {
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            padding: 0 0 10px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        body.intro-page {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, rgba(255,127,80,0.05) 0%, rgba(255,127,80,0.05) 50%, rgba(76,175,80,0.05) 50%, rgba(76,175,80,0.05) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .intro-container {
+            width: 100%;
+            max-width: 1400px;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+        
+        .intro-card {
+            width: 100%;
+            height: auto;
+            max-height: calc(100vh - 80px);
+            display: flex;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .intro-sidebar {
+            width: 40%;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 100%);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .intro-main {
+            width: 60%;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Completely rebuild the logo styling from scratch */
+        .intro-logo {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Explicitly remove any background */
+            background: none !important;
+        }
+        
+        /* Spinning border - thicker but not too large */
+        .intro-logo::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -12px;
+            background: conic-gradient(from 0deg, var(--job-color) 0%, var(--job-color) 50%, var(--rent-color) 50%, var(--rent-color) 100%);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+            z-index: 1;
+            /* Add a subtle glow effect */
+            box-shadow: 0 0 15px rgba(255, 127, 80, 0.3);
+        }
+        
+        /* Add a white circle between spinning border and image */
+        .intro-logo::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: white;
+            border-radius: 50%;
+            z-index: 1; /* Same as spinning border, but appears later in the DOM */
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* The logo image */
+        .intro-logo img {
+            width: 140px; /* Slightly smaller to leave space for white ring */
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: white;
+            box-shadow: none; /* Remove shadow that could create dark edges */
+            position: relative; 
+            z-index: 2; /* Higher than the spinning border */
+            border: 5px solid white; /* Extra white border to ensure no dark edges */
+        }
+        
+        .intro-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .intro-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+            margin-bottom: 10px;
+        }
+        
+        .intro-title h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-light);
+            margin: 0;
+            margin-bottom: 10px;
+        }
+        
+        .map-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 280px;
+        }
+        
+        .map-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 500;
+            color: white;
+            text-decoration: none;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0), rgba(255,255,255,0.1), rgba(255,255,255,0));
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .map-button:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .map-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .map-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .job-button {
+            background: linear-gradient(45deg, var(--job-color), var(--job-color-dark));
+        }
+        
+        .rent-button {
+            background: linear-gradient(45deg, var(--rent-color), var(--rent-color-dark));
+        }
+        
+        .map-button i {
+            font-size: 24px;
+            margin-left: 10px;
+        }
+        
+        .intro-content {
+            height: 100%;
+        }
+        
+        .intro-text {
+            color: var(--text-color);
+            line-height: 1.8;
+            max-width: 100%;
+        }
+        
+        .intro-text p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            max-width: 100%;
+        }
+        
+        .intro-text strong {
+            position: relative;
+            display: inline-block;
+            z-index: 1;
+        }
+        
+        .intro-text strong.job-highlight {
+            padding: 0 3px;
+        }
+        
+        .intro-text strong.job-highlight::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 8px;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(255, 127, 80, 0.2);
+            z-index: -1;
+        }
+        
+        .intro-text strong.rent-highlight {
+            padding: 0 3px;
+        }
+        
+        .intro-text strong.rent-highlight::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 8px;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(76, 175, 80, 0.2);
+            z-index: -1;
+        }
+        
+        .intro-card::before,
+        .intro-card::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            opacity: 0.05;
+            filter: blur(50px);
+            z-index: 0;
+        }
+        
+        .intro-card::before {
+            background-color: var(--job-color);
+            top: -300px;
+            left: -300px;
+        }
+        
+        .intro-card::after {
+            background-color: var(--rent-color);
+            bottom: -300px;
+            right: -300px;
+        }
+        
+        .content-section {
+            padding: 22px 25px;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: all var(--transition-speed);
+            border-left: 4px solid transparent;
+            width: 92%;
+            margin: 0 auto;
+        }
+        
+        .content-section:hover {
+            transform: translateX(8px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        
+        .job-section {
+            border-left: 4px solid var(--job-color);
+        }
+        
+        .rent-section {
+            border-left: 4px solid var(--rent-color);
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            position: relative;
+            letter-spacing: 0.5px;
+            color: #333; /* Default color */
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -7px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: #333;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .content-section:hover .section-title::after {
+            width: 80px;
+            opacity: 0.8;
+        }
+        
+        .job-section .section-title {
+            color: var(--job-color-dark);
+        }
+        
+        .job-section .section-title::after {
+            background-color: var(--job-color);
+            opacity: 0.7;
+        }
+        
+        .rent-section .section-title {
+            color: var(--rent-color-dark);
+        }
+        
+        .rent-section .section-title::after {
+            background-color: var(--rent-color);
+            opacity: 0.7;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .content-section p {
+            font-size: 16px;
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+        }
+        
+        /* Add nice fade-in animation for sections */
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .content-section, .contact-info {
+            animation: fadeInRight 0.5s ease-out forwards;
+        }
+        
+        .content-section:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        
+        .content-section:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .content-section:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        
+        .content-section:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+        
+        .content-section:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+        
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .circle-1 {
+            width: 150px;
+            height: 150px;
+            background-color: var(--job-color);
+            top: 20%;
+            left: 10%;
+        }
+        
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            background-color: var(--rent-color);
+            bottom: 10%;
+            right: 15%;
+        }
+        
+        /* Mobile styles */
+        .intro-mobile {
+            display: none;
+        }
+        
+        @media (max-width: 992px) {
+            .intro-container {
+                padding: 20px;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .intro-card {
+                flex-direction: column;
+                max-width: 650px;
+                max-height: none;
+                height: auto;
+            }
+            
+            .intro-sidebar, 
+            .intro-main {
+                width: 100%;
+                padding: 30px;
+                max-height: none;
+                overflow-y: visible;
+            }
+            
+            .intro-main {
+                gap: 15px;
+                padding: 30px 15px;
+            }
+            
+            .intro-logo {
+                width: 150px;
+                height: 150px;
+                margin-bottom: 20px;
+            }
+            
+            .intro-logo img {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .content-section {
+                padding: 15px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .intro-container {
+                display: none;
+            }
+            
+            .intro-mobile {
+                display: block;
+                padding: 20px;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            .mobile-card {
+                background: white;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                position: relative;
+            }
+            
+            .mobile-header {
+                position: relative;
+                padding: 30px 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                background: linear-gradient(120deg, rgba(255,127,80,0.1) 0%, rgba(76,175,80,0.1) 100%);
+                overflow: hidden;
+            }
+            
+            .mobile-header::before,
+            .mobile-header::after {
+                content: '';
+                position: absolute;
+                border-radius: 50%;
+                opacity: 0.2;
+            }
+            
+            .mobile-header::before {
+                width: 150px;
+                height: 150px;
+                background-color: var(--job-color);
+                top: -75px;
+                right: -75px;
+            }
+            
+            .mobile-header::after {
+                width: 100px;
+                height: 100px;
+                background-color: var(--rent-color);
+                bottom: -50px;
+                left: -50px;
+            }
+            
+            .mobile-logo {
+                position: relative;
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1;
+            }
+            
+            .mobile-logo::before {
+                content: '';
+                position: absolute;
+                top: -8px;
+                left: -8px;
+                right: -8px;
+                bottom: -8px;
+                background: conic-gradient(from 0deg, var(--job-color) 0%, var(--job-color) 50%, var(--rent-color) 50%, var(--rent-color) 100%);
+                border-radius: 50%;
+                z-index: -1;
+                animation: rotate 20s linear infinite;
+            }
+            
+            .mobile-logo img {
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+                border-radius: 50%;
+                background: white;
+            }
+            
+            .mobile-title h1 {
+                font-size: 24px;
+                margin: 0;
+                margin-bottom: 8px;
+                color: var(--text-color);
+                position: relative;
+                z-index: 1;
+            }
+            
+            .mobile-title h2 {
+                font-size: 16px;
+                margin: 0;
+                color: var(--text-light);
+                font-weight: 400;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .mobile-body {
+                padding: 20px;
+            }
+            
+            .mobile-section {
+                background-color: var(--bg-light);
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            }
+            
+            .job-mobile-section {
+                border-left: 4px solid var(--job-color);
+            }
+            
+            .rent-mobile-section {
+                border-left: 4px solid var(--rent-color);
+            }
+            
+            .mobile-section-title {
+                font-size: 16px;
+                font-weight: 600;
+                margin-top: 0;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                color: var(--text-color);
+            }
+            
+            .job-mobile-section .mobile-section-title {
+                color: var(--job-color-dark);
+            }
+            
+            .rent-mobile-section .mobile-section-title {
+                color: var(--rent-color-dark);
+            }
+            
+            .mobile-section-title i {
+                margin-right: 8px;
+                font-size: 14px;
+                width: 18px;
+                text-align: center;
+            }
+            
+            .mobile-section p {
+                font-size: 14px;
+                color: var(--text-color);
+                margin: 0;
+                line-height: 1.5;
+            }
+            
+            .mobile-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 25px;
+            }
+            
+            .mobile-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 15px;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 500;
+                color: white;
+                text-decoration: none;
+                transition: transform 0.3s, box-shadow 0.3s;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+            
+            .mobile-button i {
+                margin-left: 8px;
+            }
+            
+            .mobile-button.job-button {
+                background: linear-gradient(45deg, var(--job-color), var(--job-color-dark));
+            }
+            
+            .mobile-button.rent-button {
+                background: linear-gradient(45deg, var(--rent-color), var(--rent-color-dark));
+            }
+            
+            .mobile-contact-info {
+                font-size: 13px;
+                color: var(--text-light);
+                text-align: center;
+                margin-top: 20px;
+                background: var(--bg-light);
+                padding: 10px;
+                border-radius: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .intro-mobile {
+                padding: 15px;
+            }
+            
+            .mobile-header {
+                padding: 25px 15px;
+            }
+            
+            .mobile-logo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .mobile-logo img {
+                width: 85px;
+                height: 85px;
+            }
+            
+            .mobile-title h1 {
+                font-size: 22px;
+            }
+            
+            .mobile-title h2 {
+                font-size: 14px;
+            }
+            
+            .mobile-body {
+                padding: 15px;
+            }
+            
+            .mobile-text p {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body class="intro-page">
-    <!-- Desktop Version (B) - Side by side -->
+    <!-- Desktop Version -->
     <div class="intro-container">
-        <div class="intro-content">
-            <div class="intro-left">
+        <div class="intro-card">
+            <div class="decorative-circle circle-1"></div>
+            <div class="decorative-circle circle-2"></div>
+            
+            <div class="intro-sidebar">
                 <div class="intro-logo">
-                    <img src="src/images/p_logo.png" alt="中正地圖 - 中正大學資訊地圖">
+                    <img src="src/images/p_logo.png" alt="中正大學地圖">
                 </div>
-                <h1>中正大學地圖</h1>
-                <h2>CCUMAP.com</h2>
-                <div class="buttons-container">
-                    <a href="map/jobmap.html" class="enter-button job-button">
-                        <span>進入打工地圖</span>
-                        <i class="fas fa-briefcase"></i>
-                    </a>
-                    <a href="map/rentmap.html" class="enter-button rent-button">
+                <div class="intro-title">
+                    <h1>中正大學地圖</h1>
+                    <h2>CCU Maps</h2>
+                </div>
+                <div class="map-buttons">
+                    <a href="map/rentmap.html" class="map-button rent-button">
                         <span>進入租屋地圖</span>
                         <i class="fas fa-home"></i>
                     </a>
+                    <a href="map/jobmap.html" class="map-button job-button">
+                        <span>進入打工地圖</span>
+                        <i class="fas fa-briefcase"></i>
+                    </a>
                 </div>
             </div>
-            <div class="intro-right">
-                <div class="intro-text">
-                    <p>我們在2025企管系專題網站做了一個打工地圖網站，順便在同個網域名下做了一個租屋地圖，還請學弟妹多多利用這些資訊然後再和你們的學弟妹分享這個網站，我們想把它變成有用的東西。</p>
-                    <p><strong>打工地圖</strong>：整理中正大學附近大吃、中吃、小吃店家的打工資訊，還有之前打工過的人留下的評價。讓你在決定去哪打工前，能先看看各家店的薪資福利和過往打工者的心得。</p>
-                    <p><strong>租屋地圖</strong>：提供學校附近租屋資訊，包含房型、租金、設備等詳細資料，還有安全設施的檢查狀況，幫助同學們找到安全舒適的住處。</p>
-                    <p>資訊上可能會出現錯誤，尤其是租屋相關資訊在蒐集時遇到相當多阻礙，若資訊錯誤請多多包涵，若想要修改資訊請郵寄至ccumap42@gmail.com，感謝您的配合。</p>
+            
+            <div class="intro-main">
+                <div class="content-section about-section">
+                    <h3 class="section-title"><i class="fas fa-info-circle"></i> 關於本站</h3>
+                    <p>您好！這是我們企管系2025專題製作的中正大學地圖網站，為大家提供學校附近的打工和租屋資訊。我們希望這個網站能成為同學們生活中的實用工具，也請多多與其他同學分享。</p>
+                </div>
+                
+                <div class="content-section rent-section">
+                    <h3 class="section-title"><i class="fas fa-home"></i> 租屋地圖</h3>
+                    <p>提供學校附近租屋資訊，包含房型、租金、設備等詳細資料，還有安全設施的檢查狀況，幫助同學們找到安全舒適的住處。</p>
+                </div>
+                
+                <div class="content-section job-section">
+                    <h3 class="section-title"><i class="fas fa-briefcase"></i> 打工地圖</h3>
+                    <p>整理中正大學附近店家的打工資訊，包含薪資、工時、福利等詳細內容，還有之前打工過的學長姐們的真實評價。</p>
+                </div>
+                
+                <div class="content-section update-section">
+                    <h3 class="section-title"><i class="fas fa-sync-alt"></i> 資料更新</h3>
+                    <p>資訊收集過程中難免有所疏漏，若發現資料有誤，請多包涵並來信告知，我們會盡快修正。感謝大家的支持！</p>
+                </div>
+                
+                <div class="content-section contact-section">
+                    <h3 class="section-title"><i class="fas fa-envelope"></i> 聯絡信箱</h3>
+                    <p>如有任何問題或建議，歡迎隨時與我們聯繫：<br>ccumap42@gmail.com</p>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Mobile Version (A) - Stacked (will be shown on mobile via CSS) -->
-    <div class="intro-container-mobile">
-        <div class="intro-content-mobile">
-            <div class="intro-logo">
-                <img src="src/images/p_logo.png" alt="中正大學資訊地圖標誌">
+    
+    <!-- Mobile Version -->
+    <div class="intro-mobile">
+        <div class="mobile-card">
+            <div class="mobile-header">
+                <div class="mobile-logo">
+                    <img src="src/images/p_logo.png" alt="中正大學地圖">
+                </div>
+                <div class="mobile-title">
+                    <h1>中正大學地圖</h1>
+                    <h2>CCU Maps</h2>
+                </div>
             </div>
-            <h1>中正大學地圖</h1>
-            <h2>CCU Campus Maps</h2>
-            <div class="intro-text">
-                <p>嗨，大家好！這個網站是「中正大學地圖」專案，提供中正大學附近的打工和租屋資訊。我們團隊費了不少心思收集整理這些資訊，方便同學們觀看！</p>
-                <p><strong>打工地圖</strong>：整理中正大學附近店家的打工資訊和之前打工過的人留下的評價。</p>
-                <p><strong>租屋地圖</strong>：提供嘉義市中正大學附近租屋資訊，包含房型、租金、設備等詳細資料。</p>
-                <p>這個網站是我們2025畢業專題的心血，我們真心希望它能幫到人！請多多分享給身邊的朋友。</p>
-                <p>資訊如有任何錯誤，歡迎來信ccumap42@gmail.com，完成認證還會獲得認證標章。</p>
-            </div>
-            <div class="buttons-container mobile-buttons">
-                <a href="map/jobmap.html" class="enter-button job-button">
-                    <span>進入打工地圖</span>
-                    <i class="fas fa-briefcase"></i>
-                </a>
-                <a href="map/rentmap.html" class="enter-button rent-button">
-                    <span>進入租屋地圖</span>
-                    <i class="fas fa-home"></i>
-                </a>
+            
+            <div class="mobile-body">
+                <div class="mobile-section">
+                    <h3 class="mobile-section-title">關於本站</h3>
+                    <p>您好！這是我們企管系2025專題製作的中正大學地圖網站，為大家提供學校附近的打工和租屋資訊。</p>
+                </div>
+                
+                <div class="mobile-section rent-mobile-section">
+                    <h3 class="mobile-section-title"><i class="fas fa-home"></i> 租屋地圖</h3>
+                    <p>學校附近租屋資訊，包含房型、租金、設備以及安全設施的檢查狀況。</p>
+                </div>
+                
+                <div class="mobile-section job-mobile-section">
+                    <h3 class="mobile-section-title"><i class="fas fa-briefcase"></i> 打工地圖</h3>
+                    <p>中正大學附近店家的打工資訊，包含薪資、工時、福利，以及學長姐們的真實評價。</p>
+                </div>
+                
+                <div class="mobile-section">
+                    <h3 class="mobile-section-title">資料更新</h3>
+                    <p>資訊如有錯誤，歡迎來信告知我們會盡快修正。</p>
+                </div>
+                
+                <div class="mobile-buttons">
+                    <a href="map/rentmap.html" class="mobile-button rent-button">
+                        進入租屋地圖 <i class="fas fa-home"></i>
+                    </a>
+                    <a href="map/jobmap.html" class="mobile-button job-button">
+                        進入打工地圖 <i class="fas fa-briefcase"></i>
+                    </a>
+                </div>
+                
+                <div class="mobile-contact-info">
+                    資訊錯誤請聯絡：ccumap42@gmail.com
+                </div>
             </div>
         </div>
     </div>
