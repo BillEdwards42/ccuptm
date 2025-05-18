@@ -1010,13 +1010,51 @@ function setupMobilePopup() {
                 if (bottomSheetContent) {
                     bottomSheetContent.innerHTML = '';
                 }
+                
+                // Force a map refresh on mobile devices (both Android and iOS)
+                if (isTouchDevice() && map) {
+                    console.log('Mobile bottom sheet closed - triggering map refresh');
+                    
+                    // Force a redraw of the map
+                    map.invalidateSize({reset: true, animate: false, pan: false});
+                    
+                    // Additional fix: trigger a small pan to force tile reload if needed
+                    const center = map.getCenter();
+                    map.panBy([1, 1], {
+                        animate: false,
+                        duration: 0.1
+                    });
+                    map.panBy([-1, -1], {
+                        animate: false,
+                        duration: 0.1
+                    });
+                    
+                    // Make sure all touch handlers are re-enabled
+                    map.dragging.enable();
+                    map.touchZoom.enable();
+                    map.doubleClickZoom.enable();
+                    if (map.tap) map.tap.enable();
+                    
+                    // Complete any ghost touches
+                    forceCompleteGhostTouches();
+                }
             }, 300);
         }
     };
     
-    // Stub for legacy code
+    // For legacy code compatibility, but with direct map refresh handling
     window.closeMobilePopup = function() {
+        // First close the bottom sheet
         closeBottomSheet();
+        
+        // Additional direct map refresh for possible direct closeMobilePopup calls
+        // This ensures compatibility with potential calls from jobmap or other code
+        setTimeout(() => {
+            if (isTouchDevice() && map) {
+                console.log('Mobile popup close detected via legacy method - triggering additional map refresh');
+                map.invalidateSize({reset: true, animate: false, pan: false});
+            }
+        }, 350); // Slightly longer timeout to ensure bottom sheet animation completes first
     };
 }
 
