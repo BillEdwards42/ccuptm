@@ -50,24 +50,67 @@ body {
     border-bottom: 2px solid rgba(76, 175, 80, 0.3); /* Light green border to match rent-marker-icon */
 }
 
+/* Rent map info guide styling - completely override any jobmap styles */
+.rent-guide-container {
+    border-left: 4px solid rgba(76, 175, 80, 0.7) !important;
+    border-top: none !important;
+    background-color: white !important;
+}
+
+.rent-guide-header {
+    background-color: rgba(76, 175, 80, 0.1) !important;
+    border-bottom: 2px solid rgba(76, 175, 80, 0.3) !important;
+    border-top: none !important;
+}
+
+.rent-guide-header h3 {
+    color: #2e7d32 !important;
+}
+
+.rent-auth-icon {
+    background-color: rgba(76, 175, 80, 0.2) !important;
+    border: none !important;
+}
+
+.rent-auth-icon .auth-icon-inner {
+    color: #1b5e20 !important;
+    background-color: transparent !important;
+    font-weight: bold !important;
+}
+
+.rent-category-content p {
+    line-height: 1.6 !important;
+    font-size: 15px !important;
+    margin-bottom: 12px !important;
+}
+
+.rent-category-content strong {
+    color: #2e7d32 !important;
+}
+
 .navbar-logo {
     display: flex;
-    align-items: center;
+    flex-direction: row; /* Ensure horizontal layout */
+    align-items: center; /* Vertical center alignment */
     min-width: 0;
     overflow: hidden;
     flex: 1; /* Allow logo area to take available space */
+    height: 70px; /* Explicitly set to navbar height */
 }
 
 .navbar-logo img {
     height: 50px;
     width: 50px;
     margin-right: 12px;
+    margin-top: 0; /* Remove any top margin */
+    margin-bottom: 0; /* Remove any bottom margin */
     border-radius: 50%;
     flex-shrink: 0;
     object-fit: cover;
     background-color: transparent;
     border: 3px solid #FF7F50; /* Coral border */
     box-shadow: 0 2px 8px rgba(255, 127, 80, 0.3);
+    align-self: center; /* Ensure vertical centering */
 }
 
 .rent-map-navbar .navbar-logo img {
@@ -78,12 +121,16 @@ body {
 .navbar-logo h1 {
     font-size: 1.4rem;
     margin: 0;
+    padding: 0; /* Remove any padding */
     color: #654321; /* Warm brown color */
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     letter-spacing: 1px;
+    display: inline-block; /* Ensure it stays on the same line */
+    align-self: center; /* Ensure vertical centering */
+    line-height: 70px; /* Match navbar height for perfect centering */
 }
 
 .rent-map-navbar .navbar-logo h1 {
@@ -1783,6 +1830,10 @@ html, body {
         height: 60px;
     }
     
+    .navbar-logo {
+        height: 60px; /* Match navbar height */
+    }
+    
     .navbar-logo img {
         height: 40px;
         width: 40px;
@@ -1790,6 +1841,7 @@ html, body {
     
     .navbar-logo h1 {
         font-size: 1.1rem;
+        line-height: 60px; /* Match navbar height */
     }
     
     .navbar-links a {
@@ -2024,7 +2076,7 @@ body.intro-page {
 }
 
 .info-guide-close {
-    background: none;
+    background: rgba(255, 255, 255, 0.3);
     border: none;
     color: white;
     font-size: 1.3rem;
@@ -2039,8 +2091,15 @@ body.intro-page {
     transition: all 0.2s;
 }
 
+.rent-guide-header .info-guide-close {
+    background: rgba(255, 255, 255, 0.4);
+    color: #1b5e20;
+    text-shadow: none;
+    font-weight: bold;
+}
+
 .info-guide-close:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .info-guide-content {

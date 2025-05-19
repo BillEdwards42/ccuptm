@@ -26,10 +26,18 @@ function hideAllHoverLabels() {
     activeHoverLabel = null;
 }
 
-// Define constants - DEFAULT_VIEW is where you can change the default centering value of the rentmap
-// To change the default map centering, modify these coordinates below (format is [latitude, longitude])
-const DEFAULT_VIEW = [23.5558, 120.4705]; // Default center coordinates
-const DEFAULT_ZOOM = 17; // Default zoom level
+// Define constants for map centering with different values for desktop and mobile
+// Desktop coordinates (format is [latitude, longitude])
+const DESKTOP_DEFAULT_VIEW = [23.557, 120.462]; 
+const DESKTOP_DEFAULT_ZOOM = 16;
+
+// Mobile coordinates - more zoomed out to show more on small screens
+const MOBILE_DEFAULT_VIEW = [23.5543, 120.4727]; 
+const MOBILE_DEFAULT_ZOOM = 16;
+
+// Set default view based on device type - will be determined when map initializes
+let DEFAULT_VIEW = DESKTOP_DEFAULT_VIEW;
+let DEFAULT_ZOOM = DESKTOP_DEFAULT_ZOOM;
 
 // Global map state
 let mapState = {
@@ -88,14 +96,26 @@ function initializeMap() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     console.log('Is iOS device:', isIOS);
     
+    // Set the default view based on device type
+    const isMobile = isTouchDevice();
+    if (isMobile) {
+        DEFAULT_VIEW = MOBILE_DEFAULT_VIEW;
+        DEFAULT_ZOOM = MOBILE_DEFAULT_ZOOM;
+        console.log('Using mobile default view:', DEFAULT_VIEW);
+    } else {
+        DEFAULT_VIEW = DESKTOP_DEFAULT_VIEW;
+        DEFAULT_ZOOM = DESKTOP_DEFAULT_ZOOM;
+        console.log('Using desktop default view:', DEFAULT_VIEW);
+    }
+    
     // Setup default map options
     const mapInitConfig = {
         zoomControl: false,  // We'll add custom zoom controls
         attributionControl: false,  // Add this later in a custom position
         closePopupOnClick: true,  // Close popups when clicking elsewhere
         preferCanvas: false,  // Use SVG instead of Canvas for better transitions
-        minZoom: 17,  // Restrict zooming out too far
-        maxZoom: 19,  // Restrict zooming in too far
+        minZoom: 16,
+        maxZoom: 20,
         
         // Map interaction settings
         bounceAtZoomLimits: false,  // Don't bounce at zoom limits
@@ -142,7 +162,7 @@ function initializeMap() {
     tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors, © CARTO',
         maxZoom: 20,
-        minZoom: 17,
+        minZoom: 16,
         subdomains: 'abcd'
     }).addTo(map);
     
@@ -764,8 +784,16 @@ function createRentalPopup(rentalData) {
     
     // Add restrictions items
     const restrictionsItems = [
-        { label: '性別限制', value: rentalData.sex || '未提供', icon: 'venus-mars' },
-        { label: '寵物友善', value: rentalData.pet || '未提供', icon: 'paw' }
+        { 
+            label: '性別限制', 
+            value: rentalData.sex === false ? '無' : (rentalData.sex || '未提供'), 
+            icon: 'venus-mars' 
+        },
+        { 
+            label: '寵物友善', 
+            value: rentalData.pet === false ? '無' : (rentalData.pet || '未提供'), 
+            icon: 'paw' 
+        }
     ];
     
     restrictionsItems.forEach(item => {
@@ -1010,8 +1038,16 @@ function setupMobilePopup() {
         
         // Add restrictions items as rows for better mobile display
         const restrictionsItems = [
-            { label: '性別限制', value: marker.rentalData.sex || '未提供', icon: 'venus-mars' },
-            { label: '寵物友善', value: marker.rentalData.pet || '未提供', icon: 'paw' }
+            { 
+                label: '性別限制', 
+                value: marker.rentalData.sex === false ? '無' : (marker.rentalData.sex || '未提供'), 
+                icon: 'venus-mars' 
+            },
+            { 
+                label: '寵物友善', 
+                value: marker.rentalData.pet === false ? '無' : (marker.rentalData.pet || '未提供'), 
+                icon: 'paw' 
+            }
         ];
         
         restrictionsItems.forEach(item => {
