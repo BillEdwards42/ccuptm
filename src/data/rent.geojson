@@ -5,25 +5,950 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47126, 23.55728]
+        "coordinates": [120.47377, 23.580630]
       },
       "properties": {
-        "name": "宿舍巷舒適小套房",
-        "address": "嘉義縣民雄鄉大學路一段168巷15號",
-        "contact": "0912-345-678",
-        "rent": "8000",
-        "deposit": "8000",
-        "type": "套房",
-        "subsidy": true,
-        "elec": "依台電計費",
-        "sex": "none",
-        "pet": "none",
+        "name": "森林城學院",
+        "address": "嘉義縣大林鎮上林里頂員林5之25號",
+        "contact": "0910750190（黃小姐）",
+        "rent": "3200",
+        "deposit": "5000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": false,
+        "alarm": false,
+        "stuff": "電視機、電冰箱、冷氣機、飲水機、光纖網路",
+        "note": "",
+        "filter": 3200
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4741797, 23.5548334]
+      },
+      "properties": {
+        "name": "哈佛學院",
+        "address": "嘉義縣民雄鄉三興村興農二街148號",
+        "contact": "0932711172（賴小姐）",
+        "rent": "5000",
+        "deposit": "5000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
         "fire": true,
         "light": true,
         "exit": true,
-        "alarm": "unknown",
-        "stuff": "床、書桌、衣櫃、冷氣、熱水器、網路",
-        "note": "距離校門口5分鐘，環境安靜適合念書"
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、光纖網路",
+        "note": "",
+        "filter": 5000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4687835, 23.5532236]
+      },
+      "properties": {
+        "name": "現代首席",
+        "address": "嘉義縣民雄鄉三豐路220號",
+        "contact": "05-2723345、0922327743（施小姐）",
+        "rent": "5700-6500",
+        "deposit": "7000-12000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路",
+        "note": "",
+        "filter": 5700
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4748359, 23.5539123]
+      },
+      "properties": {
+        "name": "鼎泰",
+        "address": "嘉義縣民雄鄉三興村興農一街56號",
+        "contact": "0939667768（吳先生）",
+        "rent": "3500",
+        "deposit": "7000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、光纖網路",
+        "note": "",
+        "filter": 3500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4381881, 23.5571070]
+      },
+      "properties": {
+        "name": "弘儒山莊",
+        "address": "嘉義縣民雄鄉豐收村好收72-29號",
+        "contact": "0932711512（陳先生）",
+        "rent": "3000-3500",
+        "deposit": "3500",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台",
+        "note": "",
+        "filter": 3000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4743753, 23.5549067]
+      },
+      "properties": {
+        "name": "維多利亞學苑",
+        "address": "嘉義縣民雄鄉三興村興農二街146號",
+        "contact": "0932711172（賴小姐）",
+        "rent": "4300-5000",
+        "deposit": "5000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路",
+        "note": "",
+        "filter": 4300
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4674024576052, 23.553549447335904]
+      },
+      "properties": {
+        "name": "三豐學苑",
+        "address": "嘉義縣民雄鄉嘉義縣民雄鄉三興村三豐路298號",
+        "contact": "0937355648（侯小姐）",
+        "rent": "單人套房 7坪 49000元\n雙人套房 9坪 67000元\n（租屋網的、管理人說不方便告知）",
+        "deposit": "5000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、衣櫃、單人床、書桌(椅)、寬頻網路、光纖網路",
+        "note": "",
+        "filter": 49000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47388278348063, 23.55512603937513]
+      },
+      "properties": {
+        "name": "鳳凰軒",
+        "address": "嘉義縣民雄鄉三興村興農一街58號",
+        "contact": "0932182892（陳先生）\n0937062201（黃小姐）",
+        "rent": "3500",
+        "deposit": "7000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路第四台、光纖網路",
+        "note": "每年縣政府都會來檢查\n管理人換人了",
+        "filter": 3500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.45360499309113, 23.564449898311278]
+      },
+      "properties": {
+        "name": "育賢樓",
+        "address": "嘉義縣民雄鄉豐收村好收18-7號",
+        "contact": "0921335558（郭先生）",
+        "rent": "3000",
+        "deposit": "5000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "冷氣機、洗衣機、脫水機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
+        "note": "",
+        "filter": 3000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.44448184232787, 23.559961276537077]
+      },
+      "properties": {
+        "name": "翰林樓",
+        "address": "嘉義縣民雄鄉豐收村大學路二段2195號",
+        "contact": "0931950470（賴先生）",
+        "rent": "3000-3300",
+        "deposit": "5000",
+        "type": "學舍",
+        "elec": "3.5元/度",
+        "sex": false,
+        "pet": "寵物可以（狗不行）",
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、中央空調、洗衣機、脫水機、沙發、衣櫃、書櫃、檯燈",
+        "note": "南華大學和XX大學（會安排人來檢查）",
+        "filter": 3000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4724960959606, 23.58143868092777]
+      },
+      "properties": {
+        "name": "集賢樓",
+        "address": "嘉義縣大林鎮上林里頂員林8號",
+        "contact": "0911175860（侯小姐）",
+        "rent": "4500",
+        "deposit": "4500",
+        "type": "公寓",
+        "elec": "5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、雙人床、書櫃、書桌(椅)、檯燈、寬頻網路",
+        "note": "",
+        "filter": 4500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47143959211873, 23.552480587602552]
+      },
+      "properties": {
+        "name": "柏園",
+        "address": "嘉義縣民雄鄉三興村三豐路127號",
+        "contact": "0933668731（方先生）",
+        "rent": "單人房：3950\n三人房：9600",
+        "deposit": "6000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、 電冰箱、 冷氣機、 洗衣機、 脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 第四台、 光纖網路",
+        "note": "",
+        "filter": 3950
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.44539423525697, 23.56004421191188]
+      },
+      "properties": {
+        "name": "思賢樓",
+        "address": "嘉義縣民雄鄉豐收村大學路二段2183號",
+        "contact": "0939431841（何先生）",
+        "rent": "3500",
+        "deposit": "4000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": false,
+        "stuff": "電冰箱、 冷氣機、 洗衣機、 飲水機、 衣櫃、 單人床、 書櫃、 書桌(椅)、 光纖網路",
+        "note": "",
+        "filter": 3500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4691259403794, 23.554483135840957]
+      },
+      "properties": {
+        "name": "正心學苑",
+        "address": "嘉義縣民雄鄉三興村三興路166號",
+        "contact": "0956378688（謝小姐）",
+        "rent": "50000-52000",
+        "deposit": "無押金，預收8000元扣水電費",
+        "type": "透天",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、 電冰箱、冷氣機、 洗衣機、 脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 第四台",
+        "note": "",
+        "filter": 50000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.44285547323314, 23.561307280713237]
+      },
+      "properties": {
+        "name": "萊茵學院",
+        "address": "嘉義縣民雄鄉豐收村好收路72-40號",
+        "contact": "0937358182（林小姐）",
+        "rent": "3750",
+        "deposit": "5000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、 電冰箱、 冷氣機、 洗衣機、 脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 雙人床、 書櫃、 書桌(椅)、 寬頻網路",
+        "note": "",
+        "filter": 3750
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47486768202643, 23.555253631683993]
+      },
+      "properties": {
+        "name": "B&T",
+        "address": "嘉義縣民雄鄉三興村正義路53號",
+        "contact": "0972315666（林小姐）",
+        "rent": "5坪：5000\n6坪：6000",
+        "deposit": "6000",
+        "type": "公寓",
+        "elec": "5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、 冷氣機、 洗衣機、 烘乾機、 飲水機、 衣櫃、 雙人床、 書櫃、 書桌(椅)、 寬頻網路",
+        "note": "",
+        "filter": 5000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47333612637978, 23.553929147118513]
+      },
+      "properties": {
+        "name": "凱格鹿套房一期",
+        "address": "嘉義縣民雄鄉三興村富農路25號",
+        "contact": "0978859691（凱小姐）",
+        "rent": "4500",
+        "deposit": "6000",
+        "type": "學舍",
+        "elec": "4.5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、 電冰箱、 冷氣機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 第四台、 寬頻網路",
+        "note": "",
+        "filter": 4500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.43635525407731, 23.55675239290311]
+      },
+      "properties": {
+        "name": "樹仁書院B棟",
+        "address": "嘉義縣民雄鄉東榮村中庄13-5號",
+        "contact": "0937356239（盧先生）",
+        "rent": "4坪：2500\n5坪：3000\n6坪：3500",
+        "deposit": "5000",
+        "type": "學舍",
+        "elec": "3.5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": false,
+        "stuff": "電冰箱、 冷氣機、 洗衣機、脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 光纖網路",
+        "note": "",
+        "filter": 2500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4381881, 23.5571070]
+      },
+      "properties": {
+        "name": "百泰山莊",
+        "address": "嘉義縣民雄鄉嘉義縣民雄鄉豐收村好收72-38號",
+        "contact": "0933422664（楊先生）",
+        "rent": "4000",
+        "deposit": "4000",
+        "type": "學舍",
+        "elec": "4.5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、中央空調、洗衣機、脫水機、沙發、衣櫃、書櫃、檯燈、寬頻網路、偵煙設備、逃生梯、緩降梯",
+        "note": "收10 個月\n消防局每年都會來",
+        "filter": 4000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4367732, 23.5575087]
+      },
+      "properties": {
+        "name": "今學成學苑",
+        "address": "嘉義縣民雄鄉崙仔頂12鄰104之127號",
+        "contact": "0912183278（沈先生）",
+        "rent": "3000-3700",
+        "deposit": "5000",
+        "type": "學舍",
+        "elec": "3.5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": false,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路、停車場、電梯",
+        "note": "",
+        "filter": 3000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4565501, 23.5609133]
+      },
+      "properties": {
+        "name": "得利菊園",
+        "address": "嘉義縣民雄鄉豐收村大學路二段1768號",
+        "contact": "0972021089（方房東）",
+        "rent": "3600",
+        "deposit": "7000",
+        "type": "公寓",
+        "elec": "3.8元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": false,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、第四台、光纖網路",
+        "note": "",
+        "filter": 3600
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4508874, 23.5602367]
+      },
+      "properties": {
+        "name": "豐收帝寶",
+        "address": "嘉義縣民雄鄉豐收村大學路2段1997號",
+        "contact": "0916007818（朱房東）",
+        "rent": "2500",
+        "deposit": "2500",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": "可",
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "冷氣機、洗衣機、脫水機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
+        "note": "年收10個月",
+        "filter": 2500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47188661990492, 23.5540960061617]
+      },
+      "properties": {
+        "name": "精華學院",
+        "address": "嘉義縣民雄鄉三興村神農路36號",
+        "contact": "0911723270（李小姐）",
+        "rent": "6坪：4000",
+        "deposit": "6000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路",
+        "note": "",
+        "filter": 4000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47650873658986, 23.556570085876828]
+      },
+      "properties": {
+        "name": "金桔學院",
+        "address": "嘉義縣民雄鄉三興村34-11號",
+        "contact": "0979299993（林先生）",
+        "rent": "6坪：3200",
+        "deposit": "6000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": "不吵都可以",
+        "fire": true,
+        "light": false,
+        "exit": true,
+        "alarm": false,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路",
+        "note": "",
+        "filter": 3200
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47424368135626, 23.5555205404982]
+      },
+      "properties": {
+        "name": "凱格鹿8期",
+        "address": "嘉義縣民雄鄉三興村興農一街67及69號",
+        "contact": "0978859691（凱小姐）",
+        "rent": "7坪：6000",
+        "deposit": "10000",
+        "type": "透天",
+        "elec": "4.5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、雙人床、書櫃、書桌(椅)、寬頻網路、第四台、50M寬頻網路",
+        "note": "",
+        "filter": 6000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.46875549115428, 23.554993441696475]
+      },
+      "properties": {
+        "name": "三興學舍",
+        "address": "嘉義縣民雄鄉三興村三興路178號",
+        "contact": "0933178487（翁小姐）",
+        "rent": "單人房8坪：60000/年\n雙人房12坪：76000/年",
+        "deposit": "6000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、冷氣機、中央空調、脫水機、烘乾機、飲水機、衣櫃、雙人床、書桌(椅)、寬頻網路",
+        "note": "",
+        "filter": 60000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47731149325388, 23.54879377159555]
+      },
+      "properties": {
+        "name": "橙舍",
+        "address": "嘉義縣民雄鄉陳厝寮18-60號",
+        "contact": "0960001555（涂小姐）",
+        "rent": "6坪：5500-6500\n樓中樓：6000-8000",
+        "deposit": "",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、沙發、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、第四台、光纖網路",
+        "note": "",
+        "filter": 5500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47066342496787, 23.55507285119898]
+      },
+      "properties": {
+        "name": "陽光學苑",
+        "address": "嘉義縣民雄鄉三興村三興路102號",
+        "contact": "0910119086（林先生 ）",
+        "rent": "5坪：4000\n7坪：4400",
+        "deposit": "8000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": false,
+        "stuff": "電視機、電冰箱、冷氣機、洗衣機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、光纖網路",
+        "note": "",
+        "filter": 4000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.4375120997428, 23.556921063338887]
+      },
+      "properties": {
+        "name": "天恩學苑",
+        "address": "嘉義縣民雄鄉東榮村大學路三段80號",
+        "contact": "0937353061（何先生）",
+        "rent": "3500-5500",
+        "deposit": "5000",
+        "type": "學舍",
+        "elec": "3元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
+        "note": "",
+        "filter": 3500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.43766196189887, 23.572480383760848]
+      },
+      "properties": {
+        "name": "樹仁書院B棟",
+        "address": "嘉義縣民雄鄉頂崙村12鄰崙子頂104之128號",
+        "contact": "0937356239（盧先生）",
+        "rent": "3000",
+        "deposit": "5000",
+        "type": "公寓",
+        "elec": "3.5元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、中央空調、洗衣機、脫水機、烘乾機、沙發、衣櫃、單人床、寬頻網路",
+        "note": "",
+        "filter": 3000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.46907863909414, 23.554424990140475]
+      },
+      "properties": {
+        "name": "康乃爾",
+        "address": "嘉義縣民雄鄉三興村三興路170號",
+        "contact": "0922423859（陳先生）",
+        "rent": "3500",
+        "deposit": "8000",
+        "type": "公寓",
+        "elec": "是",
+        "sex": false,
+        "pet": "不會叫的可以",
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、電熱水器",
+        "note": "房東說價格有很多種，他無法細講",
+        "filter": 3500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.46896921607569, 23.553770092796203]
+      },
+      "properties": {
+        "name": "中正會館",
+        "address": "嘉義縣民雄鄉三興二街2號",
+        "contact": "0939683185（蔡小姐）",
+        "rent": "單人房：3,800-5,200\n雙人房：7,000-8,000\n雙人房(單床)：5,000-6,000\n",
+        "deposit": "5000",
+        "type": "透天",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視、冰箱、冷氣、衣櫃、床組、桌椅、滑動式三層鐵櫃、對講機",
+        "note": "",
+        "filter": 3800
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.44941408045348, 23.557661123449513]
+      },
+      "properties": {
+        "name": "雅筑居",
+        "address": "嘉義縣民雄鄉豐收村好收90-16號",
+        "contact": "0926-959208",
+        "rent": "3500-3900",
+        "deposit": "5000",
+        "type": "學舍",
+        "elec": "3.9元/度",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、雙人床、書櫃、書桌(椅)、寬頻網路、第四台、電話、光纖網路",
+        "note": "年收12個月",
+        "filter": 3500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47091252622161, 23.554246186738947]
+      },
+      "properties": {
+        "name": "德月學苑",
+        "address": "嘉義縣民雄鄉三興村三興路69號",
+        "contact": "05-2721005、0972223289（陳先生）",
+        "rent": "5坪：4500\n5坪邊間：4600\n6坪：5000",
+        "deposit": "8000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
+        "note": "年收11個月",
+        "filter": 4500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.45350002732492, 23.563666884030177]
+      },
+      "properties": {
+        "name": "勵志樓",
+        "address": "嘉義縣民雄鄉豐收村好收18-8號",
+        "contact": "0958890891（李先生）",
+        "rent": "6.5坪 ：3000",
+        "deposit": "4000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路",
+        "note": "",
+        "filter": 3000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47245948061796, 23.554541745315934]
+      },
+      "properties": {
+        "name": "柏睿學舍",
+        "address": "嘉義縣民雄鄉嘉義縣民雄鄉三興村三興路32號",
+        "contact": "0952338498、0958338498（呂小姐）",
+        "rent": "9坪：6500",
+        "deposit": "6000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "雙層電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路、電梯",
+        "note": "年收 78,000",
+        "filter": 6500
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.46922579960804, 23.55391668119774]
+      },
+      "properties": {
+        "name": "中正會館2",
+        "address": "嘉義縣民雄鄉三興二街129號",
+        "contact": "0939683185、052721008（蔡小姐）",
+        "rent": "單人房：3800-5200\n雙人房：7000-8000\n雙人房（單床）5000-6000\n",
+        "deposit": "5000",
+        "type": "透天",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電視、冰箱、冷氣、衣櫃、床組、桌椅、滑動式三層鐵櫃、對講機",
+        "note": "",
+        "filter": 3800
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [120.47792654986543, 23.555466062137157]
+      },
+      "properties": {
+        "name": "深白舍",
+        "address": "嘉義縣民雄鄉三興村4鄰陳厝寮30-6號",
+        "contact": "0960001555（涂小姐）",
+        "rent": "6坪：5500~6000",
+        "deposit": "8000",
+        "type": "學舍",
+        "elec": "是",
+        "sex": false,
+        "pet": false,
+        "fire": true,
+        "light": true,
+        "exit": true,
+        "alarm": true,
+        "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、陽台、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、第四台、光纖網路",
+        "note": "年收11個月",
+        "filter": 5500
       }
     }
   ]

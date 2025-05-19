@@ -82,7 +82,7 @@ function forceCompleteGhostTouches() {
 
 // Function to initialize the map with proper settings
 function initializeMap() {
-    console.log('Initializing map...');
+    console.log('Initializing rent map...');
     
     // Detect iOS device specifically
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -147,7 +147,7 @@ function initializeMap() {
     }).addTo(map);
     
     // Create a new marker cluster group with original styling
-    window.markerClusterGroup = window.markerClusterGroup || L.markerClusterGroup({
+    window.markerClusterGroup = L.markerClusterGroup({
         maxClusterRadius: 40,
         iconCreateFunction: function(cluster) {
             const count = cluster.getChildCount();
@@ -213,9 +213,9 @@ function initializeMap() {
     }
     
     // State variables (keep these outside the function so they persist)
-    window.activeMarker = window.activeMarker || null;
-    window.mobilePopupActive = window.mobilePopupActive || false;
-    window.rentals = window.rentals || [];
+    window.activeMarker = null;
+    window.mobilePopupActive = false;
+    window.rentals = [];
     
     // Helper function to save current map state
     function saveMapState() {
@@ -383,19 +383,8 @@ function loadRentalsData() {
             window.rentals = data.features || [];
             console.log(`Found ${window.rentals.length} rental properties`);
             
-            // Preprocess rentals data to add numeric values for filtering
-            preprocessRentalsForFiltering();
-            
-            // Clear existing markers
-            if (window.markerClusterGroup) {
-                window.markerClusterGroup.clearLayers();
-            }
-            
-            // If no rentals data yet, just return
-            if (!window.rentals.length) {
-                console.log('No rental listings available yet');
-                return;
-            }
+            // No need to preprocess - we're using the filter property directly
+            console.log("Using filter properties from rent.geojson for filtering");
             
             // Create container for hover labels if it doesn't exist
             let labelContainer = document.getElementById('map-label-container');
@@ -435,19 +424,8 @@ function loadRentalsData() {
                     // Store rental data in marker and ensure it has a rentValue
                     marker.rentalData = rental.properties;
                     
-                    // Add rentValue to marker for direct access in filtering
-                    if (rental.properties.rent) {
-                        const matches = rental.properties.rent.match(/\d+/g);
-                        if (matches && matches.length > 0) {
-                            const allValues = matches.map(m => parseInt(m));
-                            const minRent = Math.min(...allValues);
-                            marker.rentalData.rentValue = minRent;
-                        } else {
-                            marker.rentalData.rentValue = 0;
-                        }
-                    } else {
-                        marker.rentalData.rentValue = 0;
-                    }
+                    // Use the filter property directly from the GeoJSON
+                    marker.rentalData.rentValue = rental.properties.filter;
                     
                     // Debug: log a few markers to verify data is attached
                     if (rental.properties.name && rental.properties.rentValue) {
@@ -455,100 +433,100 @@ function loadRentalsData() {
                     }
                     
                     // Add click handler for marker to show popup
-                marker.on('click', function() {
-                    // For touch devices, show the full-screen modal instead of popup
-                    if (isTouchDevice()) {
-                        // Show mobile popup (bottom sheet)
-                        showMobilePopup(this);
-                    } else {
-                        // Create popup content for desktop
-                        const popupContent = createRentalPopup(this.rentalData);
+                    marker.on('click', function() {
+                        // For touch devices, show the full-screen modal instead of popup
+                        if (isTouchDevice()) {
+                            // Show mobile popup (bottom sheet)
+                            showMobilePopup(this);
+                        } else {
+                            // Create popup content for desktop
+                            const popupContent = createRentalPopup(this.rentalData);
+                            
+                            // Add popup to marker
+                            this.unbindPopup();
+                            this.bindPopup(popupContent, {
+                                className: 'rent-popup',
+                                maxWidth: 500,
+                                minWidth: 300,
+                                offset: [0, -15],
+                                autoPan: true,
+                                closeButton: true,
+                                autoClose: true,
+                                closeOnEscapeKey: true,
+                            }).openPopup();
+                            
+                            // Initialize tabs in popup
+                            setTimeout(() => {
+                                setupPopupTabs();
+                            }, 10);
+                        }
+                    });
+                    
+                    // Add hover events for name label
+                    marker.on('mouseover', function(e) {
+                        // Create hover label if it doesn't exist
+                        if (!this.hoverLabel) {
+                            const label = document.createElement('div');
+                            label.className = 'hover-label';
+                            label.textContent = rental.properties.name;
+                            label.style.opacity = '0';
+                            label.style.display = 'none';
+                            labelContainer.appendChild(label);
+                            this.hoverLabel = label;
+                        }
                         
-                        // Add popup to marker
-                        this.unbindPopup();
-                        this.bindPopup(popupContent, {
-                            className: 'rent-popup',
-                            maxWidth: 500,
-                            minWidth: 300,
-                            offset: [0, -15],
-                            autoPan: true,
-                            closeButton: true,
-                            autoClose: true,
-                            closeOnEscapeKey: true,
-                        }).openPopup();
+                        // Hide any active label first
+                        if (activeHoverLabel && activeHoverLabel !== this.hoverLabel) {
+                            activeHoverLabel.style.opacity = '0';
+                            activeHoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
+                            setTimeout(() => {
+                                if (activeHoverLabel.style.opacity === '0') {
+                                    activeHoverLabel.style.display = 'none';
+                                }
+                            }, 300);
+                        }
                         
-                        // Initialize tabs in popup
-                        setTimeout(() => {
-                            setupPopupTabs();
-                        }, 10);
-                    }
-                });
-                
-                // Add hover events for name label
-                marker.on('mouseover', function(e) {
-                    // Create hover label if it doesn't exist
-                    if (!this.hoverLabel) {
-                        const label = document.createElement('div');
-                        label.className = 'hover-label';
-                        label.textContent = rental.properties.name;
-                        label.style.opacity = '0';
-                        label.style.display = 'none';
-                        labelContainer.appendChild(label);
-                        this.hoverLabel = label;
-                    }
-                    
-                    // Hide any active label first
-                    if (activeHoverLabel && activeHoverLabel !== this.hoverLabel) {
-                        activeHoverLabel.style.opacity = '0';
-                        activeHoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
-                        setTimeout(() => {
-                            if (activeHoverLabel.style.opacity === '0') {
-                                activeHoverLabel.style.display = 'none';
-                            }
-                        }, 300);
-                    }
-                    
-                    // Update and show this label
-                    const markerPos = this.getLatLng();
-                    const point = map.latLngToContainerPoint(markerPos);
-                    
-                    this.hoverLabel.style.left = point.x + 'px';
-                    this.hoverLabel.style.top = (point.y + 35) + 'px'; // Position further below the marker
-                    this.hoverLabel.style.display = 'block';
-                    
-                    // Trigger reflow for transition to work
-                    void this.hoverLabel.offsetWidth;
-                    
-                    this.hoverLabel.style.opacity = '1';
-                    this.hoverLabel.style.transform = 'translateX(-50%) translateY(-10px)';
-                    activeHoverLabel = this.hoverLabel;
-                });
-                
-                marker.on('mouseout', function(e) {
-                    if (this.hoverLabel) {
-                        this.hoverLabel.style.opacity = '0';
-                        this.hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
-                        setTimeout(() => {
-                            if (this.hoverLabel.style.opacity === '0') {
-                                this.hoverLabel.style.display = 'none';
-                            }
-                        }, 300);
-                    }
-                    activeHoverLabel = null;
-                });
-                
-                // Update label positions when map is moved
-                map.on('move', function() {
-                    if (marker.hoverLabel && marker.hoverLabel.style.display !== 'none') {
-                        const markerPos = marker.getLatLng();
+                        // Update and show this label
+                        const markerPos = this.getLatLng();
                         const point = map.latLngToContainerPoint(markerPos);
                         
-                        marker.hoverLabel.style.left = point.x + 'px';
-                        marker.hoverLabel.style.top = (point.y + 35) + 'px'; // Position further below the marker
-                    }
-                });
-                
-                return marker;
+                        this.hoverLabel.style.left = point.x + 'px';
+                        this.hoverLabel.style.top = (point.y + 35) + 'px'; // Position further below the marker
+                        this.hoverLabel.style.display = 'block';
+                        
+                        // Trigger reflow for transition to work
+                        void this.hoverLabel.offsetWidth;
+                        
+                        this.hoverLabel.style.opacity = '1';
+                        this.hoverLabel.style.transform = 'translateX(-50%) translateY(-10px)';
+                        activeHoverLabel = this.hoverLabel;
+                    });
+                    
+                    marker.on('mouseout', function(e) {
+                        if (this.hoverLabel) {
+                            this.hoverLabel.style.opacity = '0';
+                            this.hoverLabel.style.transform = 'translateX(-50%) translateY(-5px)';
+                            setTimeout(() => {
+                                if (this.hoverLabel.style.opacity === '0') {
+                                    this.hoverLabel.style.display = 'none';
+                                }
+                            }, 300);
+                        }
+                        activeHoverLabel = null;
+                    });
+                    
+                    // Update label positions when map is moved
+                    map.on('move', function() {
+                        if (marker.hoverLabel && marker.hoverLabel.style.display !== 'none') {
+                            const markerPos = marker.getLatLng();
+                            const point = map.latLngToContainerPoint(markerPos);
+                            
+                            marker.hoverLabel.style.left = point.x + 'px';
+                            marker.hoverLabel.style.top = (point.y + 35) + 'px'; // Position further below the marker
+                        }
+                    });
+                    
+                    return marker;
                 } catch (error) {
                     console.error("Error creating marker:", error);
                     return null;
@@ -632,6 +610,8 @@ function loadRentalsData() {
                                         })
                                     });
                                     marker.rentalData = rental.properties;
+                                    // Use the filter property directly
+                                    marker.rentalData.rentValue = rental.properties.filter;
                                     
                                     // Simplified click handler
                                     marker.on('click', function() {
@@ -844,8 +824,6 @@ function createRentalPopup(rentalData) {
     
     governmentRequirementsSection.appendChild(requirementsList);
     safetyInfoContent.appendChild(governmentRequirementsSection);
-    
-    // Removed "此房屋安全設備" section
     
     // Equipment/Stuff section (if available)
     if (rentalData.stuff) {
@@ -1089,8 +1067,6 @@ function setupMobilePopup() {
         
         governmentRequirementsSection.appendChild(requirementsList);
         safetyInfoContent.appendChild(governmentRequirementsSection);
-        
-        // Removed "此房屋安全設備" section
         
         // Equipment/Stuff section (if available)
         if (marker.rentalData.stuff) {
@@ -1502,51 +1478,11 @@ document.addEventListener('DOMContentLoaded', () => {
         showClearFiltersButton();
     }
     
-    // Use the filter parameter from rent.geojson instead of extracting it
+    // This function is no longer needed as we're using the filter property directly from the GeoJSON
+    // Kept as a stub for compatibility
     function preprocessRentalsForFiltering() {
-        if (!window.rentals) return;
-        
-        console.log("Checking rental data for filtering...");
-        console.log("Total rentals to process:", window.rentals.length);
-        
-        window.rentals.forEach((rental, index) => {
-            if (rental.properties) {
-                // Use the filter parameter directly if available
-                if (rental.properties.filter !== undefined) {
-                    rental.properties.rentValue = rental.properties.filter;
-                    
-                    if (index < 5) {
-                        console.log(`Sample rental ${index}: "${rental.properties.name}" - Using filter value: ${rental.properties.filter}`);
-                    }
-                } else {
-                    // Fallback to old method if filter not available
-                    const rentString = rental.properties.rent;
-                    if (rentString) {
-                        // Extract ALL numbers from the rent string
-                        const matches = rentString.match(/\d+/g);
-                        if (matches && matches.length > 0) {
-                            // Get all numeric values
-                            const rentValues = matches.map(match => parseInt(match));
-                            // Find minimum value for rent range
-                            const minRent = Math.min(...rentValues);
-                            
-                            // Create a new explicit parameter for filtering
-                            rental.properties.rentValue = minRent;
-                            
-                            if (index < 5) {
-                                console.log(`Sample rental ${index}: "${rental.properties.name}" - Extracted min value: ${minRent} (no filter property found)`);
-                            }
-                        } else {
-                            rental.properties.rentValue = 0;
-                        }
-                    } else {
-                        rental.properties.rentValue = 0;
-                    }
-                }
-            }
-        });
-        
-        console.log("Preprocessing complete.");
+        console.log("Using filter properties from rent.geojson directly - no preprocessing needed");
+        return;
     }
     
     // Filter rentals based on search parameters
@@ -1576,17 +1512,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const filteredMarkers = [];
         
         // Loop through all rentals
-        if (window.rentals && window.originalMarkers) {
+        if (window.originalMarkers) {
             console.log('Total rentals to filter:', window.originalMarkers.length);
-            
-            // Find index relationship between rentals and markers
-            const rentalMap = new Map();
-            window.rentals.forEach((rental, index) => {
-                const name = rental.properties.name;
-                if (name) {
-                    rentalMap.set(name, rental.properties);
-                }
-            });
             
             window.originalMarkers.forEach(marker => {
                 // Get rental data from marker
@@ -1610,25 +1537,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Rent filter - only apply if the slider has been adjusted
                 if (hasRentFilter) {
-                    // For markers, we need to extract the rent value for filtering
-                    let rentValue = 0;
+                    // Get the filter value directly from the filter property
+                    const rentValue = rental.filter || rental.rentValue || 0;
                     
-                    // First try to use rentValue if it exists
-                    if (rental.rentValue !== undefined) {
-                        rentValue = rental.rentValue;
-                    }
-                    // Then try to extract it from the rent string
-                    else if (rental.rent) {
-                        const matches = rental.rent.match(/\d+/g);
-                        if (matches && matches.length > 0) {
-                            const allValues = matches.map(m => parseInt(m));
-                            rentValue = Math.min(...allValues);
-                        }
-                    }
-                    
-                    // Debug logging
                     if (debug) {
-                        console.log(`Rental "${rental.name}" has rent string "${rental.rent}" and calculated value ${rentValue}`);
+                        console.log(`Rental "${rental.name}" has filter value: ${rentValue}`);
                     }
                     
                     if (debug) console.log('Rent value for filtering:', rentValue);
@@ -1638,8 +1551,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
                 }
-                
-                // No boolean filters needed
                 
                 // If we got this far, the rental passed all filters
                 if (debug) console.log('Passed all filters');
