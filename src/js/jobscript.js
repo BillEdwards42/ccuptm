@@ -5,6 +5,13 @@ function setActiveState() {
     return;
 }
 
+// Check if device has touch capability
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+           (navigator.maxTouchPoints > 0) ||
+           (navigator.msMaxTouchPoints > 0));
+}
+
 // Global variable to track currently active hover label
 let activeHoverLabel = null;
 
@@ -26,331 +33,7 @@ function hideAllHoverLabels() {
     activeHoverLabel = null;
 }
 
-// Radical function to completely reset touch handling by reinitializing the map
-// With optimization to prevent excessive resets
-function resetTouchSystem(callback) {
-    // Prevent multiple resets within a short time window
-    const currentTime = Date.now();
-    if (window._lastResetTime && (currentTime - window._lastResetTime < 2000)) {
-        console.log('Skipping reset - too soon after previous reset');
-        
-        // Still execute callback if provided
-        if (typeof callback === 'function') {
-            setTimeout(callback, 100);
-        }
-        return;
-    }
-    
-    // Check if this reset is being triggered from a valid source
-    // This helps prevent unwanted resets that happen outside of user interaction with popups/pages
-    const isValidResetContext = (
-        // Check if any of these UI elements were recently active
-        window._bottomSheetWasRecentlyActive || 
-        window._mobilePopupWasRecentlyActive || 
-        window._infoGuideWasRecentlyActive ||
-        // Also allow reset if it's been a while since the last one (emergency case)
-        !window._lastResetTime || 
-        (currentTime - window._lastResetTime > 10000)
-    );
-    
-    if (!isValidResetContext) {
-        console.log('Skipping reset - not triggered from valid context');
-        // Still execute callback if provided
-        if (typeof callback === 'function') {
-            setTimeout(callback, 100);
-        }
-        return;
-    }
-    
-    // Reset these flags since we're now handling the reset
-    window._bottomSheetWasRecentlyActive = false;
-    window._mobilePopupWasRecentlyActive = false;
-    window._infoGuideWasRecentlyActive = false;
-    
-    // Set time of this reset
-    window._lastResetTime = currentTime;
-    
-    // Also check if user has manually scrolled recently (which fixes the issue naturally)
-    if (window._lastMapScrollTime && (currentTime - window._lastMapScrollTime < 1000)) {
-        console.log('Skipping reset - user recently scrolled the map');
-        
-        // Just do a light reset instead of full reinitialization
-        if (map) {
-            try {
-                // Quick cleanup of any visual states
-                const markerElements = document.querySelectorAll('.leaflet-marker-icon');
-                markerElements.forEach(marker => {
-                    marker.style.transform = '';
-                    marker.style.zIndex = '';
-                    marker.style.pointerEvents = 'auto';
-                    
-                    const customMarker = marker.querySelector('.marker-icon');
-                    if (customMarker) {
-                        customMarker.style.transform = '';
-                        customMarker.style.backgroundColor = '';
-                    }
-                });
-                
-                // Basic handler reset
-                if (map.dragging) map.dragging.enable();
-                if (map.touchZoom) map.touchZoom.enable();
-                if (map.doubleClickZoom) map.doubleClickZoom.enable();
-                
-                // Quick map refresh
-                map.invalidateSize({reset: true, pan: false});
-            } catch (e) {
-                console.warn('Error during light reset:', e);
-            }
-        }
-        
-        // Execute callback if provided
-        if (typeof callback === 'function') {
-            setTimeout(callback, 100);
-        }
-        return;
-    }
-    
-    console.log('Radical touch system reset initiated');
-    
-    // Hide any visible hover labels
-    hideAllHoverLabels();
-    
-    // Save current map state if map exists
-    let savedCenter, savedZoom, savedMarkers;
-    if (map) {
-        try {
-            savedCenter = map.getCenter();
-            savedZoom = map.getZoom();
-            
-            // Save references to any marker layers
-            if (window.markerClusterGroup) {
-                savedMarkers = window.markerClusterGroup.getLayers();
-            }
-            
-            // First, try a complete Leaflet internal state reset
-            try {
-                // Completely disable all handlers
-                map.dragging.disable();
-                map.touchZoom.disable();
-                map.doubleClickZoom.disable();
-                map.scrollWheelZoom.disable();
-                map.boxZoom.disable();
-                map.keyboard.disable();
-                if (map.tap) map.tap.disable();
-                
-                // Access and reset internal Leaflet state variables
-                if (map._leaflet_id) {
-                    // Reset dragging state - this is the critical part
-                    if (map.dragging && map.dragging._draggable) {
-                        // Force "up" state
-                        map.dragging._draggable._moved = false;
-                        map.dragging._draggable._moving = false;
-                        if (map.dragging._draggable._startPoint) {
-                            map.dragging._draggable._startPoint = null;
-                        }
-                        if (map.dragging._draggable._startPos) {
-                            map.dragging._draggable._startPos = null;
-                        }
-                        
-                        // Any other internal drag variables
-                        map.dragging._draggable._newPos = null;
-                        map.dragging._draggable._startTime = 0;
-                        map.dragging._draggable._lastPos = null;
-                    }
-                    
-                    // Reset touch zoom handler
-                    if (map.touchZoom) {
-                        map.touchZoom._zooming = false;
-                    }
-                    
-                    // Reset any _animatingZoom state
-                    map._animatingZoom = false;
-                    
-                    // Reset any moving flags
-                    map._moving = false;
-                    
-                    // Force map to stop any animations
-                    map.stop();
-                }
-            } catch (e) {
-                console.warn('Failed to reset Leaflet internal state:', e);
-            }
-        } catch (e) {
-            console.error('Error saving map state:', e);
-        }
-    }
-    
-    // Create a fullscreen overlay to capture and reset all touch events
-    const touchResetOverlay = document.createElement('div');
-    touchResetOverlay.style.position = 'fixed';
-    touchResetOverlay.style.top = '0';
-    touchResetOverlay.style.left = '0';
-    touchResetOverlay.style.width = '100%';
-    touchResetOverlay.style.height = '100%';
-    touchResetOverlay.style.backgroundColor = 'rgba(255,255,255,0.01)';
-    touchResetOverlay.style.zIndex = '9999';
-    touchResetOverlay.style.pointerEvents = 'all';
-    touchResetOverlay.style.touchAction = 'manipulation';
-    
-    // Add an explicit touch handler to the overlay
-    touchResetOverlay.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        console.log('Touch reset overlay captured touchstart');
-    }, { passive: false });
-    
-    touchResetOverlay.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        console.log('Touch reset overlay captured touchmove');
-    }, { passive: false });
-    
-    touchResetOverlay.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        console.log('Touch reset overlay captured touchend');
-    }, { passive: false });
-    
-    document.body.appendChild(touchResetOverlay);
-    
-    // Force a browser repaint
-    void touchResetOverlay.offsetHeight;
-    
-    // THE RADICAL APPROACH: We'll completely re-initialize the map!
-    // First, get the map container
-    const mapContainer = document.getElementById('map');
-    
-    // Execute the radical reset
-    setTimeout(() => {
-        // Remove the overlay
-        if (document.body.contains(touchResetOverlay)) {
-            document.body.removeChild(touchResetOverlay);
-        }
-        
-        if (mapContainer && savedCenter && savedZoom) {
-            // EXTREME MEASURE: Get rid of the map entirely and recreate it
-            if (map) {
-                try {
-                    // 1. Remove existing map
-                    console.log('Removing existing map for radical reset');
-                    map.remove();
-                    map = null;
-                    
-                    // 2. Recreate the map container (force DOM refresh)
-                    const parentNode = mapContainer.parentNode;
-                    const nextSibling = mapContainer.nextSibling;
-                    parentNode.removeChild(mapContainer);
-                    
-                    // Create a fresh map container
-                    const newMapContainer = document.createElement('div');
-                    newMapContainer.id = 'map';
-                    newMapContainer.style.height = '100vh';
-                    newMapContainer.style.width = '100vw';
-                    newMapContainer.style.position = 'absolute';
-                    newMapContainer.style.top = '0';
-                    newMapContainer.style.left = '0';
-                    newMapContainer.style.zIndex = '1';
-                    
-                    // Reinsert the new container
-                    if (nextSibling) {
-                        parentNode.insertBefore(newMapContainer, nextSibling);
-                    } else {
-                        parentNode.appendChild(newMapContainer);
-                    }
-                    
-                    // 3. Create a new map instance with the saved state
-                    setTimeout(() => {
-                        console.log('Creating fresh map instance');
-                        map = L.map('map', MAP_CONFIG).setView(savedCenter, savedZoom);
-                        
-                        // 4. Re-add the tile layer
-                        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                            attribution: '© OpenStreetMap contributors, © CARTO',
-                            maxZoom: 20,
-                            minZoom: 17,
-                            subdomains: 'abcd'
-                        }).addTo(map);
-                        
-                        // 5. Recreate marker cluster group
-                        window.markerClusterGroup = L.markerClusterGroup({
-                            maxClusterRadius: 40,
-                            iconCreateFunction: function(cluster) {
-                                const count = cluster.getChildCount();
-                                return L.divIcon({
-                                    html: `<div><span>${count}</span></div>`,
-                                    className: 'marker-cluster',
-                                    iconSize: L.point(40, 40)
-                                });
-                            },
-                            spiderfyOnMaxZoom: false,
-                            showCoverageOnHover: false,
-                            zoomToBoundsOnClick: true
-                        });
-                        
-                        // 6. Re-add the cluster group to the map
-                        map.addLayer(window.markerClusterGroup);
-                        
-                        // 7. Re-add saved markers if available
-                        if (savedMarkers && savedMarkers.length > 0) {
-                            window.markerClusterGroup.addLayers(savedMarkers);
-                        } else {
-                            // 8. If no saved markers, reload establishments data
-                            loadEstablishmentsData();
-                        }
-                        
-                        // 9. Setup event listeners
-                        setupEventListeners();
-                        
-                        // 10. Add scroll detection to track when user manually scrolls
-                        // This helps us avoid unnecessary resets
-                        if (map && map.dragging && map.dragging._draggable) {
-                            // Track touchmove events on the map to detect scrolling
-                            const mapElement = document.getElementById('map');
-                            if (mapElement) {
-                                mapElement.addEventListener('touchmove', function() {
-                                    // Update the last scroll timestamp
-                                    window._lastMapScrollTime = Date.now();
-                                }, { passive: true });
-                            }
-                        }
-                        
-                        // Execute callback if provided
-                        if (typeof callback === 'function') {
-                            callback();
-                        }
-                        
-                        console.log('Radical touch system reset complete');
-                    }, 100);
-                } catch (e) {
-                    console.error('Error during radical map reset:', e);
-                    
-                    // Fallback to simple reinitialization
-                    console.log('Falling back to simple map initialization');
-                    initializeMap();
-                    loadEstablishmentsData();
-                    
-                    // Execute callback if provided
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                }
-            } else {
-                // If no map exists, just initialize normally
-                initializeMap();
-                loadEstablishmentsData();
-                
-                // Execute callback if provided
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            }
-        } else {
-            console.log('Map container or state not available, skipping radical reset');
-            
-            // Execute callback if provided
-            if (typeof callback === 'function') {
-                callback();
-            }
-        }
-    }, 200);
-}
+// Removed resetTouchSystem function
 
 // Setup global info guide popup for all pages
 document.addEventListener('DOMContentLoaded', () => {
@@ -405,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let lastTouchEndTime = 0;
         let touchStartPos = { x: 0, y: 0 };
         let touchEndPos = { x: 0, y: 0 };
-        let consecutiveFailedTouches = 0;
+        // Removed consecutiveFailedTouches = 0;
         
         // Listen for touch start events globally
         document.addEventListener('touchstart', function(e) {
@@ -422,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('touchmove', function(e) {
             // If a touch move event happens, reset consecutive failed touches counter
             // since we're detecting some movement
-            consecutiveFailedTouches = 0;
+            // consecutiveFailedTouches = 0; // Removed
         }, {passive: true});
         
         // Listen for touch end events
@@ -450,36 +133,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Detect possible touch issues:
                 // 1. Very short touches that don't move (likely unregistered taps)
                 // 2. Long touches that don't move (stuck touch events)
-                if ((touchDuration < 100 && touchDistance < 5) || 
-                    (touchDuration > 500 && touchDistance < 10)) {
-                    consecutiveFailedTouches++;
-                    console.log('Possible touch issue detected:', 
-                        consecutiveFailedTouches, 
-                        'duration:', touchDuration, 
-                        'distance:', touchDistance);
-                }
+                // Removed logic related to consecutiveFailedTouches and resetTouchSystem
+                // if ((touchDuration < 100 && touchDistance < 5) || 
+                //     (touchDuration > 500 && touchDistance < 10)) {
+                //     // consecutiveFailedTouches++; // Removed
+                //     // console.log('Possible touch issue detected: ...'); // Removed
+                // }
                 
-                // If we detect consecutive potential touch issues, try resetting
-                if (consecutiveFailedTouches >= 2) {
-                    console.log('Multiple touch issues detected, resetting touch system');
-                    consecutiveFailedTouches = 0;
-                    if (typeof resetTouchSystem === 'function') {
-                        resetTouchSystem(function() {
-                            console.log('Touch system reset from global handler');
-                        });
-                    }
-                }
+                // Removed block: if (consecutiveFailedTouches >= 2) { ... resetTouchSystem() ... }
                 
                 // Also check if the touch ended inside the map for the traditional reset
                 if (e.target.closest('#map')) {
                     // If we detect touches aren't working (not tested yet), try resetting
-                    setTimeout(function() {
-                        if (typeof resetMapTouchHandlers === 'function' && 
-                            !document.querySelector('.mobile-popup-overlay.active') && 
-                            !document.querySelector('.info-guide-overlay.active')) {
-                            resetMapTouchHandlers();
-                        }
-                    }, 500);
+                    // setTimeout(function() { // Removed call to resetMapTouchHandlers
+                        // if (typeof resetMapTouchHandlers === 'function' && 
+                        //     !document.querySelector('.mobile-popup-overlay.active') && 
+                        //     !document.querySelector('.info-guide-overlay.active')) {
+                        //     resetMapTouchHandlers();
+                        // }
+                    // }, 500);
                 }
             }
         }, {passive: true});
@@ -549,26 +221,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Re-enable map interactions
             if (document.getElementById('map') && map) {
+                // Replace the if/else block for resetTouchSystem/invalidateSize
+                // with a consistent map refresh.
+                map.invalidateSize({reset: true, animate: false, pan: false});
                 map.dragging.enable();
                 map.touchZoom.enable();
                 map.doubleClickZoom.enable();
                 if (map.tap) map.tap.enable();
-                
-                // For touch devices, do a radical reset like we do for establishment pages
-                if (window.isTouchDevice && window.isTouchDevice()) {
-                    console.log('Touch device detected, performing radical reset after info guide close');
-                    // Use the full reset system for touch devices
-                    resetTouchSystem(() => {
-                        console.log('Radical reset completed after info guide close');
-                    });
-                } else {
-                    // For non-touch devices, just do a simple refresh
-                    try {
-                        map.invalidateSize({reset: true, pan: false});
-                    } catch(e) {
-                        console.error('Error refreshing map:', e);
-                    }
-                }
+                console.log('Map refreshed after info guide close');
             }
             
             // No longer setting active states on nav links
@@ -1354,344 +1014,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000); // Wait 2 seconds to ensure map is fully loaded
 });
 
-// Advanced helper function to completely reset touch handling and ghost states
+// Force complete all ghost touches to fix unresponsive map
 function forceCompleteGhostTouches() {
-    if (!map) return;
-    
-    console.log('Forcing completion of any ghost touches');
-    
-    // Create a safety flag for preventing infinite loops
-    if (window._forceCompleteGhostTouchesActive) {
-        console.log('Touch reset already in progress, skipping');
-        return;
-    }
-    
-    // Also protect against too frequent calls
-    const currentTime = Date.now();
-    if (window._lastGhostTouchReset && (currentTime - window._lastGhostTouchReset < 1000)) {
-        console.log('Skipping ghost touch reset - too soon after previous reset');
-        return;
-    }
-    
-    window._lastGhostTouchReset = currentTime;
-    window._forceCompleteGhostTouchesActive = true;
-    
-    // Method 1: Create and dispatch more realistic synthetic touch events
     try {
-        // Get the map container
-        const mapContainer = document.getElementById('map');
-        if (mapContainer) {
-            // Create a simulated touch point
-            const touch = {
-                identifier: Date.now(),
-                target: mapContainer,
-                clientX: Math.floor(window.innerWidth / 2),
-                clientY: Math.floor(window.innerHeight / 2),
-                screenX: Math.floor(window.innerWidth / 2),
-                screenY: Math.floor(window.innerHeight / 2),
-                pageX: Math.floor(window.innerWidth / 2),
-                pageY: Math.floor(window.innerHeight / 2),
-                radiusX: 1,
-                radiusY: 1,
-                rotationAngle: 0,
-                force: 1
-            };
-            
-            // Attempt to create a TouchList-like object
-            const createTouchList = (touch) => {
-                try {
-                    // Try native TouchList if available
-                    if (window.TouchList) {
-                        const list = new TouchList();
-                        list[0] = touch;
-                        list.length = 1;
-                        return list;
-                    } else {
-                        // Fallback to array-like object
-                        return [touch];
-                    }
-                } catch (e) {
-                    // Simple fallback
-                    return [touch];
-                }
-            };
-            
-            // Create touch events with the touch list
-            try {
-                const touchList = createTouchList(touch);
-                
-                // Create touchstart event
-                let touchStartEvent;
-                try {
-                    touchStartEvent = new TouchEvent('touchstart', {
-                        bubbles: true,
-                        cancelable: true,
-                        touches: touchList,
-                        targetTouches: touchList,
-                        changedTouches: touchList
-                    });
-                } catch (e) {
-                    // Fallback for browsers without TouchEvent constructor
-                    touchStartEvent = document.createEvent('Event');
-                    touchStartEvent.initEvent('touchstart', true, true);
-                    touchStartEvent.touches = touchList;
-                    touchStartEvent.targetTouches = touchList;
-                    touchStartEvent.changedTouches = touchList;
-                }
-                
-                // Dispatch touchstart
-                mapContainer.dispatchEvent(touchStartEvent);
-                
-                // Short timeout to simulate real touch sequence timing
-                setTimeout(() => {
-                    // Create touchmove event - KEY for simulating scrolling
-                    let touchMoveEvent;
-                    try {
-                        // Move the touch slightly to simulate a tiny drag
-                        touch.clientY += 10;
-                        touch.pageY += 10;
-                        touch.screenY += 10;
-                        
-                        const moveList = createTouchList(touch);
-                        touchMoveEvent = new TouchEvent('touchmove', {
-                            bubbles: true,
-                            cancelable: true,
-                            touches: moveList,
-                            targetTouches: moveList,
-                            changedTouches: moveList
-                        });
-                    } catch (e) {
-                        touchMoveEvent = document.createEvent('Event');
-                        touchMoveEvent.initEvent('touchmove', true, true);
-                        touchMoveEvent.touches = touchList;
-                        touchMoveEvent.targetTouches = touchList;
-                        touchMoveEvent.changedTouches = touchList;
-                    }
-                    
-                    // Dispatch touchmove
-                    mapContainer.dispatchEvent(touchMoveEvent);
-                    
-                    // Even more move events to simulate scrolling
-                    setTimeout(() => {
-                        touch.clientY += 10;
-                        touch.pageY += 10;
-                        touch.screenY += 10;
-                        mapContainer.dispatchEvent(touchMoveEvent);
-                        
-                        // Final touchend to complete the sequence
-                        setTimeout(() => {
-                            let touchEndEvent;
-                            try {
-                                // Empty touches list, but keep changed touches
-                                const emptyList = createTouchList();
-                                const changedList = createTouchList(touch);
-                                
-                                touchEndEvent = new TouchEvent('touchend', {
-                                    bubbles: true,
-                                    cancelable: true,
-                                    touches: emptyList,
-                                    targetTouches: emptyList,
-                                    changedTouches: changedList
-                                });
-                            } catch (e) {
-                                touchEndEvent = document.createEvent('Event');
-                                touchEndEvent.initEvent('touchend', true, true);
-                                touchEndEvent.touches = [];
-                                touchEndEvent.targetTouches = [];
-                                touchEndEvent.changedTouches = touchList;
-                            }
-                            
-                            // Dispatch touchend
-                            mapContainer.dispatchEvent(touchEndEvent);
-                            document.dispatchEvent(touchEndEvent);
-                            window.dispatchEvent(touchEndEvent);
-                            
-                            // Also dispatch mouseup for hybrid events
-                            const mouseUpEvent = new MouseEvent('mouseup', {
-                                bubbles: true,
-                                cancelable: true,
-                                clientX: touch.clientX,
-                                clientY: touch.clientY
-                            });
-                            document.dispatchEvent(mouseUpEvent);
-                            
-                            // Clear the safety flag
-                            setTimeout(() => {
-                                window._forceCompleteGhostTouchesActive = false;
-                            }, 100);
-                        }, 50);
-                    }, 50);
-                }, 50);
-            } catch (e) {
-                console.warn('Failed to create advanced touch events:', e);
-                window._forceCompleteGhostTouchesActive = false;
-            }
-        }
-    } catch (e) {
-        console.warn('Failed to create synthetic events:', e);
-        window._forceCompleteGhostTouchesActive = false;
-    }
-    
-    // Method 2: Directly manipulate Leaflet's internal state (comprehensive approach)
-    if (map._leaflet_id) {
-        try {
-            // COMPLETELY reset dragging state
-            if (map.dragging && map.dragging._draggable) {
-                // Reset all dragging internal flags and state
-                map.dragging._draggable._moved = false;
-                map.dragging._draggable._moving = false;
-                map.dragging._draggable._startPoint = null;
-                map.dragging._draggable._startPos = null;
-                map.dragging._draggable._newPos = null;
-                map.dragging._draggable._startTime = 0;
-                map.dragging._draggable._lastPos = null;
-                
-                // Clear move handlers temporarily
-                if (map.dragging._draggable._onMove) {
-                    const originalOnMove = map.dragging._draggable._onMove;
-                    map.dragging._draggable._onMove = null;
-                    setTimeout(() => {
-                        map.dragging._draggable._onMove = originalOnMove;
-                    }, 10);
-                }
-                
-                // Force a call to _onUp to ensure drag end is processed
-                if (typeof map.dragging._draggable._onUp === 'function') {
-                    try {
-                        map.dragging._draggable._onUp({ 
-                            type: 'touchend',
-                            preventDefault: function() {},
-                            stopPropagation: function() {}
-                        });
-                    } catch (e) {
-                        console.warn('Error calling internal _onUp handler:', e);
-                    }
-                }
-                
-                // Force disable and re-enable to reset all event listeners
-                try {
-                    map.dragging.disable();
-                    setTimeout(() => {
-                        map.dragging.enable();
-                    }, 10);
-                } catch (e) {
-                    console.warn('Error toggling drag handler:', e);
-                }
-            }
-            
-            // Reset ALL touch zoom handler state
-            if (map.touchZoom) {
-                map.touchZoom._zooming = false;
-                
-                // Reset any other touch zoom internal state
-                if (map.touchZoom._moved) map.touchZoom._moved = false;
-                if (map.touchZoom._startPoint) map.touchZoom._startPoint = null;
-                if (map.touchZoom._startDist) map.touchZoom._startDist = 0;
-                if (map.touchZoom._zoom) map.touchZoom._zoom = map.getZoom();
-                
-                // Force touch end handling
-                if (typeof map.touchZoom._onTouchEnd === 'function') {
-                    try {
-                        map.touchZoom._onTouchEnd();
-                    } catch (e) {
-                        console.warn('Error calling touchZoom._onTouchEnd:', e);
-                    }
-                }
-                
-                // Toggle to ensure full reset
-                map.touchZoom.disable();
-                setTimeout(() => {
-                    map.touchZoom.enable();
-                }, 10);
-            }
-            
-            // Reset ANY animation or motion flags
-            map._animatingZoom = false;
-            map._moving = false;
-            map._loaded = true;
-            
-            // Force map to stop any animations
-            if (typeof map.stop === 'function') {
-                try {
-                    map.stop();
-                } catch (e) {
-                    console.warn('Error stopping map animations:', e);
-                }
-            }
-            
-            // Reset EVERY handler we can find
-            if (map._handlers && map._handlers.length) {
-                for (let i = 0; i < map._handlers.length; i++) {
-                    const handler = map._handlers[i];
-                    if (handler && typeof handler.disable === 'function' && typeof handler.enable === 'function') {
-                        try {
-                            const wasEnabled = handler.enabled;
-                            handler.disable();
-                            if (wasEnabled) {
-                                setTimeout(() => {
-                                    handler.enable();
-                                }, 10);
-                            }
-                        } catch (e) {
-                            console.warn(`Error resetting handler ${i}:`, e);
-                        }
-                    }
-                }
-            }
-            
-            // Reset any marker layer interactivity
-            if (window.markerClusterGroup) {
-                try {
-                    window.markerClusterGroup.refreshClusters();
-                } catch (e) {
-                    console.warn('Error refreshing marker clusters:', e);
-                }
-            }
-        } catch (e) {
-            console.warn('Failed deep reset of Leaflet internal handlers:', e);
-        }
-    }
-    
-    // Method 3: Force visual refresh of all map elements
-    try {
-        // Reset all markers to normal state
-        const markerElements = document.querySelectorAll('.leaflet-marker-icon');
-        markerElements.forEach(marker => {
-            // Reset any stuck hover/active states
-            marker.style.transform = '';
-            marker.style.zIndex = '';
-            marker.style.pointerEvents = 'auto';
-            
-            // Force a DOM reflow
-            const originalDisplay = marker.style.display;
-            marker.style.display = 'none';
-            void marker.offsetHeight; // Force reflow
-            marker.style.display = originalDisplay;
-            
-            // Reset internal marker elements
-            const customMarker = marker.querySelector('.marker-icon');
-            if (customMarker) {
-                customMarker.style.transform = '';
-                customMarker.style.backgroundColor = '';
+        // Dispatch synthetic touchend events to clear any stuck touches
+        const fakeEvent = new Event('touchend', { bubbles: true, cancelable: true });
+        document.dispatchEvent(fakeEvent);
+        
+        // Also clear any :active or .active CSS states
+        document.querySelectorAll('.active').forEach(el => {
+            if (!el.classList.contains('popup-tab') && !el.classList.contains('establishment-popup-content')) {
+                el.classList.remove('active');
             }
         });
         
-        // Reset map container styles
-        const mapContainer = document.getElementById('map');
-        if (mapContainer) {
-            mapContainer.style.pointerEvents = 'auto';
-            mapContainer.style.touchAction = 'manipulation';
-            
-            // Force container redraw
-            mapContainer.style.transform = 'translateZ(0)';
-            void mapContainer.offsetHeight;
-            mapContainer.style.transform = '';
-        }
+        // Reset any touch action CSS
+        document.querySelectorAll('.leaflet-container').forEach(el => {
+            el.style.touchAction = 'pan-x pan-y';
+        });
         
-        // Force a complete map refresh
-        map.invalidateSize({reset: true, pan: false, animate: false});
+        // Re-enable map interaction if it got disabled
+        if (map) {
+            map.dragging.enable();
+            map.touchZoom.enable();
+            map.doubleClickZoom.enable();
+            if (map.tap) map.tap.enable();
+        }
     } catch (e) {
-        console.warn('Failed to refresh map visual state:', e);
+        console.error('Error in forceCompleteGhostTouches:', e);
     }
 }
 
@@ -1744,16 +1094,8 @@ function forceCompleteGhostTouches() {
 });
 
 // Save map configuration and state variables at module level
-const MAP_CONFIG = {
-    attributionControl: false,
-    zoomControl: false,
-    minZoom: 17,
-    maxZoom: 20,
-    tap: true,
-    tapTolerance: 15,
-    touchZoom: true,
-    bounceAtZoomLimits: false
-};
+// const MAP_CONFIG = { ... }; // Removed as per instructions
+// const MAP_CONFIG has been removed.
 
 const DEFAULT_VIEW = [23.5558, 120.4705];
 const DEFAULT_ZOOM = 17;
@@ -1764,10 +1106,10 @@ let mapState = {}; // Store current map state
 
 // Initialize map and related functionality
 function initializeMap() {
-    console.log('Initializing map');
+    console.log('Initializing job map...'); // Updated log message
     
     // Get map container element
-    const mapContainer = document.getElementById('map');
+    // const mapContainer = document.getElementById('map'); // mapContainer is defined later if needed
     
     // If a map instance already exists, destroy it first
     if (map && typeof map.remove === 'function') {
@@ -1778,16 +1120,36 @@ function initializeMap() {
         map = null;
     }
     
-    // Create a new map instance with optimized config for touch devices
-    const mapInitConfig = {...MAP_CONFIG};
+    // Define the new configuration object
+    const mapInitConfig = {
+        zoomControl: false,
+        attributionControl: false,
+        closePopupOnClick: true,
+        preferCanvas: false,
+        minZoom: 17, // from existing jobscript MAP_CONFIG
+        maxZoom: 20, // from existing jobscript MAP_CONFIG
+        bounceAtZoomLimits: false,
+        inertia: !isTouchDevice(),
+        scrollWheelZoom: !isTouchDevice(),
+        dragging: true,
+        touchZoom: true,
+        doubleClickZoom: true,
+        tap: isTouchDevice(), 
+        tapTolerance: 15, 
+        zoomSnap: 0.5,
+        wheelPxPerZoomLevel: 120,
+        fadeAnimation: true,
+        zoomAnimation: true,
+        markerZoomAnimation: true,
+        tapHold: isTouchDevice()
+    };
     
-    // Enhance touch device configuration
+    // Apply touch-specific overrides
     if (isTouchDevice()) {
-        // Enable tap with higher tolerance for better marker clicking
-        mapInitConfig.tap = true;
-        mapInitConfig.tapTolerance = 30;
-        
-        // Enable all touch interactions
+        mapInitConfig.bounceAtZoomLimits = false; 
+        mapInitConfig.inertiaDeceleration = 2000; 
+        mapInitConfig.tap = true; 
+        mapInitConfig.tapTolerance = 40; // Use 40 for touch devices
         mapInitConfig.dragging = true;
         mapInitConfig.touchZoom = true;
         mapInitConfig.doubleClickZoom = true;
@@ -1802,12 +1164,12 @@ function initializeMap() {
     // Add tile layer with CartoDB Voyager style
     tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors, © CARTO',
-        maxZoom: 20,
-        minZoom: 17,
+        maxZoom: 20, // from jobscript
+        minZoom: 17, // from jobscript
         subdomains: 'abcd'
     }).addTo(map);
     
-    // Create a new marker cluster group with original styling
+    // Create a new marker cluster group with original jobscript styling
     window.markerClusterGroup = window.markerClusterGroup || L.markerClusterGroup({
         maxClusterRadius: 40,
         iconCreateFunction: function(cluster) {
@@ -1826,40 +1188,30 @@ function initializeMap() {
     // Add the cluster group to the map
     map.addLayer(window.markerClusterGroup);
     
-    // For touch devices, we'll apply comprehensive touch optimizations
+    // For touch devices, apply comprehensive touch optimizations from rentscript.js
     if (isTouchDevice()) {
-        // Ensure Leaflet's tap handling is properly configured
-        map.options.tap = true;
-        map.options.tapTolerance = 40; // Even more tolerant tap detection
+        // Ensure Leaflet's tap handling is properly configured (already done by mapInitConfig, but good for clarity)
+        // map.options.tap = true;
+        // map.options.tapTolerance = 40; 
         
-        // Make sure all touch handlers are enabled
+        // Make sure all touch handlers are enabled (already done by mapInitConfig, but good for clarity)
         map.dragging.enable();
         map.touchZoom.enable();
         map.doubleClickZoom.enable();
         
-        // Completely disable touch-action CSS on map to prevent browser interference
         const mapContainer = document.getElementById('map');
         if (mapContainer) {
-            // Add scroll detection to auto-fix ghost touches
             let lastScrollTime = 0;
-            
-            // Monitor for scroll/move events to detect when the user manually fixes the ghost state
             mapContainer.addEventListener('touchmove', function(e) {
                 lastScrollTime = Date.now();
             }, {passive: true});
             
-            // When touch ends on the map, check if it was a tap or the end of a scroll
             mapContainer.addEventListener('touchend', function(e) {
-                const wasScroll = (Date.now() - lastScrollTime) < 300; // Was a scroll if < 300ms from last move
-                
+                const wasScroll = (Date.now() - lastScrollTime) < 300;
                 if (wasScroll) {
-                    // After scroll, make sure ghost states are cleared
                     setTimeout(forceCompleteGhostTouches, 50);
                 } else {
-                    // Was a tap - check if we need to fix ghost states after a short delay
-                    // This creates the effect of the map being instantly ready for taps
                     setTimeout(() => {
-                        // Only run the ghost fix if no popup/modal is active
                         if (!window.bottomSheetActive && !document.querySelector('.leaflet-popup')) {
                             forceCompleteGhostTouches();
                         }
@@ -1867,7 +1219,6 @@ function initializeMap() {
                 }
             }, {passive: true});
             
-            // Set initial touch action to none and pointer events to auto
             mapContainer.style.touchAction = 'pan-x pan-y';
             mapContainer.style.pointerEvents = 'auto';
         }
@@ -1893,20 +1244,7 @@ function initializeMap() {
             console.error('Error saving map state:', error);
         }
     }
-    let _markerClusterGroup = L.markerClusterGroup({
-        maxClusterRadius: 40,
-        iconCreateFunction: function(cluster) {
-            const count = cluster.getChildCount();
-            return L.divIcon({
-                html: `<div><span>${count}</span></div>`,
-                className: 'marker-cluster',
-                iconSize: L.point(40, 40)
-            });
-        },
-        spiderfyOnMaxZoom: false,
-        showCoverageOnHover: false,
-        zoomToBoundsOnClick: true
-    });
+    // let _markerClusterGroup = L.markerClusterGroup({ ... }); // Removed unused local variable as planned
     
     // Initialize UI elements and load data
     setupEventListeners();
@@ -2022,15 +1360,44 @@ function initializeMap() {
                 
                 // Re-add click handler after a short delay
                 setTimeout(() => {
-                    marker.off('click');
-                    marker.on('click', () => {
-                        window.innerWidth <= 768 ? showMobilePopup(marker) : showDesktopPopup(marker);
-                        activeMarker = marker;
-                    });
+                    // Check if marker still exists and has an 'off' method
+                    if (marker && typeof marker.off === 'function') { 
+                        marker.off('click'); // Avoid errors if marker was removed
+                        marker.on('click', () => {
+                            window.innerWidth <= 768 ? showMobilePopup(marker) : showDesktopPopup(marker);
+                            activeMarker = marker;
+                        });
+                    }
                 }, 50);
             }
             
             activeMarker = null;
+
+            // --- BEGINNING OF ADDED IOS FIX ---
+            // Detect iOS specifically
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            if (isIOS) {
+                console.log('iOS popup close detected - triggering map refresh');
+                // Force a redraw of the map after popup closes
+                setTimeout(() => {
+                    if (map) { // Ensure map still exists
+                        map.invalidateSize({reset: true, animate: false, pan: false});
+                        
+                        // Additional fix: trigger a small pan to force tile reload if needed
+                        try { // Add try-catch for panBy in case map state is unusual
+                            const center = map.getCenter(); // Ensure map has a center
+                            if (center) {
+                                 map.panBy([1, 1], { animate: false, duration: 0.1 });
+                                 map.panBy([-1, -1], { animate: false, duration: 0.1 });
+                            }
+                        } catch (panError) {
+                            console.warn('Error during iOS panBy fix:', panError);
+                        }
+                    }
+                }, 100); // 100ms delay
+            }
+            // --- END OF ADDED IOS FIX ---
         });
         
         // Add a special fix for iOS devices
@@ -2060,70 +1427,13 @@ function initializeMap() {
         mapContainer.addEventListener('touchend', function(e) {
             isTouching = false;
             // If no popup is active and touch isn't working, try resetting handlers
-            if (!mobilePopupActive && Date.now() - touchStartTime > 300) {
-                resetMapTouchHandlers();
-            }
+            // if (!mobilePopupActive && Date.now() - touchStartTime > 300) {
+                // resetMapTouchHandlers(); // Removed call
+            // }
         }, { passive: true });
     }
     
-    // Function to completely reset map touch handlers
-    function resetMapTouchHandlers() {
-        console.log('Resetting map touch handlers');
-        
-        try {
-            // Make sure map is valid
-            if (!map || typeof map.invalidateSize !== 'function') return;
-            
-            // First use our generic touch reset function
-            resetTouchSystem(() => {
-                // Now do map-specific resets
-                try {
-                    // Force a complete re-initialization of the map
-                    map.invalidateSize({reset: true, pan: false});
-                    
-                    // Enable all possible interactions
-                    map.dragging.enable();
-                    map.touchZoom.enable();
-                    map.doubleClickZoom.enable();
-                    map.scrollWheelZoom.enable();
-                    map.boxZoom.enable();
-                    map.keyboard.enable();
-                    if (map.tap) map.tap.enable();
-                    
-                    // Reset handlers from saved originals if available
-                    if (window._originalMapHandlers) {
-                        map._onTouchStart = window._originalMapHandlers._onTouchStart;
-                        map._onTouchEnd = window._originalMapHandlers._onTouchEnd;
-                        map._onTouchMove = window._originalMapHandlers._onTouchMove;
-                    }
-                    
-                    // Fix CSS related issues
-                    const mapContainer = document.getElementById('map');
-                    if (mapContainer) {
-                        // Ensure proper CSS classes
-                        mapContainer.classList.add('leaflet-touch');
-                        mapContainer.classList.add('leaflet-touch-drag');
-                        mapContainer.classList.add('leaflet-touch-zoom');
-                        
-                        // Reset any CSS that might be interfering
-                        mapContainer.style.touchAction = '';
-                        mapContainer.style.pointerEvents = '';
-                    }
-                    
-                    // Ensure body doesn't have any lingering styles
-                    document.body.style.overflow = '';
-                    document.body.style.touchAction = '';
-                    document.body.style.position = '';
-                    
-                    console.log('Map-specific touch handlers reset complete');
-                } catch (innerError) {
-                    console.error('Error in map-specific reset:', innerError);
-                }
-            });
-        } catch (error) {
-            console.error('Error resetting touch handlers:', error);
-        }
-    }
+    // Removed resetMapTouchHandlers function
     
     // No longer setting active class on navigation links
     function setActiveNavLink() {
@@ -2785,15 +2095,14 @@ function initializeMap() {
         console.log('Bottom sheet activated as fullscreen modal');
     }
     
-    // Close bottom sheet with RADICAL touch reset
+    // Close bottom sheet with map refresh
     function closeBottomSheet() {
-        console.log('Closing bottom sheet - with RADICAL touch reset');
+        console.log('Closing bottom sheet - with map refresh'); // Updated log
         const bottomSheet = document.getElementById('bottom-sheet-container');
         
         if (!bottomSheet) return;
         
         // Set flag to indicate a bottom sheet was just closed
-        // This will be used to ensure map reset happens in the proper context
         window._bottomSheetWasRecentlyActive = true;
         
         // Make sure the bottom sheet has transition
@@ -2822,35 +2131,9 @@ function initializeMap() {
             }
         });
         
-        // After animation starts but before it completes, begin touch reset
-        setTimeout(() => {
-            // Basic quick attempt at touch reset
-            if (map) {
-                try {
-                    // Manually reset key internal Leaflet state flags
-                    if (map.dragging && map.dragging._draggable) {
-                        map.dragging._draggable._moved = false;
-                        map.dragging._draggable._moving = false;
-                    }
-                    
-                    if (map.touchZoom) {
-                        map.touchZoom._zooming = false;
-                    }
-                    
-                    map._animatingZoom = false;
-                    map._moving = false;
-                    
-                    // Force reset all handlers
-                    map.dragging.enable();
-                    map.touchZoom.enable();
-                    map.doubleClickZoom.enable();
-                } catch (e) {
-                    console.warn('Error in first phase touch reset:', e);
-                }
-            }
-        }, 150);
+        // Removed the 150ms setTimeout block with "Basic quick attempt at touch reset"
         
-        // After animation completes, set visibility to hidden and do radical reset
+        // After animation completes, set visibility to hidden and perform map refresh
         setTimeout(() => {
             bottomSheet.style.visibility = 'hidden';
             bottomSheet.style.pointerEvents = 'none';
@@ -2859,22 +2142,52 @@ function initializeMap() {
             window.bottomSheetActive = false;
             window.activeMarker = null;
             
-            // INITIATE RADICAL RESET - completely reinitialize the map
-            resetTouchSystem(() => {
-                console.log('Radical reset completed after bottom sheet close');
-                
-                // Re-enable any critical event handlers
-                if (document.getElementById('reset-view-btn')) {
-                    const resetViewBtn = document.getElementById('reset-view-btn');
-                    resetViewBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (typeof resetView === 'function') {
-                            resetView();
-                        }
-                    });
+            // Replace resetTouchSystem with map.invalidateSize() and handler re-enabling
+            if (map) {
+                map.invalidateSize({reset: true, animate: false, pan: false});
+
+                const center = map.getCenter();
+                if (center) { // Ensure map has a center to avoid errors
+                    try {
+                        map.panBy([1, 1], { animate: false, duration: 0.1 });
+                        map.panBy([-1, -1], { animate: false, duration: 0.1 });
+                        console.log('Map panned slightly to encourage refresh in closeBottomSheet.');
+                    } catch (panError) {
+                        console.warn('Error during panBy trick in closeBottomSheet:', panError);
+                    }
+                } else {
+                    console.warn('Map center not available for panBy trick in closeBottomSheet.');
                 }
-            });
+
+                if (window.markerClusterGroup && typeof window.markerClusterGroup.refreshClusters === 'function') {
+                    window.markerClusterGroup.refreshClusters();
+                    console.log('MarkerClusterGroup refreshed via refreshClusters() in closeBottomSheet.');
+                } else {
+                    if (!window.markerClusterGroup) console.warn('closeBottomSheet: MarkerClusterGroup not found for refreshClusters().');
+                    else console.warn('closeBottomSheet: refreshClusters() method not available.');
+                }
+            
+                // Re-enable map interactions
+                map.dragging.enable();
+                map.touchZoom.enable();
+                map.doubleClickZoom.enable();
+                if (map.tap) map.tap.enable(); // Ensure tap is enabled
+
+                // Removed MarkerClusterGroup refresh logic
+                // if (window.markerClusterGroup && map && map.hasLayer(window.markerClusterGroup)) {
+                //     map.removeLayer(window.markerClusterGroup);
+                //     map.addLayer(window.markerClusterGroup);
+                //     console.log('MarkerClusterGroup layer refreshed in closeBottomSheet.');
+                // } else {
+                //     if (!window.markerClusterGroup) console.log('closeBottomSheet: MarkerClusterGroup not found.');
+                //     else if (!map) console.log('closeBottomSheet: Map not found.');
+                //     else if (!map.hasLayer(window.markerClusterGroup)) console.log('closeBottomSheet: MarkerClusterGroup not on map.');
+                // }
+
+                console.log('Map refreshed and interactions re-enabled after bottom sheet close'); // Updated log
+                forceCompleteGhostTouches(); // Add call here
+            }
+            // Removed resetTouchSystem call and its callback (which re-added resetViewBtn listener)
         }, 300);
     }
     
@@ -2952,32 +2265,56 @@ function initializeMap() {
         document.body.style.touchAction = '';
         document.body.style.position = '';
         
-        // Use the centralized touch reset function with map reinitialization
-        resetTouchSystem(() => {
-            // Save any important map state before rebuilding
-            saveMapState(); 
-            
-            // Re-initialize the map from scratch
-            initializeMap();
-            
-            // Rebuild markers and UI after map is re-initialized
-            setupEventListeners();
-            setActiveNavLink();
-            
-            // If we already loaded establishments data, don't reload it
-            if (window.establishments && window.establishments.length > 0) {
-                console.log('Re-adding existing markers');
-                addMapMarkers();
+        // Remove resetTouchSystem() call and its callback
+        // Implement map.invalidateSize() refresh logic
+        if (map) {
+            map.invalidateSize({reset: true, animate: false, pan: false});
+
+            const center = map.getCenter();
+            if (center) { // Ensure map has a center to avoid errors
+                try {
+                    map.panBy([1, 1], { animate: false, duration: 0.1 });
+                    map.panBy([-1, -1], { animate: false, duration: 0.1 });
+                    console.log('Map panned slightly to encourage refresh in closeMobilePopup.');
+                } catch (panError) {
+                    console.warn('Error during panBy trick in closeMobilePopup:', panError);
+                }
             } else {
-                console.log('Loading establishment data');
-                loadEstablishmentsData();
+                console.warn('Map center not available for panBy trick in closeMobilePopup.');
             }
+
+            if (window.markerClusterGroup && typeof window.markerClusterGroup.refreshClusters === 'function') {
+                window.markerClusterGroup.refreshClusters();
+                console.log('MarkerClusterGroup refreshed via refreshClusters() in closeMobilePopup.');
+            } else {
+                if (!window.markerClusterGroup) console.warn('closeMobilePopup: MarkerClusterGroup not found for refreshClusters().');
+                else console.warn('closeMobilePopup: refreshClusters() method not available.');
+            }
+
+            // Re-enable map interactions (including desktop-specific ones)
+            map.dragging.enable();
+            map.touchZoom.enable();
+            map.doubleClickZoom.enable();
+            map.scrollWheelZoom.enable(); // Enable for desktop/non-touch
+            map.boxZoom.enable();         // Enable for desktop/non-touch
+            map.keyboard.enable();        // Enable for desktop/non-touch
+            if (map.tap) map.tap.enable();
+
+            // Removed MarkerClusterGroup refresh logic
+            // if (window.markerClusterGroup && map && map.hasLayer(window.markerClusterGroup)) {
+            //     map.removeLayer(window.markerClusterGroup);
+            //     map.addLayer(window.markerClusterGroup);
+            //     console.log('MarkerClusterGroup layer refreshed in closeMobilePopup.');
+            // } else {
+            //     if (!window.markerClusterGroup) console.log('closeMobilePopup: MarkerClusterGroup not found.');
+            //     else if (!map) console.log('closeMobilePopup: Map not found.');
+            //     else if (!map.hasLayer(window.markerClusterGroup)) console.log('closeMobilePopup: MarkerClusterGroup not on map.');
+            // }
             
-            console.log('Map re-initialization complete');
-            
-            // Re-setup the mobile popup elements
-            setupMobilePopup();
-        });
+            console.log('Map refreshed and interactions re-enabled after mobile popup close');
+            forceCompleteGhostTouches(); // Add call here
+        }
+        // All logic from the previous resetTouchSystem callback (saveMapState, initializeMap, etc.) is removed.
     }
     
     // Create popup content with establishment data and legal standards
