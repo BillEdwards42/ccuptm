@@ -949,7 +949,7 @@ function createComparisonSection(label, standard, actual) {
     // Standard box
     const standardBox = document.createElement('div');
     standardBox.className = 'comparison-box standard-box';
-    standardBox.innerHTML = `<span>標準：</span> ${standard}`;
+    standardBox.innerHTML = `<span>標準：</span> <span class="box-value">${standard}</span>`;
     boxesContainer.appendChild(standardBox);
     
     // Actual box
@@ -957,31 +957,20 @@ function createComparisonSection(label, standard, actual) {
     actualBox.className = 'comparison-box actual-box';
     
     let actualDisplay = '';
-    let meetsStandard = false;
     
     if (label === '時薪') {
         actualDisplay = actual || 'N/A';
-        const standardNum = parseInt(standard.match(/\d+/)?.[0] || 0);
-        const actualNum = parseInt(actual.match(/\d+/)?.[0] || 0);
-        meetsStandard = actualNum >= standardNum;
     } else if (label === '勞健保') {
         actualDisplay = actual ? '是' : '否';
-        meetsStandard = actual === true || actual === '是';
     } else if (label === '國定雙倍') {
         if (actual === true || actual === '是') {
             actualDisplay = '休假';
-            meetsStandard = true;
         } else {
             actualDisplay = '否';
-            meetsStandard = false;
         }
     }
     
-    const iconHtml = meetsStandard 
-        ? '<span class="status-icon yes"><i class="fas fa-check"></i></span>'
-        : '<span class="status-icon no"><i class="fas fa-times"></i></span>';
-    
-    actualBox.innerHTML = `<span>店家：</span> ${iconHtml} ${actualDisplay}`;
+    actualBox.innerHTML = `<span>店家：</span> <span class="box-value">${actualDisplay}</span>`;
     boxesContainer.appendChild(actualBox);
     
     section.appendChild(boxesContainer);

@@ -932,7 +932,7 @@ html, body {
 .leaflet-popup-content-wrapper {
     border-radius: 12px;
     padding: 0;
-    overflow: hidden;
+    overflow: visible !important; /* Allow tooltips to escape */
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
     width: 380px; /* Increased width for more space */
     max-width: 95vw;
@@ -960,8 +960,8 @@ html, body {
 .popup-tabs {
     display: flex;
     border-bottom: 1px solid #eee;
-    z-index: 1001;
-    position: relative;
+    z-index: 100;
+    position: absolute;
 }
 
 .popup-tab {
@@ -976,8 +976,8 @@ html, body {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     will-change: background-color, color;
-    position: relative;
-    z-index: 1002;
+    position: absolute;
+    z-index: 101;
     user-select: none;
 }
 
@@ -1049,6 +1049,7 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    overflow: visible !important; /* Allow tooltips to escape */
 }
 
 /* Green header for rent popups */
@@ -1188,6 +1189,10 @@ html, body {
     background-color: #2196F3;
 }
 
+.icon-wrapper.landlord-auth {
+    background-color: #9C27B0;
+}
+
 .icon-wrapper:hover {
     transform: scale(1.1);
     box-shadow: 0 3px 6px rgba(0,0,0,0.2);
@@ -1204,8 +1209,8 @@ html, body {
     top: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(5px);
-    background-color: rgba(0, 0, 0, 0.9);
-    color: white;
+    background-color: white;
+    color: #333;
     padding: 6px 10px;
     border-radius: 4px;
     font-size: 12px;
@@ -1214,7 +1219,9 @@ html, body {
     visibility: hidden;
     transition: all 0.2s ease;
     pointer-events: none;
-    z-index: 1000;
+    z-index: 10000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    border: 1px solid #eee;
 }
 
 .icon-wrapper::before {
@@ -1224,11 +1231,11 @@ html, body {
     left: 50%;
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.9);
+    border-bottom-color: white;
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
-    z-index: 1000;
+    z-index: 10000;
 }
 
 .icon-wrapper:hover::after {
@@ -1510,6 +1517,7 @@ html, body {
     font-size: 13px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .comparison-box span:first-child {
@@ -1519,13 +1527,20 @@ html, body {
     font-size: 12px;
 }
 
+.comparison-box .box-value {
+    font-weight: 500;
+    color: #333;
+    text-align: right;
+}
+
 .actual-box {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.status-icon {
+/* Status icons removed - no longer used in legal standards tab */
+/* .status-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1546,7 +1561,7 @@ html, body {
 
 .status-icon i {
     font-size: 9px;
-}
+} */
 
 .legal-standards-footer {
     margin-top: 8px;

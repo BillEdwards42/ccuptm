@@ -23,7 +23,9 @@
         "alarm": false,
         "stuff": "電視機、電冰箱、冷氣機、飲水機、光纖網路",
         "note": "",
-        "filter": 3200
+        "filter": 3200,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -48,7 +50,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、光纖網路",
         "note": "",
-        "filter": 5000
+        "filter": 5000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -73,7 +77,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路",
         "note": "",
-        "filter": 5700
+        "filter": 5700,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -98,7 +104,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、光纖網路",
         "note": "",
-        "filter": 3500
+        "filter": 3500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -123,7 +131,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台",
         "note": "",
-        "filter": 3000
+        "filter": 3000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -148,7 +158,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路",
         "note": "",
-        "filter": 4300
+        "filter": 4300,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -173,7 +185,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、衣櫃、單人床、書桌(椅)、寬頻網路、光纖網路",
         "note": "",
-        "filter": 49000
+        "filter": 49000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -198,7 +212,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路第四台、光纖網路",
         "note": "每年縣政府都會來檢查\n管理人換人了",
-        "filter": 3500
+        "filter": 3500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -223,7 +239,9 @@
         "alarm": true,
         "stuff": "冷氣機、洗衣機、脫水機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
         "note": "",
-        "filter": 3000
+        "filter": 3000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -248,7 +266,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、中央空調、洗衣機、脫水機、沙發、衣櫃、書櫃、檯燈",
         "note": "南華大學和XX大學（會安排人來檢查）",
-        "filter": 3000
+        "filter": 3000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -273,7 +293,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、雙人床、書櫃、書桌(椅)、檯燈、寬頻網路",
         "note": "",
-        "filter": 4500
+        "filter": 4500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -298,7 +320,9 @@
         "alarm": true,
         "stuff": "電視機、 電冰箱、 冷氣機、 洗衣機、 脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 第四台、 光纖網路",
         "note": "",
-        "filter": 3950
+        "filter": 3950,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -323,7 +347,9 @@
         "alarm": false,
         "stuff": "電冰箱、 冷氣機、 洗衣機、 飲水機、 衣櫃、 單人床、 書櫃、 書桌(椅)、 光纖網路",
         "note": "",
-        "filter": 3500
+        "filter": 3500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -348,7 +374,9 @@
         "alarm": true,
         "stuff": "電視機、 電冰箱、冷氣機、 洗衣機、 脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 第四台",
         "note": "",
-        "filter": 50000
+        "filter": 50000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -373,7 +401,9 @@
         "alarm": true,
         "stuff": "電視機、 電冰箱、 冷氣機、 洗衣機、 脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 雙人床、 書櫃、 書桌(椅)、 寬頻網路",
         "note": "",
-        "filter": 3750
+        "filter": 3750,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -398,7 +428,9 @@
         "alarm": true,
         "stuff": "電冰箱、 冷氣機、 洗衣機、 烘乾機、 飲水機、 衣櫃、 雙人床、 書櫃、 書桌(椅)、 寬頻網路",
         "note": "",
-        "filter": 5000
+        "filter": 5000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -423,7 +455,9 @@
         "alarm": true,
         "stuff": "電視機、 電冰箱、 冷氣機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 第四台、 寬頻網路",
         "note": "",
-        "filter": 4500
+        "filter": 4500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -448,7 +482,9 @@
         "alarm": false,
         "stuff": "電冰箱、 冷氣機、 洗衣機、脫水機、 烘乾機、 飲水機、 衣櫃、 單人床、 書桌(椅)、 寬頻網路、 光纖網路",
         "note": "",
-        "filter": 2500
+        "filter": 2500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -473,7 +509,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、中央空調、洗衣機、脫水機、沙發、衣櫃、書櫃、檯燈、寬頻網路、偵煙設備、逃生梯、緩降梯",
         "note": "收10 個月\n消防局每年都會來",
-        "filter": 4000
+        "filter": 4000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -498,7 +536,9 @@
         "alarm": false,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路、停車場、電梯",
         "note": "",
-        "filter": 3000
+        "filter": 3000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -523,7 +563,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、第四台、光纖網路",
         "note": "",
-        "filter": 3600
+        "filter": 3600,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -548,7 +590,9 @@
         "alarm": true,
         "stuff": "冷氣機、洗衣機、脫水機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
         "note": "年收10個月",
-        "filter": 2500
+        "filter": 2500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -573,7 +617,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路",
         "note": "",
-        "filter": 4000
+        "filter": 4000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -598,7 +644,9 @@
         "alarm": false,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路",
         "note": "",
-        "filter": 3200
+        "filter": 3200,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -623,7 +671,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、雙人床、書櫃、書桌(椅)、寬頻網路、第四台、50M寬頻網路",
         "note": "",
-        "filter": 6000
+        "filter": 6000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -648,7 +698,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、冷氣機、中央空調、脫水機、烘乾機、飲水機、衣櫃、雙人床、書桌(椅)、寬頻網路",
         "note": "",
-        "filter": 60000
+        "filter": 60000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -673,7 +725,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、沙發、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、第四台、光纖網路",
         "note": "",
-        "filter": 5500
+        "filter": 5500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -698,7 +752,9 @@
         "alarm": false,
         "stuff": "電視機、電冰箱、冷氣機、洗衣機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、光纖網路",
         "note": "",
-        "filter": 4000
+        "filter": 4000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -723,7 +779,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
         "note": "",
-        "filter": 3500
+        "filter": 3500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -748,7 +806,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、中央空調、洗衣機、脫水機、烘乾機、沙發、衣櫃、單人床、寬頻網路",
         "note": "",
-        "filter": 3000
+        "filter": 3000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -773,7 +833,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、電熱水器",
         "note": "房東說價格有很多種，他無法細講",
-        "filter": 3500
+        "filter": 3500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -798,7 +860,9 @@
         "alarm": true,
         "stuff": "電視、冰箱、冷氣、衣櫃、床組、桌椅、滑動式三層鐵櫃、對講機",
         "note": "",
-        "filter": 3800
+        "filter": 3800,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -823,7 +887,9 @@
         "alarm": true,
         "stuff": "電視機、電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、雙人床、書櫃、書桌(椅)、寬頻網路、第四台、電話、光纖網路",
         "note": "年收12個月",
-        "filter": 3500
+        "filter": 3500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -848,7 +914,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、烘乾機、飲水機、衣櫃、單人床、書桌(椅)、寬頻網路、第四台、光纖網路",
         "note": "年收11個月",
-        "filter": 4500
+        "filter": 4500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -873,7 +941,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路",
         "note": "",
-        "filter": 3000
+        "filter": 3000,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -898,7 +968,9 @@
         "alarm": true,
         "stuff": "雙層電冰箱、冷氣機、洗衣機、脫水機、烘乾機、飲水機、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、光纖網路、電梯",
         "note": "年收 78,000",
-        "filter": 6500
+        "filter": 6500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -923,7 +995,9 @@
         "alarm": true,
         "stuff": "電視、冰箱、冷氣、衣櫃、床組、桌椅、滑動式三層鐵櫃、對講機",
         "note": "",
-        "filter": 3800
+        "filter": 3800,
+        "landlord_auth": true,
+        "question_auth": false
       }
     },
     {
@@ -948,7 +1022,9 @@
         "alarm": true,
         "stuff": "電冰箱、冷氣機、洗衣機、脫水機、烘乾機、陽台、衣櫃、單人床、書櫃、書桌(椅)、寬頻網路、第四台、光纖網路",
         "note": "年收11個月",
-        "filter": 5500
+        "filter": 5500,
+        "landlord_auth": true,
+        "question_auth": false
       }
     }
   ]

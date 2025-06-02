@@ -680,6 +680,30 @@ function createRentalPopup(rentalData) {
     header.innerHTML = `<h3>${rentalData.name || '未命名的住所'}</h3>`;
     popupContainer.appendChild(header);
     
+    // Add auth badges under the header using info guide structure
+    if (rentalData.landlord_auth || rentalData.question_auth) {
+        const badgesContainer = document.createElement('div');
+        badgesContainer.className = 'auth-icons-container';
+        
+        if (rentalData.landlord_auth) {
+            const landlordIcon = document.createElement('div');
+            landlordIcon.className = 'icon-wrapper landlord-auth';
+            landlordIcon.innerHTML = '<i class="fas fa-house"></i>';
+            landlordIcon.setAttribute('data-tooltip', '此資訊由房東提供');
+            badgesContainer.appendChild(landlordIcon);
+        }
+        
+        if (rentalData.question_auth) {
+            const questionIcon = document.createElement('div');
+            questionIcon.className = 'icon-wrapper question-auth';
+            questionIcon.innerHTML = '<i class="fas fa-clipboard-list"></i>';
+            questionIcon.setAttribute('data-tooltip', '此資訊由問卷蒐集');
+            badgesContainer.appendChild(questionIcon);
+        }
+        
+        header.appendChild(badgesContainer);
+    }
+    
     // Create tabs
     const tabsContainer = document.createElement('div');
     tabsContainer.className = 'popup-tabs';
@@ -939,6 +963,32 @@ function setupMobilePopup() {
                 <i class="fas fa-times"></i>
             </div>
         `;
+        
+        // Add auth badges inside the title container
+        if (marker.rentalData.landlord_auth || marker.rentalData.question_auth) {
+            const titleContainer = header.querySelector('.bottom-sheet-title-container');
+            const badgesContainer = document.createElement('div');
+            badgesContainer.className = 'auth-icons-container mobile-auth-icons';
+            
+            if (marker.rentalData.landlord_auth) {
+                const landlordIcon = document.createElement('div');
+                landlordIcon.className = 'icon-wrapper landlord-auth';
+                landlordIcon.innerHTML = '<i class="fas fa-house"></i>';
+                landlordIcon.setAttribute('data-tooltip', '此資訊由房東提供');
+                badgesContainer.appendChild(landlordIcon);
+            }
+            
+            if (marker.rentalData.question_auth) {
+                const questionIcon = document.createElement('div');
+                questionIcon.className = 'icon-wrapper question-auth';
+                questionIcon.innerHTML = '<i class="fas fa-clipboard-list"></i>';
+                questionIcon.setAttribute('data-tooltip', '此資訊由問卷蒐集');
+                badgesContainer.appendChild(questionIcon);
+            }
+            
+            titleContainer.appendChild(badgesContainer);
+        }
+        
         mobileContent.appendChild(header);
         
         // Create tabs (similar to desktop)
