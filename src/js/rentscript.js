@@ -737,7 +737,7 @@ function createRentalPopup(rentalData) {
         { label: '月租金', value: rentalData.rent || '未提供', icon: 'dollar-sign' },
         { label: '押金', value: rentalData.deposit || '未提供', icon: 'money-bill-wave' },
         { label: '房屋類型', value: rentalData.type || '未提供', icon: 'home' },
-        { label: '電費計價', value: rentalData.elec || '未提供', icon: 'bolt' }
+        { label: '台電', value: rentalData.elec || '未提供', icon: 'bolt' }
     ];
     
     mainInfoItems.forEach(item => {
