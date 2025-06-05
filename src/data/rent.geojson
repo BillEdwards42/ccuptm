@@ -1616,6 +1616,36 @@
       "landlord_auth": false,
       "question_auth": true
     }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47143,
+        23.55446
+      ]
+    },
+    "properties": {
+      "name": "三興路98號",
+      "address": "嘉義縣民雄鄉三興路98號",
+      "contact": "0975570366(簡秋芬)",
+      "rent": "6坪：3900",
+      "deposit": "6000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": "未知",
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 衣櫃, 洗衣機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 3900,
+      "landlord_auth": false,
+      "question_auth": true
+    }
   }
   ]
 }
