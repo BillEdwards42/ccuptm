@@ -5,7 +5,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47377, 23.580630]
+        "coordinates": [
+          120.47377,
+          23.580630
+        ]
       },
       "properties": {
         "name": "森林城學院",
@@ -32,7 +35,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4741797, 23.5548334]
+        "coordinates": [
+          120.4741797,
+          23.5548334
+        ]
       },
       "properties": {
         "name": "哈佛學院",
@@ -59,7 +65,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4687835, 23.5532236]
+        "coordinates": [
+          120.4687835,
+          23.5532236
+        ]
       },
       "properties": {
         "name": "現代首席",
@@ -86,7 +95,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4748359, 23.5539123]
+        "coordinates": [
+          120.4748359,
+          23.5539123
+        ]
       },
       "properties": {
         "name": "鼎泰",
@@ -113,7 +125,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4381881, 23.5571070]
+        "coordinates": [
+          120.4381881,
+          23.5571070
+        ]
       },
       "properties": {
         "name": "弘儒山莊",
@@ -140,7 +155,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4743753, 23.5549067]
+        "coordinates": [
+          120.4743753,
+          23.5549067
+        ]
       },
       "properties": {
         "name": "維多利亞學苑",
@@ -167,7 +185,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4674024576052, 23.553549447335904]
+        "coordinates": [
+          120.4674024576052,
+          23.553549447335904
+        ]
       },
       "properties": {
         "name": "三豐學苑",
@@ -194,7 +215,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47388278348063, 23.55512603937513]
+        "coordinates": [
+          120.47388278348063,
+          23.55512603937513
+        ]
       },
       "properties": {
         "name": "鳳凰軒",
@@ -221,7 +245,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.45360499309113, 23.564449898311278]
+        "coordinates": [
+          120.45360499309113,
+          23.564449898311278
+        ]
       },
       "properties": {
         "name": "育賢樓",
@@ -248,7 +275,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.44448184232787, 23.559961276537077]
+        "coordinates": [
+          120.44448184232787,
+          23.559961276537077
+        ]
       },
       "properties": {
         "name": "翰林樓",
@@ -257,7 +287,7 @@
         "rent": "3000-3300",
         "deposit": "5000",
         "type": "學舍",
-        "elec": "3.5元/度",
+        "elec": "否，3.5元/度",
         "sex": false,
         "pet": "寵物可以（狗不行）",
         "fire": true,
@@ -275,7 +305,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4724960959606, 23.58143868092777]
+        "coordinates": [
+          120.4724960959606,
+          23.58143868092777
+        ]
       },
       "properties": {
         "name": "集賢樓",
@@ -284,7 +317,7 @@
         "rent": "4500",
         "deposit": "4500",
         "type": "公寓",
-        "elec": "5元/度",
+        "elec": "否，5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -302,7 +335,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47143959211873, 23.552480587602552]
+        "coordinates": [
+          120.47143959211873,
+          23.552480587602552
+        ]
       },
       "properties": {
         "name": "柏園",
@@ -329,7 +365,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.44539423525697, 23.56004421191188]
+        "coordinates": [
+          120.44539423525697,
+          23.56004421191188
+        ]
       },
       "properties": {
         "name": "思賢樓",
@@ -356,7 +395,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4691259403794, 23.554483135840957]
+        "coordinates": [
+          120.4691259403794,
+          23.554483135840957
+        ]
       },
       "properties": {
         "name": "正心學苑",
@@ -383,7 +425,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.44285547323314, 23.561307280713237]
+        "coordinates": [
+          120.44285547323314,
+          23.561307280713237
+        ]
       },
       "properties": {
         "name": "萊茵學院",
@@ -410,7 +455,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47486768202643, 23.555253631683993]
+        "coordinates": [
+          120.47486768202643,
+          23.555253631683993
+        ]
       },
       "properties": {
         "name": "B&T",
@@ -419,7 +467,7 @@
         "rent": "5坪：5000\n6坪：6000",
         "deposit": "6000",
         "type": "公寓",
-        "elec": "5元/度",
+        "elec": "否，5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -437,7 +485,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47333612637978, 23.553929147118513]
+        "coordinates": [
+          120.47333612637978,
+          23.553929147118513
+        ]
       },
       "properties": {
         "name": "凱格鹿套房一期",
@@ -446,7 +497,7 @@
         "rent": "4500",
         "deposit": "6000",
         "type": "學舍",
-        "elec": "4.5元/度",
+        "elec": "否，4.5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -464,7 +515,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.43635525407731, 23.55675239290311]
+        "coordinates": [
+          120.43635525407731,
+          23.55675239290311
+        ]
       },
       "properties": {
         "name": "樹仁書院B棟",
@@ -473,7 +527,7 @@
         "rent": "4坪：2500\n5坪：3000\n6坪：3500",
         "deposit": "5000",
         "type": "學舍",
-        "elec": "3.5元/度",
+        "elec": "否，3.5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -491,7 +545,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4381881, 23.5571070]
+        "coordinates": [
+          120.4381881,
+          23.5571070
+        ]
       },
       "properties": {
         "name": "百泰山莊",
@@ -500,7 +557,7 @@
         "rent": "4000",
         "deposit": "4000",
         "type": "學舍",
-        "elec": "4.5元/度",
+        "elec": "否，4.5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -518,7 +575,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4367732, 23.5575087]
+        "coordinates": [
+          120.4367732,
+          23.5575087
+        ]
       },
       "properties": {
         "name": "今學成學苑",
@@ -527,7 +587,7 @@
         "rent": "3000-3700",
         "deposit": "5000",
         "type": "學舍",
-        "elec": "3.5元/度",
+        "elec": "否，3.5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -545,7 +605,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4565501, 23.5609133]
+        "coordinates": [
+          120.4565501,
+          23.5609133
+        ]
       },
       "properties": {
         "name": "得利菊園",
@@ -554,7 +617,7 @@
         "rent": "3600",
         "deposit": "7000",
         "type": "公寓",
-        "elec": "3.8元/度",
+        "elec": "否，3.8元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -572,7 +635,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4508874, 23.5602367]
+        "coordinates": [
+          120.4508874,
+          23.5602367
+        ]
       },
       "properties": {
         "name": "豐收帝寶",
@@ -599,7 +665,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47188661990492, 23.5540960061617]
+        "coordinates": [
+          120.47188661990492,
+          23.5540960061617
+        ]
       },
       "properties": {
         "name": "精華學院",
@@ -626,7 +695,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47650873658986, 23.556570085876828]
+        "coordinates": [
+          120.47650873658986,
+          23.556570085876828
+        ]
       },
       "properties": {
         "name": "金桔學院",
@@ -653,7 +725,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47424368135626, 23.5555205404982]
+        "coordinates": [
+          120.47424368135626,
+          23.5555205404982
+        ]
       },
       "properties": {
         "name": "凱格鹿8期",
@@ -662,7 +737,7 @@
         "rent": "7坪：6000",
         "deposit": "10000",
         "type": "透天",
-        "elec": "4.5元/度",
+        "elec": "否，4.5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -680,7 +755,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.46875549115428, 23.554993441696475]
+        "coordinates": [
+          120.46875549115428,
+          23.554993441696475
+        ]
       },
       "properties": {
         "name": "三興學舍",
@@ -707,7 +785,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47731149325388, 23.54879377159555]
+        "coordinates": [
+          120.47731149325388,
+          23.54879377159555
+        ]
       },
       "properties": {
         "name": "橙舍",
@@ -734,7 +815,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47066342496787, 23.55507285119898]
+        "coordinates": [
+          120.47066342496787,
+          23.55507285119898
+        ]
       },
       "properties": {
         "name": "陽光學苑",
@@ -761,7 +845,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.4375120997428, 23.556921063338887]
+        "coordinates": [
+          120.4375120997428,
+          23.556921063338887
+        ]
       },
       "properties": {
         "name": "天恩學苑",
@@ -770,7 +857,7 @@
         "rent": "3500-5500",
         "deposit": "5000",
         "type": "學舍",
-        "elec": "3元/度",
+        "elec": "否，3元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -788,7 +875,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.43766196189887, 23.572480383760848]
+        "coordinates": [
+          120.43766196189887,
+          23.572480383760848
+        ]
       },
       "properties": {
         "name": "樹仁書院B棟",
@@ -797,7 +887,7 @@
         "rent": "3000",
         "deposit": "5000",
         "type": "公寓",
-        "elec": "3.5元/度",
+        "elec": "否，3.5元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -815,10 +905,13 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.46907863909414, 23.554424990140475]
+        "coordinates": [
+          120.46907863909414,
+          23.554424990140475
+        ]
       },
       "properties": {
-        "name": "康乃爾",
+        "name": "康乃爾學苑",
         "address": "嘉義縣民雄鄉三興村三興路170號",
         "contact": "0922423859（陳先生）",
         "rent": "3500",
@@ -842,7 +935,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.46896921607569, 23.553770092796203]
+        "coordinates": [
+          120.46896921607569,
+          23.553770092796203
+        ]
       },
       "properties": {
         "name": "中正會館",
@@ -869,7 +965,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.44941408045348, 23.557661123449513]
+        "coordinates": [
+          120.44941408045348,
+          23.557661123449513
+        ]
       },
       "properties": {
         "name": "雅筑居",
@@ -878,7 +977,7 @@
         "rent": "3500-3900",
         "deposit": "5000",
         "type": "學舍",
-        "elec": "3.9元/度",
+        "elec": "否，3.9元/度",
         "sex": false,
         "pet": false,
         "fire": true,
@@ -896,7 +995,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47091252622161, 23.554246186738947]
+        "coordinates": [
+          120.47091252622161,
+          23.554246186738947
+        ]
       },
       "properties": {
         "name": "德月學苑",
@@ -923,13 +1025,16 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.45350002732492, 23.563666884030177]
+        "coordinates": [
+          120.45350002732492,
+          23.563666884030177
+        ]
       },
       "properties": {
         "name": "勵志樓",
         "address": "嘉義縣民雄鄉豐收村好收18-8號",
         "contact": "0958890891（李先生）",
-        "rent": "6.5坪 ：3000",
+        "rent": "6.5坪：3000",
         "deposit": "4000",
         "type": "學舍",
         "elec": "是",
@@ -950,7 +1055,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47245948061796, 23.554541745315934]
+        "coordinates": [
+          120.47245948061796,
+          23.554541745315934
+        ]
       },
       "properties": {
         "name": "柏睿學舍",
@@ -977,7 +1085,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.46922579960804, 23.55391668119774]
+        "coordinates": [
+          120.46922579960804,
+          23.55391668119774
+        ]
       },
       "properties": {
         "name": "中正會館2",
@@ -1004,7 +1115,10 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [120.47792654986543, 23.555466062137157]
+        "coordinates": [
+          120.47792654986543,
+          23.555466062137157
+        ]
       },
       "properties": {
         "name": "深白舍",
@@ -1026,6 +1140,482 @@
         "landlord_auth": true,
         "question_auth": false
       }
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.45489,
+        23.56839
+      ]
+    },
+    "properties": {
+      "name": "中正白宮",
+      "address": "62144嘉義縣民雄鄉好收1-17號",
+      "contact": "",
+      "rent": "3300",
+      "deposit": "5000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 電視機, 書櫃, 衣櫃, 洗衣機, 烘乾機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 3300,
+      "landlord_auth": false,
+      "question_auth": true
     }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47192,
+        23.55630
+      ]
+    },
+    "properties": {
+      "name": "大吃全家樓上",
+      "address": "嘉義縣民雄鄉公園路368, 370號",
+      "contact": "",
+      "rent": "5.72坪：5000\n7坪：5000",
+      "deposit": "5.72坪：7000\n7坪：10000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": "否(7坪問卷寫可)",
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": true,
+      "stuff": "使用5.72坪之答覆: 書桌(椅), 單人床, 冷氣機, 電冰箱, 電視機, 書櫃, 衣櫃, 床組, 洗衣機, 飲水機, 寬頻網路, 獨立陽台、獨立洗衣機",
+      "note": "",
+      "filter": 5000,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47485,
+        23.55390
+      ]
+    },
+    "properties": {
+      "name": "鳳凰軒",
+      "address": "興農一街58號",
+      "contact": "0912618647",
+      "rent": "3583",
+      "deposit": "7000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": "未知",
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 書櫃, 衣櫃, 床組, 洗衣機, 烘乾機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 3583,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47320,
+        23.55616
+      ]
+    },
+    "properties": {
+      "name": "天鵝堡",
+      "address": "嘉義縣民雄鄉富農路89號二樓",
+      "contact": "",
+      "rent": "3坪左右：4200",
+      "deposit": "7000",
+      "type": "學舍(套房)",
+      "elec": "否，3元/度",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 書櫃, 衣櫃, 床組, 洗衣機, 烘乾機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 7000,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.46826,
+        23.55447
+      ]
+    },
+    "properties": {
+      "name": "三興學苑",
+      "address": "嘉義縣民雄鄉三興路168號",
+      "contact": "",
+      "rent": "4400",
+      "deposit": "3000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": "未知",
+      "light": true,
+      "exit": true,
+      "alarm": true,
+      "stuff": "書桌(椅), 雙人床, 冷氣機, 電冰箱, 衣櫃, 床組, 洗衣機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 4400,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47239,
+        23.55364
+      ]
+    },
+    "properties": {
+      "name": "鼎冠",
+      "address": "神農三街12號",
+      "contact": "",
+      "rent": "5500",
+      "deposit": "8000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": "未知",
+      "light": "未知",
+      "exit": "未知",
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 電視機, 書櫃, 衣櫃, 洗衣機, 烘乾機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 5500,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.45171,
+        23.56283
+      ]
+    },
+    "properties": {
+      "name": "百成學苑",
+      "address": "嘉義縣民雄鄉豐收村好收23-1號",
+      "contact": "0972396756(黃文周)",
+      "rent": "5.5坪：2850",
+      "deposit": "5000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 衣櫃, 洗衣機, 烘乾機, 飲水機, 寬頻網路, 光纖網路",
+      "note": "",
+      "filter": 2850,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47050,
+        23.55450
+      ]
+    },
+    "properties": {
+      "name": "夏艷",
+      "address": "三興路106號",
+      "contact": "",
+      "rent": "單人房：4800",
+      "deposit": "7000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": true,
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 電梯, 書櫃, 衣櫃, 洗衣機, 烘乾機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 4800,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47269,
+        23.55368
+      ]
+    },
+    "properties": {
+      "name": "神農學院",
+      "address": "神農三街22號",
+      "contact": "0931590880(廖本誌)",
+      "rent": "3坪：3600",
+      "deposit": "2000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": true,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 雙人床, 冷氣機, 電冰箱, 電梯, 衣櫃, 床組, 洗衣機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 3600,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.45651,
+        23.55957
+      ]
+    },
+    "properties": {
+      "name": "菩提學院",
+      "address": "嘉義縣民雄鄉好收191號",
+      "contact": "",
+      "rent": "6坪：3000",
+      "deposit": "5000",
+      "type": "學舍(套房)",
+      "elec": "否，3元/度",
+      "sex": false,
+      "pet": true,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 電視機, 書櫃, 衣櫃, 洗衣機, 烘乾機, 飲水機, 寬頻網路, 洗衣機/烘衣機為共用",
+      "note": "",
+      "filter": 3000,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47417,
+        23.55396
+      ]
+    },
+    "properties": {
+      "name": "陶居",
+      "address": "嘉義縣民雄鄉三興村正義三街2號",
+      "contact": "",
+      "rent": "4-5坪：3400",
+      "deposit": "10000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 衣櫃, 床組, 洗衣機, 烘乾機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 3400,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47039,
+        23.55337
+      ]
+    },
+    "properties": {
+      "name": "劍橋",
+      "address": "嘉義縣民雄鄉三豐路192號",
+      "contact": "",
+      "rent": "4600",
+      "deposit": "8000",
+      "type": "學舍(套房)",
+      "elec": "否，2.5元/度",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": "未知",
+      "stuff": "書桌(椅), 雙人床, 冷氣機, 電冰箱, 電視機, 書櫃, 衣櫃, 床組, 洗衣機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 4600,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.47254,
+        23.55483
+      ]
+    },
+    "properties": {
+      "name": "公園小築",
+      "address": "公園路298號",
+      "contact": "",
+      "rent": "6700",
+      "deposit": "5000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": "未知",
+      "light": true,
+      "exit": "未知",
+      "alarm": "未知",
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電視機, 衣櫃, 床組, 洗衣機, 飲水機",
+      "note": "",
+      "filter": 6700,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        120.46900,
+        23.55444
+      ]
+    },
+    "properties": {
+      "name": "康乃爾學苑",
+      "address": "621嘉義縣民雄鄉三興路170號",
+      "contact": "",
+      "rent": "4620",
+      "deposit": "8000",
+      "type": "學舍(套房)",
+      "elec": "是",
+      "sex": false,
+      "pet": false,
+      "fire": true,
+      "light": true,
+      "exit": true,
+      "alarm": true,
+      "stuff": "書桌(椅), 單人床, 冷氣機, 電冰箱, 書櫃, 衣櫃, 床組, 洗衣機, 烘乾機, 飲水機, 寬頻網路",
+      "note": "",
+      "filter": 4620,
+      "landlord_auth": false,
+      "question_auth": true
+    }
+  }
   ]
 }
